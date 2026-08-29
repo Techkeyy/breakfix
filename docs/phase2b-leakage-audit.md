@@ -1,6 +1,6 @@
 # Phase 2B holdout leakage audit
 
-Audit status: **REMEDIATED / PASS before execution**  
+Audit status: **REMEDIATED / CONDITIONAL PASS before execution**  
 Audit date: 2026-08-29  
 Holdout: `benchmark/phase2b_holdout/`  
 Reviewer: independent read-only audit path plus a separate review-agent context
@@ -41,6 +41,12 @@ result evaluation.
   prompts, or included in trajectory context.
 - Recent commits contain only protocol/evidence history and do not name a
   Phase 2B case label or expected breaker.
+- The current checkout, index, and agent-visible case workspaces contain no
+  Phase 2B oracle. Earlier local Git objects from the pre-remediation commits
+  still retain the deleted oracle blob. The direct runner sends no Git history
+  to either model lane, but a strict history-access threat model would require
+  a fresh shallow clone or an approved history rewrite before claiming absolute
+  repository-level isolation.
 
 ## Pairing and mutation review
 
@@ -53,7 +59,7 @@ The hidden oracle maps exactly one supported experiment to each pair.
 
 ## Decision
 
-The initial leakage findings were remediated and the final read-only audit found
-no obvious answer leakage. The holdout is cleared for execution. This audit is
-immutable evidence of the pre-run state; it must not be edited after provider
-execution begins.
+The initial content and context leakage findings were remediated. The current
+agent context is cleared for execution, with the historical-object caveat
+above. This audit is immutable evidence of the pre-run state; it must not be
+edited after provider execution begins.

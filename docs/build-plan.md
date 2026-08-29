@@ -161,7 +161,9 @@ for complete seeded-fault recall with zero false confirmed breaks as the single
 primary metric. The pre-run implementation adds a fresh 16-case paired
 holdout, direct-provider telemetry, a deterministic three-experiment budget,
 immediate stop after a confirmed break, and a fixed exhaustive matrix of 128
-executions. The pre-run holdout leakage audit passed.
+executions. The pre-run holdout leakage audit passes for the current
+agent-visible context, with a documented caveat that an earlier local Git object
+retains the removed pre-remediation oracle.
 
 The benchmark is blocked until an authorized direct-provider credential and
 cost rates are supplied in the local environment. The pre-run commit is
