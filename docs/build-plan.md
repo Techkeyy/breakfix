@@ -24,8 +24,8 @@ User journey:
       -> reproduce -> generate regression test -> review fix
       -> approve -> verify -> decide whether to merge
 
-The Phase 1 artifact implements the technical flow and the comparison gate. It
-does not implement the final interface journey.
+The Phase 1 and Phase 1.5 artifacts implement the technical flow and comparison
+gate. They do not implement the final interface journey.
 
 ## Six pre-build answers
 
@@ -100,15 +100,39 @@ Result:
   comparable agent runtime was available. The implemented baseline is labeled
   offline deterministic surrogate.
 
-### Phase 2: real-agent and benchmark hardening
+### Phase 1.5: validation closure
+
+Scope:
+
+- same-model real baseline and BreakFix reasoning-agent calls;
+- sanitized numeric case workspaces to prevent fixture-name leakage;
+- structured agent response validation;
+- captured prompts, contexts, tool actions, retries, and final conclusions;
+- evaluator-only ground truth and deterministic experiment execution;
+- runtime, model-call, token, cost, false-positive, and reproduction metrics.
+
+PASS gate:
+
+- BreakFix materially improves over the real generic baseline;
+- BreakFix matches or approaches the fixed matrix with fewer experiments;
+- the safe cases do not show an unacceptable false-positive pattern;
+- every confirmed break has execution evidence;
+- no ground-truth leakage and complete agent trajectories.
+
+Result: MIXED. The real baseline found 4/4 seeded faults and raised one safe-case
+false positive. BreakFix found 4/4 with no safe-case false positive using 7
+experiments versus 30 for the fixed matrix. The efficiency advantage survived,
+but the discovery advantage did not. The next decision is NARROW, not PASS.
+
+### Phase 2: benchmark hardening and provider reproducibility
 
 Start only after the Phase 1 decision.
 
 Scope:
 
-- connect a participant-owned live coding-agent baseline;
-- preserve prompts, model, tools, outputs, timing, and cost;
-- add at least five more cases, including an ambiguous and a safe change;
+- add a direct API-backed provider with secret isolation;
+- preserve prompt, model, tools, outputs, timing, tokens, retries, and cost;
+- add at least ten more independent cases, including ambiguous and safe changes;
 - freeze the evaluation rubric before final runs;
 - test malformed model output, timeout, missing dependency, empty diff, and
   unsupported project handling;
@@ -121,7 +145,7 @@ PASS gate:
 - baseline and advanced traces are complete;
 - metrics include detection, false approval, false positive, executable
   reproduction, runtime, and cost where available;
-- the load-bearing hypothesis is supported or the design is reshaped honestly.
+- the narrowed product claim is supported or the design is reshaped honestly.
 
 ### Phase 3: reduction and regression proof
 
@@ -195,8 +219,8 @@ PASS gate:
 
 1. Prove the assumption-to-experiment mapping.
 2. Complete the real execution loop.
-3. Add a live comparable baseline.
-4. Harden benchmark independence and error paths.
+3. Harden benchmark independence and safe-case precision.
+4. Add a reproducible direct model provider.
 5. Add reduction, regression, approval, and verification.
 6. Build the one focused interface.
 7. Polish only after the proof is stable.
@@ -217,7 +241,7 @@ Do not build yet:
 
 ## Current decision
 
-The prototype mechanics deserve a second experiment with a real baseline.
-Do not lock the product or start the polished app until that baseline is
-available and the five-case comparison is rerun.
-
+The real-agent comparison is complete but MIXED. Narrow the claim toward
+evidence-efficient review, add independent cases and direct provider telemetry,
+and do not start the polished app until the narrowed value proposition survives
+that benchmark.

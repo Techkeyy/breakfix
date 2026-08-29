@@ -1,0 +1,590 @@
+{
+  "run_id": "phase1.5-20260829T120133Z",
+  "phase": "1.5-validation-closure",
+  "cases": [
+    {
+      "id": "case_01",
+      "title": "Collection summary change",
+      "truth_id_evaluator_only": "case_input_boundary",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_average_for_normal_collection (test_app.SummaryTests.test_average_for_normal_collection) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "output": null,
+        "duration_ms": 1744,
+        "process_failed": false
+      },
+      "baseline": {
+        "valid_response": true,
+        "flagged": true,
+        "detected": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/baseline/case_01/trajectory.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "input_empty"
+        ],
+        "execution_runtime_ms": 3915,
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/fixed-matrix/case_01"
+      },
+      "breakfix": {
+        "valid_response": true,
+        "assumptions": [
+          {
+            "id": "items-present-and-nonempty",
+            "statement": "Every invocation supplies a non-empty items collection.",
+            "surface": "input",
+            "evidence": [
+              "before/app.py:2-3",
+              "after/app.py:2-3"
+            ],
+            "failure_if_false": "A missing key raises KeyError; an empty collection raises ZeroDivisionError.",
+            "risk": "high",
+            "proposed_experiment": {
+              "id": "input_empty",
+              "parameters": {
+                "payload": {
+                  "items": []
+                }
+              },
+              "rationale": "Exercises the newly introduced len(items) denominator with an empty collection."
+            },
+            "supported_experiment": true
+          },
+          {
+            "id": "zero-is-valid-numeric-item",
+            "statement": "Zero-valued items are valid numeric inputs and average normally.",
+            "surface": "input",
+            "evidence": [
+              "public.json:4",
+              "after/app.py:3"
+            ],
+            "failure_if_false": "Zero could be mishandled as an empty or invalid value, producing an incorrect result instead of average 0.0.",
+            "risk": "low",
+            "proposed_experiment": {
+              "id": "input_boundary_zero",
+              "parameters": {
+                "payload": {
+                  "items": [
+                    0
+                  ]
+                }
+              },
+              "rationale": "Checks the smallest numeric collection containing zero."
+            },
+            "supported_experiment": true
+          }
+        ],
+        "unsupported_assumptions": [],
+        "experiments_selected": [
+          "input_empty",
+          "input_boundary_zero"
+        ],
+        "experiments_run": 2,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "input_empty"
+        ],
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "execution_runtime_ms": 2875,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_01/trajectory.json",
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_01"
+      }
+    },
+    {
+      "id": "case_02",
+      "title": "Retryable request handler",
+      "truth_id_evaluator_only": "case_retry_duplicate",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_single_delivery_charges_once (test_app.ChargeTests.test_single_delivery_charges_once) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "output": null,
+        "duration_ms": 1596,
+        "process_failed": false
+      },
+      "baseline": {
+        "valid_response": true,
+        "flagged": true,
+        "detected": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/baseline/case_02/trajectory.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "retry_duplicate"
+        ],
+        "execution_runtime_ms": 5903,
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/fixed-matrix/case_02"
+      },
+      "breakfix": {
+        "valid_response": true,
+        "assumptions": [
+          {
+            "id": "retries_are_idempotent",
+            "statement": "Repeated deliveries with the same request_id represent retries of one charge and must charge at most once.",
+            "surface": "input",
+            "evidence": [
+              "public.json: task specifies a retryable side-effecting request handler",
+              "before/app.py:5-8 checks _processed before charging",
+              "after/app.py:4-5 always returns payload[\"amount\"]"
+            ],
+            "failure_if_false": "A duplicate delivery is charged again; two attempts for amount 25 produce total_charged 50 instead of 25.",
+            "risk": "high",
+            "proposed_experiment": {
+              "id": "retry_duplicate",
+              "parameters": {
+                "request_id": "retry-1",
+                "amount": 25,
+                "attempts": 2
+              },
+              "rationale": "Exercise repeated delivery of the same request identity and verify that the side effect is applied only once."
+            },
+            "supported_experiment": true
+          },
+          {
+            "id": "required_payload_fields_exist",
+            "statement": "Each request is a non-empty mapping containing request_id and amount.",
+            "surface": "input",
+            "evidence": [
+              "after/app.py:4 accesses payload[\"request_id\"]",
+              "after/app.py:5 accesses payload[\"amount\"]"
+            ],
+            "failure_if_false": "An empty payload raises KeyError instead of producing a controlled validation result.",
+            "risk": "medium",
+            "proposed_experiment": {
+              "id": "input_empty",
+              "parameters": {
+                "payload": {}
+              },
+              "rationale": "Probe the handler's behavior when the assumed required request fields are absent."
+            },
+            "supported_experiment": true
+          }
+        ],
+        "unsupported_assumptions": [],
+        "experiments_selected": [
+          "retry_duplicate",
+          "input_empty"
+        ],
+        "experiments_run": 2,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "retry_duplicate"
+        ],
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "execution_runtime_ms": 1587,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_02/trajectory.json",
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_02"
+      }
+    },
+    {
+      "id": "case_03",
+      "title": "Persisted record migration",
+      "truth_id_evaluator_only": "case_stale_state",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_current_state_total (test_app.TotalTests.test_current_state_total) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n",
+        "output": null,
+        "duration_ms": 2893,
+        "process_failed": false
+      },
+      "baseline": {
+        "valid_response": true,
+        "flagged": true,
+        "detected": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/baseline/case_03/trajectory.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "state_legacy"
+        ],
+        "execution_runtime_ms": 10179,
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/fixed-matrix/case_03"
+      },
+      "breakfix": {
+        "valid_response": true,
+        "assumptions": [
+          {
+            "id": "persisted-records-have-tax-rate",
+            "statement": "Every persisted account record contains a numeric tax_rate field.",
+            "surface": "state",
+            "evidence": [
+              "before/app.py:3",
+              "after/app.py:3",
+              "public.json:4"
+            ],
+            "failure_if_false": "A legacy record without tax_rate raises KeyError and produces no total.",
+            "risk": "high",
+            "proposed_experiment": {
+              "id": "state_legacy",
+              "parameters": {
+                "state": {
+                  "version": 1,
+                  "balance": 100
+                }
+              },
+              "rationale": "Load an older persisted record lacking the newly required tax_rate field."
+            },
+            "supported_experiment": true
+          }
+        ],
+        "unsupported_assumptions": [],
+        "experiments_selected": [
+          "state_legacy"
+        ],
+        "experiments_run": 1,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "state_legacy"
+        ],
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "execution_runtime_ms": 765,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_03/trajectory.json",
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_03"
+      }
+    },
+    {
+      "id": "case_04",
+      "title": "Event replay simplification",
+      "truth_id_evaluator_only": "case_reordered_events",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_happy_path_order (test_app.ReplayTests.test_happy_path_order) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "output": null,
+        "duration_ms": 760,
+        "process_failed": false
+      },
+      "baseline": {
+        "valid_response": true,
+        "flagged": true,
+        "detected": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/baseline/case_04/trajectory.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "events_reordered"
+        ],
+        "execution_runtime_ms": 4905,
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/fixed-matrix/case_04"
+      },
+      "breakfix": {
+        "valid_response": true,
+        "assumptions": [
+          {
+            "id": "reservation-precedes-confirmation",
+            "statement": "Every valid replay sequence contains reserve before confirm.",
+            "surface": "input",
+            "evidence": [
+              "before/app.py:10",
+              "before/app.py:14",
+              "after/app.py:6"
+            ],
+            "failure_if_false": "A sequence such as confirm, reserve returns pending after the change, whereas the previous implementation returned confirmed.",
+            "risk": "high",
+            "proposed_experiment": {
+              "id": "events_reordered",
+              "parameters": {
+                "events": [
+                  "confirm",
+                  "reserve"
+                ]
+              },
+              "rationale": "Tests whether confirmation remains valid when replay events arrive in the opposite order."
+            },
+            "supported_experiment": true
+          }
+        ],
+        "unsupported_assumptions": [],
+        "experiments_selected": [
+          "events_reordered"
+        ],
+        "experiments_run": 1,
+        "detected": true,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [
+          "events_reordered"
+        ],
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "execution_runtime_ms": 901,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_04/trajectory.json",
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_04"
+      }
+    },
+    {
+      "id": "case_05",
+      "title": "Business-hour interpretation",
+      "truth_id_evaluator_only": "case_timezone_robust",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_normal_business_hours (test_app.BusinessHoursTests.test_normal_business_hours) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.320s\n\nOK\n",
+        "output": null,
+        "duration_ms": 3839,
+        "process_failed": false
+      },
+      "baseline": {
+        "valid_response": true,
+        "flagged": true,
+        "detected": false,
+        "detection": false,
+        "false_approval": false,
+        "false_positive": true,
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/baseline/case_05/trajectory.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": false,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [],
+        "execution_runtime_ms": 10226,
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/fixed-matrix/case_05"
+      },
+      "breakfix": {
+        "valid_response": true,
+        "assumptions": [
+          {
+            "id": "timestamp_is_absolute",
+            "statement": "The timestamp is ISO-8601 and offset-aware, representing an absolute instant.",
+            "surface": "input",
+            "evidence": [
+              "after/app.py:5-6",
+              "after/tests/test_app.py:8-12"
+            ],
+            "failure_if_false": "A naive timestamp is interpreted using the host's local timezone, making the result environment-dependent or semantically incorrect.",
+            "risk": "high",
+            "proposed_experiment": {
+              "id": "world_dst",
+              "parameters": {
+                "timezone": "America/New_York",
+                "utc_instants": [
+                  "2026-03-08T06:59:00+00:00",
+                  "2026-03-08T07:00:00+00:00"
+                ]
+              },
+              "rationale": "Checks whether absolute UTC instants are mapped to the correct local business-hour status across the spring DST transition."
+            },
+            "supported_experiment": true
+          },
+          {
+            "id": "timezone_rules_are_available",
+            "statement": "The requested timezone is a valid IANA timezone resolvable by the runtime's timezone database.",
+            "surface": "world",
+            "evidence": [
+              "after/app.py:6"
+            ],
+            "failure_if_false": "Missing or invalid timezone data causes ZoneInfo resolution to fail instead of returning a business-hours result.",
+            "risk": "medium",
+            "proposed_experiment": {
+              "id": "world_dst",
+              "parameters": {
+                "timezone": "America/New_York",
+                "utc_instants": [
+                  "2026-11-01T05:59:00+00:00",
+                  "2026-11-01T06:00:00+00:00"
+                ]
+              },
+              "rationale": "Exercises timezone-rule lookup and fall-back DST behavior at a world-time boundary."
+            },
+            "supported_experiment": true
+          }
+        ],
+        "unsupported_assumptions": [],
+        "experiments_selected": [
+          "world_dst"
+        ],
+        "experiments_run": 1,
+        "detected": false,
+        "false_approval": false,
+        "false_positive": false,
+        "confirmed_experiments": [],
+        "model_runtime_ms": null,
+        "model_calls": 1,
+        "execution_runtime_ms": 2627,
+        "trajectory_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_05/trajectory.json",
+        "evidence_path": "evidence/phase1.5-20260829T120133Z/breakfix/case_05"
+      }
+    }
+  ],
+  "integrity": {
+    "ground_truth_used_by_evaluator_only": true,
+    "real_subprocess_executions": true,
+    "real_model_responses_used": true,
+    "same_model_metadata_for_agent_lanes": true,
+    "fixture_to_experiment_mapping_used_by_agent": false
+  },
+  "metrics": {
+    "baseline": {
+      "seeded_faults_discovered": 4,
+      "seeded_faults_total": 4,
+      "seeded_faults_missed": 0,
+      "defect_detection_rate": 1.0,
+      "false_positives_on_safe_case": 1,
+      "false_approval_rate": 0.0,
+      "experiments_executed": 0,
+      "confirmed_failures_produced": 0,
+      "executable_reproduction_rate": null,
+      "execution_runtime_ms": null
+    },
+    "fixed_matrix": {
+      "seeded_faults_discovered": 4,
+      "seeded_faults_total": 4,
+      "seeded_faults_missed": 0,
+      "defect_detection_rate": 1.0,
+      "false_positives_on_safe_case": 0,
+      "false_approval_rate": 0.0,
+      "experiments_executed": 30,
+      "confirmed_failures_produced": 4,
+      "executable_reproduction_rate": 1.0,
+      "execution_runtime_ms": 35128
+    },
+    "breakfix": {
+      "seeded_faults_discovered": 4,
+      "seeded_faults_total": 4,
+      "seeded_faults_missed": 0,
+      "defect_detection_rate": 1.0,
+      "false_positives_on_safe_case": 0,
+      "false_approval_rate": 0.0,
+      "experiments_executed": 7,
+      "confirmed_failures_produced": 4,
+      "executable_reproduction_rate": 1.0,
+      "execution_runtime_ms": 8755
+    },
+    "fault_cases": 4,
+    "safe_cases": 1
+  },
+  "model": {
+    "baseline": {
+      "provider": "Codex multi-agent runtime",
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "xhigh",
+      "temperature": null,
+      "model_calls": 5,
+      "runtime_ms": null,
+      "token_usage": null,
+      "monetary_cost_usd": null,
+      "retries": 0
+    },
+    "breakfix": {
+      "provider": "Codex multi-agent runtime",
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "xhigh",
+      "temperature": null,
+      "model_calls": 5,
+      "runtime_ms": null,
+      "token_usage": null,
+      "monetary_cost_usd": null,
+      "retries": 0
+    },
+    "same_provider": true,
+    "same_model": true,
+    "token_usage_available": false,
+    "monetary_cost_available": false
+  }
+}

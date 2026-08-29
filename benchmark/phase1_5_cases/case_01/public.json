@@ -1,0 +1,6 @@
+{
+  "id": "case_01",
+  "title": "Collection summary change",
+  "task": "Change the summary result to expose an average for numeric items.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

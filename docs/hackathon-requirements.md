@@ -2,9 +2,10 @@
 
 Research date: 2026-08-29. Local timezone: Africa/Lagos. Statuses in this
 document are Confirmed, Inferred, or Unknown. The HackerEarth challenge page is
-the primary source. The page links an official instruction PDF, but the PDF
-request was blocked by the browser and network layer in this environment, so
-requirements that depend on that PDF remain Unknown.
+the primary source. The linked instruction PDF remains inaccessible in this
+environment, but the director independently verified the official scoring rubric
+and supplied the weights recorded below. Other requirements that depend on the
+PDF remain Unknown.
 
 Primary source:
 https://www.hackerearth.com/community/challenges/hackathon/micro1-frontier-engineering-challenge-2026/
@@ -25,19 +26,19 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | At least 18 years old | Challenge page, Eligibility | Participant responsibility, not a software gate | Submission checklist still needed | Confirmed |
 | Six months practical software-building experience or equivalent | Challenge page, Eligibility | Participant responsibility, not a software gate | Submission checklist still needed | Confirmed |
 | One registration and one final submission | Challenge page, Eligibility | No submission automation built | Submission work remains | Confirmed |
-| Coding-agent use is required | Challenge page, Overview and FAQ | Agent-shaped baseline and BreakFix traces are instrumented, but the baseline is offline and not a live coding model | evidence/.../trajectory.json; integrity.live_model_used=false | Confirmed requirement, implementation incomplete |
+| Coding-agent use is required | Challenge page, Overview and FAQ | Phase 1.5 uses the same real `gpt-5.6-luna` Codex runtime for baseline and BreakFix reasoning, with captured replay traces | evidence/phase1.5-20260829T120133Z; integrity.real_model_responses_used=true | Confirmed requirement, captured run complete |
 | Disclose tools used | Challenge page, Overview and FAQ | README and docs name the local prototype and limitations | README; docs | Confirmed |
-| Submit representative trajectories for every agent used | Challenge page, Submission Package and FAQ | Baseline and BreakFix trajectory.json files capture instructions, context, tool calls, outputs, and the no-ground-truth boundary | evidence/.../baseline/*/trajectory.json; evidence/.../breakfix/*/trajectory.json | Confirmed requirement, Phase 1 instrumented |
+| Submit representative trajectories for every agent used | Challenge page, Submission Package and FAQ | Baseline and BreakFix trajectories capture instructions by prompt reference, context, tool actions, outputs, retries, validation, and the no-ground-truth boundary | trajectories/phase1.5/*/case_*/replay.json; evidence/phase1.5-20260829T120133Z/*/trajectory.json | Confirmed requirement, Phase 1.5 captured |
 | Complete solution code | Challenge page, Submission Package | Source, benchmark, tests, and runner are present | canonical project directory | Confirmed for Phase 1 |
 | Improvement changelog with evidence-linked iterations | Challenge page, Submission Package | Changelog records the baseline, matrix, planner miss, timeout fix, and final rerun | docs/improvement-changelog.md | Confirmed for this checkpoint |
 | Clean-environment reproduction guide | Challenge page, Submission Package | README gives local commands; clean-machine validation is not complete | README; build plan | Inferred implementation, not submission-complete |
-| Exact commands for solution, baseline, and evaluation | Challenge page, Submission Package | One Phase 1 command runs all three lanes; live model baseline command does not exist yet | README; scripts/run_phase1.py | Partially confirmed |
-| Versions, approximate runtime, and cost | Challenge page, Submission Package | Python version and per-process durations are recorded; model cost is not applicable because no model was called | evidence execution results; cost field absent | Partially confirmed |
+| Exact commands for solution, baseline, and evaluation | Challenge page, Submission Package | `python scripts/run_phase15.py` replays the captured baseline, fixed matrix, and BreakFix evaluation; direct live-provider capture is still external to the script | README; scripts/run_phase15.py; docs/phase1.5-prompts.md | Partially confirmed |
+| Versions, approximate runtime, and cost | Challenge page, Submission Package | Python version, provider, model, reasoning setting, model-call count, and per-process durations are recorded; token usage, latency, and cost were unavailable | evidence execution results; Phase 1.5 comparison model block | Partially confirmed |
 | Solution video up to 5 minutes | Challenge page, Submission Package | No video produced in Phase 1 | Video remains future work | Confirmed requirement, not started |
 | Video begins with problem and simple baseline | Challenge page, Submission Package | Not started | Video remains future work | Confirmed requirement, not started |
 | Video shows realistic execution, comparison, changelog, strongest change, and removed experiment | Challenge page, Submission Package | Evidence and changelog exist for a future recording | docs/improvement-changelog.md; evidence | Confirmed requirement, not started |
 | Correct, reproducible, testable, clearly explained solution | Challenge page, Overview | Standard-library runner, unit tests, five controlled cases, evidence, and docs | test run; evidence bundle | Confirmed objective, provisional evidence |
-| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Fixed matrix and targeted BreakFix are implemented; baseline is an offline surrogate, not a comparable live agent | evidence comparison.json | Confirmed requirement, not fully satisfied |
+| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Phase 1.5 compares a same-model live baseline, fixed matrix, and BreakFix targeted reasoning; BreakFix preserved efficiency but did not beat discovery | evidence/phase1.5-20260829T120133Z/comparison.json | Confirmed requirement, MIXED result |
 | Allowed languages include Python, TypeScript, Java, C++, Go, Rust | Challenge page, Theme and FAQ | Python 3.14 prototype | pyproject.toml; environment check | Confirmed |
 | Final problem PDF may prescribe runtime, dependency, API, and acceptance-test constraints | Challenge page, Theme | No PDF constraints could be read in this environment | blocked PDF URL | Unknown |
 | Valid submission must be timely, complete, original, policy compliant, reproducible, and include repository/archive, tests, README, agent evidence, and video | Challenge page, FAQ | Repository, tests, README, evidence, and traces exist; archive, final form, and video do not | current tree | Partially confirmed |
@@ -47,11 +48,33 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | Every result claim connected to evidence | Challenge page, Rule Book | Comparison metrics point to per-lane evidence directories | evidence/phase1-20260829T104633Z/comparison.json | Confirmed for Phase 1 |
 | Judges must be able to run and reproduce the main result | Challenge page, Rule Book | Local commands and offline fixtures are provided; fresh-machine validation remains open | README; build plan | Partially confirmed |
 | micro1 may own submissions and use them for AI training and evaluation | Challenge page, Rule Book | No code action; recorded as an ownership consideration before public submission | this matrix | Confirmed |
-| Scoring criteria and weights | Challenge page, Evaluation Criteria | Tie-break order is recorded below; no percentage weights were visible in the authoritative page snapshot | page content inspected on 2026-08-29 | Unknown |
+| Scoring criteria and weights | Director-verified official instruction PDF | Rubric recorded below and used for prioritization | This document, director review | Confirmed |
 | Tie-break order: Agent Solution and Engineering, Reproducibility, Measured Improvement, End to End Quality, final evidence review | Challenge page, Evaluation Criteria | Build plan prioritizes these gates | docs/build-plan.md | Confirmed |
 | Prize amounts by award | Challenge page, Prizes & Awards | Total cash pool is recorded; individual award split is not encoded | page content inspected on 2026-08-29 | Unknown |
 | API keys or model credits supplied by organizer | Challenge page, FAQ | Prototype uses no external model; future live baseline must use participant-owned setup | README | Confirmed: organizer says no |
 | Registration/submission intake fields, archive format, exact acceptance tests, and final PDF constraints | Official instruction PDF link | Not implemented until the PDF can be read and the final form is rechecked | blocked URL and open verification queue | Unknown |
+
+## Official scoring rubric
+
+The official rubric is scored out of 100 points:
+
+| Criterion | Points | What a strong entry demonstrates |
+| --- | ---: | --- |
+| Problem & User Value | 15 | A meaningful problem for a clearly defined user |
+| Agent Solution & Engineering | 30 | Purposeful, technically sound use of context, tools, memory, verification, skills, or orchestration |
+| End to End Quality | 20 | A realistic, self-contained execution producing a result an intended user can use |
+| Measured Improvement | 15 | Fair-baseline gains connected to evidence through the improvement changelog |
+| Reproducibility | 15 | A clear clean-environment path for baseline, final solution, and main evaluation |
+| Hot Take / Insights | 5 | A practical lesson extracted from an observed agent failure mode |
+| **Total** | **100** | |
+
+The official tie-break priority from the HackerEarth challenge page is:
+
+1. Agent Solution & Engineering
+2. Reproducibility
+3. Measured Improvement
+4. End to End Quality
+5. Final documented-evidence review
 
 ## Official facts used for this checkpoint
 
@@ -63,18 +86,17 @@ requires evidence-backed claims, safe handling of consequential actions, human
 review where effects are significant, permitted data, and credentials kept
 outside the submission.
 
-No percentage scoring weights are asserted here because none were visible in
-the authoritative page content that was inspected. The PDF and submission form
-must be rechecked before a final submission.
+The scoring weights above were independently verified by the director from the
+official instruction PDF. The PDF itself and the final submission form still
+must be rechecked before a final submission for constraints, starter material,
+acceptance tests, archive format, and intake fields.
 
 ## Open verification queue
 
 1. Obtain and read the official instruction PDF, including starter materials,
    constraints, and acceptance tests.
-2. Recheck the live Evaluation Criteria tab for weights or a later rubric.
-3. Recheck the final submission form fields and archive limits.
-4. Replace the offline baseline surrogate with a comparable live coding-agent
-   review and preserve its prompt, model, tool list, runtime, and cost.
-5. Verify whether any policy requires a public repository, and record the exact
+2. Recheck the final submission form fields and archive limits.
+3. Add a direct provider path so the captured live coding-agent review and
+   BreakFix reasoning can be regenerated outside the Codex runtime.
+4. Verify whether any policy requires a public repository, and record the exact
    archive format.
-

@@ -1,0 +1,6 @@
+{
+  "id": "case_03",
+  "title": "Persisted record migration",
+  "task": "Use the tax rate from the persisted account record when calculating a total.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

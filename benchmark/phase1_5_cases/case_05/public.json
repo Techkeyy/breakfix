@@ -1,0 +1,6 @@
+{
+  "id": "case_05",
+  "title": "Business-hour interpretation",
+  "task": "Interpret business-hour timestamps in the requested timezone.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

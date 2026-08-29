@@ -1,0 +1,14 @@
+{
+  "selected_supported_ids": [
+    "world_dst"
+  ],
+  "supported_catalogue": [
+    "input_empty",
+    "input_boundary_zero",
+    "retry_duplicate",
+    "state_legacy",
+    "events_reordered",
+    "world_dst"
+  ],
+  "unsupported_assumptions": []
+}

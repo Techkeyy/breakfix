@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))
+                                                                                                        ~~~~~~~^^^^^^^^^
+  File "C:\Users\HomePC\Desktop\BreakFix\benchmark\phase1_5_cases\case_03\after\app.py", line 3, in run
+    tax_rate = state["tax_rate"]
+               ~~~~~^^^^^^^^^^^^
+KeyError: 'tax_rate'

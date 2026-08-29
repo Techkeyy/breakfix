@@ -1,0 +1,44 @@
+{
+  "case_id": "case_04",
+  "context": {
+    "ground_truth_supplied_to_agent": false,
+    "prior_evidence_supplied_to_agent": false,
+    "supplied_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ],
+    "workspace": "C:\\\\Users\\\\HomePC\\\\Desktop\\\\BreakFix\\\\benchmark\\\\phase1_5_cases\\\\case_04"
+  },
+  "lane": "baseline",
+  "model": "gpt-5.6-luna",
+  "model_calls": 1,
+  "monetary_cost_usd": null,
+  "prompt_file": "docs/phase1.5-prompts.md",
+  "prompt_id": "baseline_v1",
+  "prompt_workspace": "C:\\\\Users\\\\HomePC\\\\Desktop\\\\BreakFix\\\\benchmark\\\\phase1_5_cases\\\\case_04",
+  "provider": "Codex multi-agent runtime",
+  "reasoning_effort": "xhigh",
+  "replay_path": "trajectories/phase1.5/baseline/case_04/replay.json",
+  "response_format": "captured final model result normalized as JSON text",
+  "response_text": "{\"change_summary\":\"Removed pending-confirmation handling from the replay loop.\",\"decision\":\"needs-review\",\"findings\":[{\"summary\":\"Confirmation before reservation is no longer preserved.\",\"severity\":\"medium\",\"evidence\":[\"case_04/before/app.py:6-14 preserves an early confirm and applies it when reserve arrives.\",\"case_04/after/app.py:5-8 sets confirmed from the current reserved state and never revisits it on reserve.\"],\"confidence\":\"high\"}],\"tests_run\":[\"python -m unittest discover -s tests -v \u2014 passed: 1 test, OK\"],\"tool_actions\":[{\"action\":\"Inspected public.json, before/app.py, after/app.py, and after/tests/test_app.py\",\"result\":\"Observed the change removes pending_confirmation; the visible test covers only reserve followed by confirm.\"},{\"action\":\"Ran the visible test command in after\",\"result\":\"1 test ran and passed.\"}],\"retries\":0,\"final_conclusion\":\"The visible test passes, but the implementation regresses the prior behavior for out-of-order confirm followed by reserve events.\"}",
+  "retries": 0,
+  "runtime_ms": null,
+  "temperature": null,
+  "token_usage": null,
+  "tool_access": [
+    "read-only filesystem inspection",
+    "visible test command execution"
+  ],
+  "tool_actions": [
+    {
+      "action": "Inspected public.json, before/app.py, after/app.py, and after/tests/test_app.py",
+      "result": "Observed the change removes pending_confirmation; the visible test covers only reserve followed by confirm."
+    },
+    {
+      "action": "Ran the visible test command in after",
+      "result": "1 test ran and passed."
+    }
+  ]
+}

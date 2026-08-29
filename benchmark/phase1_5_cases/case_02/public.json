@@ -1,0 +1,6 @@
+{
+  "id": "case_02",
+  "title": "Retryable request handler",
+  "task": "Refactor a side-effecting request handler so a delivery can retry.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "case_04",
+  "title": "Event replay simplification",
+  "task": "Simplify the event replay loop for reservation confirmations.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

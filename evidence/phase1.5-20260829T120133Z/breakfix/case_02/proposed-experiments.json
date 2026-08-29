@@ -1,0 +1,15 @@
+{
+  "selected_supported_ids": [
+    "retry_duplicate",
+    "input_empty"
+  ],
+  "supported_catalogue": [
+    "input_empty",
+    "input_boundary_zero",
+    "retry_duplicate",
+    "state_legacy",
+    "events_reordered",
+    "world_dst"
+  ],
+  "unsupported_assumptions": []
+}

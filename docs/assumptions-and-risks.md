@@ -69,6 +69,23 @@ promising evidence for the targeted-selection mechanism, not evidence of broad
 real-world superiority. The baseline is not a live coding-agent run, so the
 official load-bearing hypothesis remains unverified.
 
+## Phase 1.5 findings
+
+Final run: phase1.5-20260829T120133Z. Both agent lanes used the same real
+`gpt-5.6-luna` Codex multi-agent runtime with `xhigh` reasoning.
+
+| Lane | Fault detection | False approvals | False positives | Experiments | Confirmed failures |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Live generic baseline | 4/4, 100% | 0/4, 0% | 1/1, 100% | 0 | 0 |
+| Fixed six-experiment matrix | 4/4, 100% | 0/4, 0% | 0/1, 0% | 30 | 4 |
+| Live BreakFix reasoning agent | 4/4, 100% | 0/4, 0% | 0/1, 0% | 7 | 4 |
+
+The live baseline matched BreakFix on seeded-fault discovery, so the discovery
+advantage is not supported. BreakFix used 7 experiments versus 30 for the fixed
+matrix, so the broader efficiency advantage survived. All four BreakFix fault
+reproductions were executable. Token usage, model latency, and monetary cost
+were unavailable from the Codex runtime and remain explicitly unasserted.
+
 ## Observed planner decisions
 
 - Input boundary: assumed non-empty input; selected input_empty and
@@ -87,7 +104,7 @@ official load-bearing hypothesis remains unverified.
 
 | Risk | Impact | Mitigation now | Remaining work |
 | --- | --- | --- | --- |
-| No live baseline model | High | Label the surrogate explicitly; do not claim an official pass | Run a comparable participant-owned agent with the same cases |
+| No direct provider API | High | Capture authentic same-model runs through the Codex runtime and preserve replays | Add a direct participant-owned provider with telemetry |
 | Five synthetic cases | High | Keep claims provisional and ground truth explicit | Expand to 10 or more realistic cases |
 | Heuristic planner overfits signals | High | Tests include unrelated diff; no case-ID rules | Test unseen repositories and add semantic agent only after baseline |
 | Ground-truth leakage | High | Runner passes only diff and visible result to planner | Add automated context-audit that rejects private paths and expected strings |
@@ -96,9 +113,9 @@ official load-bearing hypothesis remains unverified.
 | No reducer | Medium | Do not call evidence minimal; say experiment reproduction | Implement constrained real reducer |
 | No regression test generation | High | Feature is explicitly deferred | Generate and run a test that fails before fix |
 | No human approval flow | High | No patch or merge action exists | Add safe working state and explicit approval |
-| No model/API cost data | Medium | Record that no model was used | Capture prompt, model, tokens, cost, retries |
+| Incomplete model telemetry | Medium | Record model and calls; preserve unavailable token/cost/latency as null | Capture tokens, latency, and cost through a direct provider |
 | Planner can select extra probes | Medium | Count and report every selected experiment | Tighten ranking and add budget policy |
-| Unknown final PDF requirements | High | Requirement matrix marks dependent items UNKNOWN | Obtain and read official PDF before submission |
+| Unknown non-scoring PDF requirements | High | Official rubric weights are recorded; PDF-dependent constraints remain UNKNOWN | Obtain and read official PDF before submission |
 
 ## Security boundary
 
@@ -125,7 +142,7 @@ Stop scaling the product if:
 
 ## Decision
 
-Continue only to the live-baseline and benchmark-hardening phase. Do not start
-the polished UI, GitHub integration, fix application, or broad product surface
-until the official Phase 1 completeness gate passes.
-
+Continue only to benchmark hardening and provider reproducibility. The Phase 1.5
+decision is NARROW: do not start the polished UI, GitHub integration, fix
+application, or broad product surface until the narrowed efficiency claim and
+safe-case precision survive independent cases.
