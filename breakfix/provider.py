@@ -6,6 +6,7 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 
@@ -32,6 +33,7 @@ class OpenAICompatibleProvider:
     """Minimal direct provider with explicit usage and latency telemetry."""
 
     def __init__(self) -> None:
+        self._load_local_env()
         self.api_key = os.environ.get("BREAKFIX_OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
         self.base_url = os.environ.get("BREAKFIX_OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
         self.model = os.environ.get("BREAKFIX_MODEL", "gpt-5.6-luna")
@@ -40,6 +42,22 @@ class OpenAICompatibleProvider:
         self.max_output_tokens = int(os.environ.get("BREAKFIX_MAX_OUTPUT_TOKENS", "2000"))
         self.input_rate = self._optional_float("BREAKFIX_COST_INPUT_PER_1K")
         self.output_rate = self._optional_float("BREAKFIX_COST_OUTPUT_PER_1K")
+
+    @staticmethod
+    def _load_local_env() -> None:
+        """Load ignored .env values without overriding explicit process vars."""
+        path = Path.cwd() / ".env"
+        if not path.exists():
+            return
+        for raw_line in path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip("\"").strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
 
     @staticmethod
     def _optional_float(name: str) -> float | None:
