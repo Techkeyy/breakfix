@@ -309,6 +309,7 @@ def run_phase2a(root: Path) -> dict[str, Any]:
                 "cleared_experiments": [record["experiment_id"] for record in fixed_records if record["evaluation"]["evidence_state"] == "CLEARED"],
                 "unsupported_experiments": [record["experiment_id"] for record in fixed_records if record["evaluation"]["evidence_state"] == "UNSUPPORTED"],
                 "execution_runtime_ms": sum(record["duration_ms"] for record in fixed_records),
+                "complete_confirmed_experiments": sum(record["evaluation"]["evidence_complete"] for record in fixed_records if record["evaluation"]["evidence_state"] == "CONFIRMED_BREAK"),
                 "evidence_path": _relative(root, fixed_root / case_id),
             },
             "breakfix": {
