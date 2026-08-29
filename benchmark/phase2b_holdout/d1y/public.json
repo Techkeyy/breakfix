@@ -1,1 +1,1 @@
-{"id":"d1y","title":"Routine presentation update","task":"Update the routine while preserving the established behavior.","test_command":"python -m unittest discover -s tests -v"}
+{"id":"d1y","title":"Routine update","task":"Update the routine while preserving the established behavior.","test_command":"python -m unittest discover -s tests -v"}
