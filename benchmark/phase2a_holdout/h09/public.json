@@ -1,0 +1,7 @@
+{
+  "id": "h09",
+  "title": "Business-hours calculation refactor",
+  "surface": "world",
+  "task": "Refactor business-hours calculation so the displayed local time remains correct across timezone changes.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

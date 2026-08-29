@@ -1,0 +1,7 @@
+{
+  "id": "h12",
+  "title": "Checkout configuration refactor",
+  "surface": "state",
+  "task": "Refactor checkout configuration loading while retaining the default for older records.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "h11",
+  "title": "Payment configuration refactor",
+  "surface": "state",
+  "task": "Refactor payment configuration loading while retaining the documented default currency.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

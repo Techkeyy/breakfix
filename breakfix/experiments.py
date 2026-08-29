@@ -15,6 +15,8 @@ BASE_CONTEXT: dict[str, Any] = {
     "events": ["reserve", "confirm"],
     "timestamp": "2026-01-15T19:00:00+00:00",
     "timezone": "America/New_York",
+    "config": {"currency": "USD"},
+    "concurrent_calls": 1,
 }
 
 
@@ -57,6 +59,18 @@ EXPERIMENTS: tuple[Experiment, ...] = (
             "timestamp": "2026-03-29T20:30:00+00:00",
             "timezone": "America/New_York",
         },
+    ),
+    Experiment(
+        id="config_missing",
+        surface="state",
+        description="Remove an optional configuration field to test the dependency boundary.",
+        perturbation={"config": {}},
+    ),
+    Experiment(
+        id="concurrent_duplicate",
+        surface="timing",
+        description="Deliver two concurrent copies of one request through the effect boundary.",
+        perturbation={"concurrent_calls": 2},
     ),
 )
 

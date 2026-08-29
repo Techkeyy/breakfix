@@ -1,0 +1,7 @@
+{
+  "id": "h01",
+  "title": "Webhook delivery refactor",
+  "surface": "timing",
+  "task": "Refactor webhook delivery so a retried notification preserves the original effect.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

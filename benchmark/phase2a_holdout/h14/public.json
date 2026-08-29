@@ -1,0 +1,7 @@
+{
+  "id": "h14",
+  "title": "Reservation claim refactor",
+  "surface": "timing",
+  "task": "Refactor reservation claims so simultaneous deliveries still produce one effect.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

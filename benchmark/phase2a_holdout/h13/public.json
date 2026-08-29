@@ -1,0 +1,7 @@
+{
+  "id": "h13",
+  "title": "Claim processing refactor",
+  "surface": "timing",
+  "task": "Refactor claim processing so simultaneous deliveries cannot create duplicate effects.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "h07",
+  "title": "Workflow event refactor",
+  "surface": "timing",
+  "task": "Refactor workflow event handling while preserving the final state of a valid delivery.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

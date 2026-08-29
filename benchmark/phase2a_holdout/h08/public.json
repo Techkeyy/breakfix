@@ -1,0 +1,7 @@
+{
+  "id": "h08",
+  "title": "Workflow transition refactor",
+  "surface": "timing",
+  "task": "Refactor workflow events while preserving a valid final state when delivery order varies.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

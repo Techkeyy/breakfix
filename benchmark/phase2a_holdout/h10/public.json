@@ -1,0 +1,7 @@
+{
+  "id": "h10",
+  "title": "Regional-hours calculation refactor",
+  "surface": "world",
+  "task": "Refactor regional-hours calculation without changing the meaning of an absolute timestamp.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

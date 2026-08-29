@@ -1,0 +1,7 @@
+{
+  "id": "h05",
+  "title": "Account state migration",
+  "surface": "state",
+  "task": "Refactor account loading while keeping records written by the previous version readable.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

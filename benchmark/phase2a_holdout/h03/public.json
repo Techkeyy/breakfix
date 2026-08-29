@@ -1,0 +1,7 @@
+{
+  "id": "h03",
+  "title": "Batch summary refactor",
+  "surface": "input",
+  "task": "Refactor the batch summary so it reports the highest observed value.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

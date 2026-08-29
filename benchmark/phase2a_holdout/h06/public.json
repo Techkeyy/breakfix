@@ -1,0 +1,7 @@
+{
+  "id": "h06",
+  "title": "Profile state migration",
+  "surface": "state",
+  "task": "Refactor profile loading without breaking records created before the latest schema field.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

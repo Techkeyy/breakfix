@@ -1,0 +1,7 @@
+{
+  "id": "h04",
+  "title": "Batch metrics refactor",
+  "surface": "input",
+  "task": "Refactor batch metrics so the summary remains defined for an empty batch.",
+  "test_command": "python -m unittest discover -s tests -v"
+}
