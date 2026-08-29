@@ -1,68 +1,80 @@
 # BREAKFIX
 
-Phase 0, Phase 1, and Phase 1.5 only. BreakFix is a change-aware assumption
-falsification prototype for the micro1 Frontier Engineering Challenge 2026.
+BreakFix is a change-aware assumption falsification prototype for the micro1
+Frontier Engineering Challenge 2026.
 
-> Your tests check what you expected. We test what you forgot to expect.
+> Stop guessing what might break. Prove what actually does.
 
-This checkpoint intentionally contains no polished UI. It proves the risky
-comparison first:
+This checkpoint tests a narrow claim: BreakFix can turn plausible suspicions
+into executable evidence while spending fewer targeted experiments than a fixed
+matrix.
 
-1. a real same-model generic baseline review;
-2. a fixed six-experiment matrix;
-3. a real BreakFix reasoning agent that proposes structured assumptions;
-4. deterministic validation, targeted experiment selection, and real subprocess
-   execution.
+It compares:
 
-Run it from this directory:
+1. a same-model generic baseline review;
+2. a fixed eight-experiment matrix;
+3. a BreakFix reasoning agent that proposes structured assumptions;
+4. deterministic validation, targeted selection, and real subprocess execution.
 
-    python scripts/run_phase15.py
+## Quickstart
+
+Run from this directory:
+
     python -m unittest discover -s tests -v
+    python scripts/run_phase2a.py
 
-The Phase 1.5 command evaluates captured real-agent replays under
-trajectories/phase1.5/ and writes replayable evidence under evidence/<run-id>/.
-The sample projects are synthetic and safe to run locally. The captured model
-calls used the Codex multi-agent runtime; a direct API key is not required to
-replay this checkpoint. A future live API backend still needs to be added for a
-clean-machine re-run without the captured replays.
+The Phase 2A command evaluates the fresh 14-case holdout under
+`trajectories/phase2a/` and writes evidence under `evidence/<run-id>/`. The
+committed replay inputs let the evaluation run without a provider credential.
+To capture new direct-provider responses, configure `.env` from `.env.example`
+and run `python scripts/run_phase2a_live.py`.
 
-The current deterministic test suite has 12 passing tests. The Phase 1.5 runner
-also executes the five visible case suites and records their output in the
-evidence bundle.
+The current deterministic suite has 15 passing tests. All sample projects are
+synthetic and safe to run locally. The direct provider path is implemented, but
+the final Phase 2A run used the same live Codex multi-agent runtime for both
+lanes because this environment had no authorized external provider credential.
+Provider tokens, latency, and cost are therefore reported as `null`.
 
-See:
+## Phase 2A result
 
-- docs/hackathon-requirements.md
-- docs/product-understanding.md
-- docs/project-edge.md
-- docs/build-plan.md
-- docs/assumptions-and-risks.md
-- docs/phase1.5-prompts.md
-- docs/phase1.5-exit-report.md
+Final run: `evidence/phase2a-20260829T154132Z/`
+
+| Lane | Correct verdicts | Fault recall | Safe specificity | Experiments |
+| --- | ---: | ---: | ---: | ---: |
+| Live generic baseline | 13/14, 92.9% | 6/7, 85.7% | 7/7, 100% | 0 |
+| Fixed matrix | 14/14, 100% | 7/7, 100% | 7/7, 100% | 112 |
+| Live BreakFix reasoning agent | 11/14, 78.6% | 7/7, 100% | 4/7, 57.1% | 19 |
+
+BreakFix confirmed all seven faulty cases with executable evidence and used
+17.0% as many experiments as the matrix. Its extra safe-case probes made three
+safe cases inconclusive. Under the frozen protocol this is **FAIL** for Phase
+2A, not a product lock. The honest thesis is evidence-backed falsification plus
+potential efficiency; precision against a competent baseline remains unproven.
 
 ## Phase 1.5 result
 
-Final run: evidence/phase1.5-20260829T120133Z/
+Final run: `evidence/phase1.5-20260829T120133Z/`
 
 | Lane | Fault detection | Experiments |
 | --- | ---: | ---: |
-| Live generic baseline | 4/4, 100% | 0 hidden probes |
-| Fixed matrix | 4/4, 100% | 30 |
-| Live BreakFix reasoning agent | 4/4, 100% | 7 |
+| Live generic baseline | 4/4 | 0 hidden probes |
+| Fixed matrix | 4/4 | 30 |
+| Live BreakFix reasoning agent | 4/4 | 7 |
 
-All five visible case suites passed. The live baseline produced one false
-positive on the safe timezone case; BreakFix produced none. Every confirmed
-BreakFix fault has captured stdout, stderr, exit status or output mismatch, and
-an agent trajectory. The result is MIXED: the 5x efficiency finding did not
-survive exactly, but BreakFix still used substantially fewer experiments than
-the fixed matrix. The cases are synthetic and the executor is not a production
-sandbox.
+Phase 1.5 was MIXED: the live baseline matched BreakFix on seeded-fault
+discovery, while BreakFix used substantially fewer experiments than the matrix.
 
-## Current scope
+## Evidence and scope
+
+The frozen scoring rules are in `docs/phase2a-evaluation-protocol.md`, exact
+prompts are in `docs/phase2a-prompts.md`, and the complete 35-item stop report
+is in `docs/phase2a-exit-report.md`.
 
 Supported prototype surfaces are input boundaries, persisted state shape,
-duplicate operations, reordered events, and timezone interpretation. The
-controlled case contract is a Python app.py module with run(payload). No
-GitHub integration, regression-test generation, reducer, fix application,
+duplicate operations, reordered events, timezone interpretation, configuration,
+and concurrent delivery. The controlled case contract is a Python `app.py`
+module with `run(payload)`.
+
+No GitHub integration, regression-test generation, reducer, fix application,
 approval flow, production sandbox, multi-language support, or UI is shipped in
 this checkpoint.

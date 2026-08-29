@@ -124,28 +124,42 @@ false positive. BreakFix found 4/4 with no safe-case false positive using 7
 experiments versus 30 for the fixed matrix. The efficiency advantage survived,
 but the discovery advantage did not. The next decision is NARROW, not PASS.
 
-### Phase 2: benchmark hardening and provider reproducibility
+### Phase 2A: evidence-quality lock
 
 Start only after the Phase 1 decision.
 
 Scope:
 
-- add a direct API-backed provider with secret isolation;
-- preserve prompt, model, tools, outputs, timing, tokens, retries, and cost;
-- add at least ten more independent cases, including ambiguous and safe changes;
-- freeze the evaluation rubric before final runs;
-- test malformed model output, timeout, missing dependency, empty diff, and
-  unsupported project handling;
+- freeze the primary evidence-backed correct-verdict metric and uncertainty
+  scoring before evaluation;
+- add a direct OpenAI-compatible provider path with secret isolation;
+- add a fresh 14-case paired holdout with 7 faulty and 7 safe cases;
+- preserve prompts, model metadata, outputs, retries, and execution evidence;
+- compare baseline, fixed eight-experiment matrix, and targeted BreakFix lanes;
 - verify that ground truth cannot enter agent context.
 
 PASS gate:
 
-- live baseline and BreakFix use identical case contexts;
-- all lanes are independently rerunnable;
-- baseline and advanced traces are complete;
-- metrics include detection, false approval, false positive, executable
-  reproduction, runtime, and cost where available;
-- the narrowed product claim is supported or the design is reshaped honestly.
+- BreakFix materially improves over the live generic baseline;
+- BreakFix meets the frozen matrix efficiency and comparable-quality thresholds;
+- all confirmed breaks have complete execution evidence;
+- metrics include correct verdicts, recall, specificity, FP/FAR, false approval,
+  confirmation, reproduction, experiments, runtime, and provider telemetry;
+- the narrowed product claim is supported.
+
+Result: FAIL. On run `phase2a-20260829T154132Z`, the baseline scored 13/14
+with 100% safe specificity, the matrix scored 14/14 at 112 experiments, and
+BreakFix scored 11/14 with 7/7 executable fault confirmations at 19
+experiments. BreakFix's raw volume threshold passed, but its 57.1% safe
+specificity failed the frozen comparable-quality threshold. Direct provider
+tokens, latency, and cost were unavailable, so they remain null.
+
+### Phase 2B: narrow recovery scope
+
+Only if authorized after the Phase 2A FAIL, address direct provider telemetry,
+budget-aware relevant-assumption selection, and a newly reviewed paired holdout.
+Do not start UI, GitHub/CI, fixes, reducers, multilingual support, or large
+sandboxing.
 
 ### Phase 3: reduction and regression proof
 
@@ -241,7 +255,7 @@ Do not build yet:
 
 ## Current decision
 
-The real-agent comparison is complete but MIXED. Narrow the claim toward
-evidence-efficient review, add independent cases and direct provider telemetry,
-and do not start the polished app until the narrowed value proposition survives
-that benchmark.
+The Phase 2A comparison is FAIL under the frozen gate. Retain the narrow
+evidence-backed falsification mechanism as a prototype, but do not promote it
+to a product build. The next authorized work is only the Phase 2B recovery scope
+in `docs/phase2a-exit-report.md`.

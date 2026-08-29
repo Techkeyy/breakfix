@@ -12,13 +12,15 @@ under evidence/ and are not reconstructed from memory.
 | 4 | Execution timeout correction | Initial run used 5 seconds for experiments and 10 seconds for visible tests; Python startup caused false timeout records | Five frozen cases | Timeout limits raised to 15 seconds and 30 seconds; final visible suites all passed | Keep explicit bounded timeouts and report them |
 | 5 | Final targeted run | Re-run after corrections with evaluator-only ground truth | Five frozen cases | BreakFix 4/4 at 6 executions; matrix 4/4 at 30; baseline surrogate 2/4 | Provisional support for the targeted mechanism; do not build UI yet |
 | 6 | Phase 1.5 real-agent validation | Replace the surrogate reasoning lanes with the same real model and preserve captured trajectories | Five sanitized frozen cases | Live baseline 4/4 faults with 1 safe-case false positive and 0 experiments; live BreakFix 4/4 with 7 targeted executions and no safe-case false positive; matrix 4/4 with 30 executions | MIXED: the efficiency result survived, but BreakFix did not improve fault discovery over the live baseline |
+| 7 | Phase 2A evidence-quality lock | Test the narrowed evidence-backed thesis on an independent paired holdout | Fourteen numeric cases, 7 faulty and 7 safe | Baseline 13/14 with 100% safe specificity; matrix 14/14 at 112 experiments; BreakFix 11/14 with 7/7 executable fault confirmations at 19 experiments, but 57.1% safe specificity; direct provider telemetry unavailable | FAIL: executable confirmation and raw efficiency are promising, but safe-case verdict precision is worse than the live baseline |
 
 ## Current conclusion
 
-The deterministic targeted mechanism earned another experiment, and the Phase
-1.5 efficiency result survived a same-model run: 7 targeted executions versus 30
-for the fixed matrix. The discovery advantage did not survive this benchmark:
-the live baseline found all four seeded faults, but produced one false positive
-on the safe case. The result is MIXED, not a product lock. Phase 2 should focus
-on benchmark independence, safe-case precision, and whether the assumption path
-adds useful evidence beyond a competent generic agent before any UI work.
+The Phase 2A run confirms that deterministic execution can turn targeted
+assumptions into seven executable fault proofs using 19 probes instead of the
+matrix's 112. It does not confirm a precision advantage: the live baseline
+scored 13/14 with all safe cases accepted, while BreakFix scored 11/14 because
+three safe cases became inconclusive after extra probes. The decision is FAIL
+under the frozen gate. Keep BreakFix narrow and limit Phase 2B to direct
+provider telemetry, budget-aware selection, and a fresh paired rerun before any
+UI work.

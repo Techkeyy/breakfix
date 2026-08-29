@@ -1,19 +1,19 @@
 # BreakFix assumptions and risks
 
-## Load-bearing project hypothesis
+## Revised load-bearing project hypothesis
 
-A change-aware agent that explicitly infers hidden assumptions and selects
-targeted falsification experiments will discover more real change-induced
-failures per reasonable testing budget than:
+BreakFix should turn plausible change-risk suspicions into evidence-backed
+conclusions with fewer targeted experiments than a fixed matrix. It must not
+claim to find more defects than a competent generic coding agent without a
+separate result proving that claim.
 
-- ordinary generic coding-agent review; and
-- a fixed generic adversarial checklist or matrix.
+The revised hypothesis has three parts:
 
-The hypothesis has three parts:
-
-1. Change context improves which assumptions are challenged.
-2. Targeted experiments preserve detection while using fewer executions.
-3. Deterministic execution evidence is more trustworthy than an agent verdict.
+1. Change context helps identify a relevant assumption to test.
+2. Targeted experiments preserve executable fault confirmation while using fewer
+   executions than a fixed matrix.
+3. Deterministic execution evidence is more trustworthy than an agent verdict,
+   but safe changes must not become inconclusive because of unnecessary probes.
 
 ## Test design
 
@@ -86,6 +86,24 @@ matrix, so the broader efficiency advantage survived. All four BreakFix fault
 reproductions were executable. Token usage, model latency, and monetary cost
 were unavailable from the Codex runtime and remain explicitly unasserted.
 
+## Phase 2A findings
+
+Final run: `phase2a-20260829T154132Z`. The independent holdout contains 14
+numeric cases, 7 faulty and 7 safe, in seven paired scenarios.
+
+| Lane | Correct verdicts | Fault recall | Safe specificity | False positives | False approvals | Experiments | Confirmed breaks |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Live generic baseline | 13/14 | 6/7 | 7/7 | 0 | 0/7 | 0 | 0 |
+| Fixed matrix | 14/14 | 7/7 | 7/7 | 0 | 0/7 | 112 | 7 |
+| Live BreakFix | 11/14 | 7/7 | 4/7 | 0 | 0/7 | 19 | 7 |
+
+BreakFix reproduced all seven faulty cases with complete subprocess evidence and
+used 19 experiments versus 112. Its raw experiment-volume threshold passed, but
+three safe cases were inconclusive after extra selected probes, so the frozen
+comparable-quality threshold failed. The baseline was more precise overall.
+Model input/output tokens, latency, and cost remain null because the run used
+the Codex multi-agent runtime rather than a direct provider.
+
 ## Observed planner decisions
 
 - Input boundary: assumed non-empty input; selected input_empty and
@@ -105,6 +123,7 @@ were unavailable from the Codex runtime and remain explicitly unasserted.
 | Risk | Impact | Mitigation now | Remaining work |
 | --- | --- | --- | --- |
 | No direct provider API | High | Capture authentic same-model runs through the Codex runtime and preserve replays | Add a direct participant-owned provider with telemetry |
+| BreakFix safe-case over-selection | High | Treat oracle-less extras as inconclusive and report them explicitly; keep safe specificity in the primary metrics | Add budget-aware relevant-assumption selection and rerun the paired holdout |
 | Five synthetic cases | High | Keep claims provisional and ground truth explicit | Expand to 10 or more realistic cases |
 | Heuristic planner overfits signals | High | Tests include unrelated diff; no case-ID rules | Test unseen repositories and add semantic agent only after baseline |
 | Ground-truth leakage | High | Runner passes only diff and visible result to planner | Add automated context-audit that rejects private paths and expected strings |
@@ -113,7 +132,7 @@ were unavailable from the Codex runtime and remain explicitly unasserted.
 | No reducer | Medium | Do not call evidence minimal; say experiment reproduction | Implement constrained real reducer |
 | No regression test generation | High | Feature is explicitly deferred | Generate and run a test that fails before fix |
 | No human approval flow | High | No patch or merge action exists | Add safe working state and explicit approval |
-| Incomplete model telemetry | Medium | Record model and calls; preserve unavailable token/cost/latency as null | Capture tokens, latency, and cost through a direct provider |
+| Incomplete model telemetry | Medium | Implement the OpenAI-compatible provider and preserve unavailable token/cost/latency as null | Run it with an authorized credential and verify billing fields |
 | Planner can select extra probes | Medium | Count and report every selected experiment | Tighten ranking and add budget policy |
 | Unknown non-scoring PDF requirements | High | Official rubric weights are recorded; PDF-dependent constraints remain UNKNOWN | Obtain and read official PDF before submission |
 
@@ -142,7 +161,7 @@ Stop scaling the product if:
 
 ## Decision
 
-Continue only to benchmark hardening and provider reproducibility. The Phase 1.5
-decision is NARROW: do not start the polished UI, GitHub integration, fix
-application, or broad product surface until the narrowed efficiency claim and
-safe-case precision survive independent cases.
+Phase 2A is FAIL under its frozen gate. Keep the project narrow and do not start
+the polished UI, GitHub integration, fix application, or broad product surface.
+Any Phase 2B work must be limited to direct provider telemetry, budget-aware
+relevant-assumption selection, and a newly reviewed paired holdout.
