@@ -5,7 +5,7 @@ import app
 
 class AccountTests(unittest.TestCase):
     def test_current_record(self):
-        self.assertEqual(app.run({"state": {"balance": 42}}), {"balance": 42})
+        self.assertEqual(app.run({"state": {"tax_rate": 0.2}}), {"tax_rate": 0.2})
 
 
 if __name__ == "__main__":

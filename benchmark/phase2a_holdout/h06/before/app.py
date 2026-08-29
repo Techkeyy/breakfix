@@ -1,3 +1,3 @@
 def run(payload):
     state = payload["state"]
-    return {"balance": state.get("balance", 0)}
+    return {"tax_rate": state.get("tax_rate", 0.2)}
