@@ -1,0 +1,6 @@
+{
+  "id": "q4d",
+  "title": "Routine update",
+  "task": "Expose the configured currency in the account summary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

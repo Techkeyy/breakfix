@@ -1,0 +1,6 @@
+{
+  "id": "r0k",
+  "title": "Routine update",
+  "task": "Preserve the stable summary behavior while accepting routine context changes.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

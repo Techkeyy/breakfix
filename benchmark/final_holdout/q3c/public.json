@@ -1,0 +1,6 @@
+{
+  "id": "q3c",
+  "title": "Routine update",
+  "task": "Use the persisted tax rate when calculating the account total.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

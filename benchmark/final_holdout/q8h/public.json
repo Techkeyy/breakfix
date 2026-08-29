@@ -1,0 +1,6 @@
+{
+  "id": "q8h",
+  "title": "Routine update",
+  "task": "Interpret business hours in the requested timezone.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

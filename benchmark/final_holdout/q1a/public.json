@@ -1,0 +1,6 @@
+{
+  "id": "q1a",
+  "title": "Routine update",
+  "task": "Expose the mean in the collection summary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

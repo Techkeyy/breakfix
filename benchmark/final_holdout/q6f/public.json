@@ -1,0 +1,6 @@
+{
+  "id": "q6f",
+  "title": "Routine update",
+  "task": "Make duplicate deliveries apply the acceptance once.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

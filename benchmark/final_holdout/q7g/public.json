@@ -1,0 +1,6 @@
+{
+  "id": "q7g",
+  "title": "Routine update",
+  "task": "Simplify reservation event replay while preserving confirmation.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

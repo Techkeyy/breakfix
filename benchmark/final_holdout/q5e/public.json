@@ -1,0 +1,6 @@
+{
+  "id": "q5e",
+  "title": "Routine update",
+  "task": "Refactor the request handler so retries do not duplicate the charge.",
+  "test_command": "python -m unittest discover -s tests -v"
+}
