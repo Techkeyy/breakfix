@@ -3,6 +3,7 @@
 Status: **frozen before final evaluation**  
 Freeze date: 2026-08-29  
 Product checkpoint: `13b8c89`
+Public holdout checkpoint: `4939d76`
 
 ## Purpose
 
@@ -51,6 +52,10 @@ matrix versus BreakFix targeted execution.
 Both model lanes record provider/model, prompt hash, reasoning/content
 separation, finish reason, model calls, input/output/total tokens, latency,
 retries, cache telemetry when available, pricing period, and approximate cost.
+
+The generic comparator prompt is `final-generic-comparator-v1` and the product
+planner prompt is `breakfix-product-planner-v1`. The frozen runner is
+`scripts/run_final_evaluation.py`.
 
 ## Frozen primary metric and gate
 
