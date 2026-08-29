@@ -178,6 +178,9 @@ summary.
 - [`docs/video-script.md`](docs/video-script.md): five-minute demo script.
 - [`docs/video-shot-list.md`](docs/video-shot-list.md): recording checklist.
 
+The complete canonical demo and its transparent recorded-provider harness are
+described in docs/canonical-demo.md.
+
 ## License
 
 No separate license file is currently included. Treat this directory as the
