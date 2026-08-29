@@ -24,6 +24,9 @@ class WebEvidenceTests(unittest.TestCase):
 
             demo = root / "canonical-demo-test"
             demo.mkdir(parents=True)
+            (demo / "analysis.json").write_text(
+                json.dumps({"outcome": "CONFIRMED BREAK"}), encoding="utf-8"
+            )
             (demo / "canonical-demo-result.json").write_text(
                 json.dumps({"verification": {"status": "VERIFIED"}}), encoding="utf-8"
             )
