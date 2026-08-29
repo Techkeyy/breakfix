@@ -1,1 +1,0 @@
-{"id":"h24","title":"Schedule summary update","surface":"world","task":"Update the schedule summary while preserving the meaning of an absolute timestamp.","test_command":"python -m unittest discover -s tests -v"}

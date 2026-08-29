@@ -1,1 +1,0 @@
-{"id":"h20","title":"Record display update","surface":"state","task":"Update the record display while preserving the existing rate behavior.","test_command":"python -m unittest discover -s tests -v"}

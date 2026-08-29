@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -13,7 +14,7 @@ from .executor import run_experiment, run_visible_tests
 from .experiments import EXPERIMENTS, experiment_by_id, payload_for
 
 
-PHASE2B_CASE_IDS = tuple(f"h{index:02d}" for index in range(15, 31))
+PHASE2B_CASE_IDS = ("xq7", "m2v", "r9c", "k4d", "p6h", "w1s", "b8n", "z3f", "u5j", "e0r", "a6t", "d1y", "g8p", "n4k", "s2m", "v7c")
 PHASE2B_MAX_EXPERIMENTS = 3
 
 
@@ -26,7 +27,11 @@ def _relative(root: Path, path: Path) -> str:
 
 
 def _load_truth(root: Path) -> dict[str, Any]:
-    return json.loads((root / "benchmark" / "phase2b_ground_truth.json").read_text(encoding="utf-8"))
+    configured = os.environ.get("BREAKFIX_PHASE2B_TRUTH_PATH")
+    path = Path(configured) if configured else root.parent / "BreakFix-private" / "phase2b_ground_truth.json"
+    if not path.exists():
+        raise RuntimeError("Phase 2B evaluator requires an external private truth file: set BREAKFIX_PHASE2B_TRUTH_PATH")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _load_replay(root: Path, lane: str, case_id: str) -> tuple[dict[str, Any] | None, str | None]:
@@ -288,7 +293,7 @@ def run_phase2b(root: Path) -> dict[str, Any]:
         comparison["cases"].append({
             "id": case_id,
             "title": public["title"],
-            "surface": public["surface"],
+            "surface": truth.get("surface"),
             "task": public["task"],
             "diff": diff,
             "diff_path": _relative(root, case_root / "after" / "app.py"),

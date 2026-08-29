@@ -2,7 +2,7 @@
 
 The exact rendered prompt templates are implemented in
 `breakfix/phase2b_prompts.py`. The direct runner renders the same template for
-each numeric case, inserting only `public.json`, before source, after source,
+each opaque case, inserting only `public.json`, before source, after source,
 and visible tests. Ground truth is never rendered.
 
 ## Generic coding-agent lane

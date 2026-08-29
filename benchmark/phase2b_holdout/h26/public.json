@@ -1,1 +1,0 @@
-{"id":"h26","title":"Configuration display update","surface":"state","task":"Update the configuration display while preserving the documented output.","test_command":"python -m unittest discover -s tests -v"}

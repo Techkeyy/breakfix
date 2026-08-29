@@ -11,13 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Phase2BContractTests(unittest.TestCase):
     def test_holdout_is_fresh_balanced_and_numeric(self):
-        truth = json.loads((ROOT / "benchmark" / "phase2b_ground_truth.json").read_text(encoding="utf-8"))
-        self.assertEqual(PHASE2B_CASE_IDS, tuple(f"h{i:02d}" for i in range(15, 31)))
-        self.assertEqual(sum(bool(truth[case_id]["fault"]) for case_id in PHASE2B_CASE_IDS), 8)
-        self.assertEqual(sum(not truth[case_id]["fault"] for case_id in PHASE2B_CASE_IDS), 8)
+        self.assertEqual(len(PHASE2B_CASE_IDS), 16)
+        self.assertEqual(len(set(PHASE2B_CASE_IDS)), 16)
+        self.assertEqual(len(list((ROOT / "benchmark" / "phase2b_holdout").iterdir())), 16)
         for case_id in PHASE2B_CASE_IDS:
             public = json.loads((ROOT / "benchmark" / "phase2b_holdout" / case_id / "public.json").read_text(encoding="utf-8"))
             self.assertEqual(public["id"], case_id)
+            self.assertNotIn("surface", public)
 
     def test_execution_states_require_oracle_and_payload_evidence(self):
         truth = {"fault": True, "fault_experiments": ["retry_duplicate"], "expected_outputs": {"retry_duplicate": {"accepted": 1}}}

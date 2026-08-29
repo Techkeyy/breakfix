@@ -143,14 +143,16 @@ failure, not Phase 2B evidence and not a PASS.
 
 ## 9. Fresh independent holdout
 
-The final holdout is `benchmark/phase2b_holdout/` with 16 numeric cases:
+The final holdout is `benchmark/phase2b_holdout/` with 16 opaque cases:
 eight mechanically faulty changes and eight clean controls arranged as eight
 new pairs. It covers each currently supported surface without adding a new
 surface. No Phase 1, Phase 1.5, or Phase 2A case is reused as final evidence.
 
-Ground truth is stored in `benchmark/phase2b_ground_truth.json`, readable only
-by the evaluator. It is absent from the public workspaces, prompts, planner,
-runtime environment, trajectories, and agent responses.
+Ground truth is stored in an external private file configured by
+`BREAKFIX_PHASE2B_TRUTH_PATH` (or the local sibling path
+`BreakFix-private/phase2b_ground_truth.json`), readable only by the evaluator.
+It is absent from the repository, public workspaces, prompts, planner, runtime
+environment, trajectories, and agent responses.
 
 ## 10. Leakage audit and evidence integrity
 

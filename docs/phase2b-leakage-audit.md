@@ -1,14 +1,17 @@
 # Phase 2B holdout leakage audit
 
-Audit status: **PASS before execution**  
+Audit status: **REMEDIATED / PASS before execution**  
 Audit date: 2026-08-29  
 Holdout: `benchmark/phase2b_holdout/`  
 Reviewer: independent read-only audit path plus a separate review-agent context
 
 ## Scope
 
-The audit covered all 16 numeric cases (`h15`–`h30`) and the evaluator-only
-oracle at `benchmark/phase2b_ground_truth.json`. It inspected filenames,
+The first audit found three issues: contiguous odd/even IDs correlated with the
+fault label, public `surface`/task text made the target experiment nearly
+direct, and the oracle was tracked in the repository. Those issues were
+corrected before any model/provider call. The final audit covered all 16 opaque
+cases and the external evaluator-only oracle. It inspected filenames,
 directory names, public task metadata, source files, visible test names and
 content, comments, source constants, fixture metadata, prompt context, and
 recent commit messages. The audit ran before any Phase 2B provider call or
@@ -16,11 +19,12 @@ result evaluation.
 
 ## Findings
 
-- Case directories and IDs are numeric only. No directory or filename contains
-  a fault category, expected breaker, safe/faulty label, or oracle value.
-- Public titles and task descriptions use neutral update language. The exposed
-  `surface` field identifies an existing supported BreakFix surface; it does
-  not disclose the case label or the seeded experiment.
+- Case directories use opaque, non-correlated IDs (`a6t`, `b8n`, `d1y`, `e0r`,
+  `g8p`, `k4d`, `m2v`, `n4k`, `p6h`, `r9c`, `s2m`, `u5j`, `v7c`, `w1s`,
+  `xq7`, `z3f`). Public IDs no longer encode fault parity.
+- Public titles and task descriptions use neutral update language and omit the
+  surface field. The agent must infer the relevant surface from the visible
+  source change rather than from a near-direct task-to-catalogue mapping.
 - Visible tests use ordinary happy-path names and inputs. They do not mention
   hidden probes, fault labels, expected hidden outputs, or oracle metadata.
 - Source files contain no fault comments, fixture labels, expected-output maps,
@@ -31,9 +35,10 @@ result evaluation.
   truth`, `expected_outputs`, `fault_experiments`, or `defect` text in the
   agent-visible case workspaces.
 - A second search found no hidden-truth fields in any `phase2b_holdout` case.
-- The hidden oracle is a separate benchmark file and is read by the evaluator
-  only. It is not copied into case directories, rendered into prompts, or
-  included in trajectory context.
+- The hidden oracle is outside the repository at the private evaluator path
+  configured by `BREAKFIX_PHASE2B_TRUTH_PATH`. The evaluator fails closed when
+  that path is absent. It is not copied into case directories, rendered into
+  prompts, or included in trajectory context.
 - Recent commits contain only protocol/evidence history and do not name a
   Phase 2B case label or expected breaker.
 
@@ -48,6 +53,7 @@ The hidden oracle maps exactly one supported experiment to each pair.
 
 ## Decision
 
-No obvious benchmark leakage was found. The holdout is cleared for execution.
-This audit is immutable evidence of the pre-run state; it must not be edited
-after provider execution begins.
+The initial leakage findings were remediated and the final read-only audit found
+no obvious answer leakage. The holdout is cleared for execution. This audit is
+immutable evidence of the pre-run state; it must not be edited after provider
+execution begins.

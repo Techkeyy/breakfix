@@ -1,1 +1,0 @@
-{"id":"h28","title":"Delivery summary update","surface":"timing","task":"Update the delivery summary while preserving one effect for one request.","test_command":"python -m unittest discover -s tests -v"}
