@@ -1,0 +1,31 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 3",
+          "reason": "new indexing into items without a guard"
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "items": []
+          }
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "Function raises IndexError when items is empty (or TypeError if not indexable)",
+      "id": "A1",
+      "risk": "high",
+      "statement": "payload['items'] is a non-empty collection that supports indexing",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Return count and first item from payload items",
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

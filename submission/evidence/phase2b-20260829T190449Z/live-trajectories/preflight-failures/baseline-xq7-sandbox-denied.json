@@ -1,0 +1,38 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "reasoning_effort": "high",
+  "reasoning_mode": "enabled",
+  "temperature": null,
+  "max_output_tokens": 2000,
+  "prompt_id": "phase2b-baseline-v1",
+  "prompt_file": "docs/phase2b-prompts.md",
+  "prompt_sha256": "258d6efd19519d1dd282f7f664df10759036d1551723007920f79a94be91167c",
+  "prompt_context": {
+    "public": {
+      "id": "xq7",
+      "title": "Routine update",
+      "task": "Update the routine while preserving the established behavior.",
+      "test_command": "python -m unittest discover -s tests -v"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "model_calls": 1,
+  "tool_access": "direct provider receives the rendered public context only",
+  "tool_actions": [],
+  "response_text": "",
+  "runtime_ms": 3207,
+  "latency_ms": 3207,
+  "request_timestamp_utc": "2026-08-29T18:46:08.947996Z",
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null,
+  "monetary_cost_usd": null,
+  "retries": 2,
+  "api_error": "direct provider transport error: <urlopen error [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions>"
+}

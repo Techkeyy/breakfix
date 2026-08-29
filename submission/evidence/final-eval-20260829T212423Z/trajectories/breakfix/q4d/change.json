@@ -1,0 +1,10 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "diff": "--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,2 @@\n def run(payload):\n-    return {\"status\": \"ready\"}\n+    return {\"currency\": payload[\"config\"][\"currency\"]}\n",
+  "reference": "q4d",
+  "task": "Expose the configured currency in the account summary.",
+  "visible_test_command": "python -m unittest discover -s tests -v"
+}

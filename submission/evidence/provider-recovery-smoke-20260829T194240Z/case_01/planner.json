@@ -1,0 +1,51 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "after/app.py",
+          "location": "payload['items']",
+          "reason": "Direct key access assumes the key exists, unlike the previous get default."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {}
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "KeyError: 'items' when payload lacks the key.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The input payload always contains an 'items' key.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "after/app.py",
+          "location": "sum(items) / len(items)",
+          "reason": "Division by len(items) assumes at least one item."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "items": []
+          }
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "ZeroDivisionError: division by zero when items is empty.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "The 'items' collection is non-empty.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Replaced total with average and switched to direct key access for payload items.",
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

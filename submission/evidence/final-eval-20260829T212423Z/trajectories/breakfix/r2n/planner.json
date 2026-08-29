@@ -1,0 +1,101 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Passing normal context provides no coverage for empty input path."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Summary function raises an exception or returns an unexpected empty/malformed summary.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Empty input collection does not cause summary failure or deviate from stable output contract.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context likely includes optional configuration; missing-field path is untested."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "config_missing"
+      },
+      "failure_if_false": "Summary changes, errors, or falls back to different default when config is absent.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Missing optional configuration field does not alter the summary output.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal context tested; DST boundary time representation unverified."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "world_dst"
+      },
+      "failure_if_false": "Summary timestamp or time-derived values shift incorrectly across DST.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary remains consistent across daylight-saving timezone boundary for a UTC instant.",
+      "surface": "world"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context likely uses non-zero values; zero boundary not exercised."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_boundary_zero"
+      },
+      "failure_if_false": "Summary aggregates treat zero incorrectly, causing wrong totals or counts.",
+      "id": "A4",
+      "risk": "medium",
+      "statement": "Zero numeric input value is handled without distorting summary calculations.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Single request test does not verify repeatability or side effects."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Second call returns a different summary due to hidden state mutation.",
+      "id": "A5",
+      "risk": "low",
+      "statement": "Replaying the same request twice produces the same summary (idempotency).",
+      "surface": "timing"
+    }
+  ],
+  "change_summary": "Summary behavior should remain stable across routine context changes, but only normal context is verified.",
+  "selected_experiments": [
+    "input_empty",
+    "config_missing",
+    "world_dst"
+  ],
+  "unsupported_assumptions": []
+}

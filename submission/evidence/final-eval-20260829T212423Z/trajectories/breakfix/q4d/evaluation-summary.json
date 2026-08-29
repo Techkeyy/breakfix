@@ -1,0 +1,20 @@
+{
+  "case_id": "q4d",
+  "duration_ms": 61191,
+  "experiments_run": 1,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 532,
+      "evidence_complete": true,
+      "experiment_id": "config_missing",
+      "process_failed": true,
+      "state": "CONFIRMED BREAK"
+    }
+  ],
+  "regression_valid": true,
+  "selected_experiments": [
+    "config_missing"
+  ],
+  "state": "CONFIRMED BREAK"
+}

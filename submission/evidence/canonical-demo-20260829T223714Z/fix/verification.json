@@ -1,0 +1,60 @@
+{
+  "experiment": {
+    "command": [
+      "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+      "-I",
+      "-c",
+      "import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))"
+    ],
+    "duration_ms": 543,
+    "exit_code": 0,
+    "experiment_id": "input_empty",
+    "output": {
+      "count": 0,
+      "mean": 0
+    },
+    "process_failed": false,
+    "stderr": "",
+    "stdout": "{\"count\": 0, \"mean\": 0}\n",
+    "timed_out": false
+  },
+  "regression": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "duration_ms": 902,
+    "exit_code": 0,
+    "experiment_id": "verified_regression",
+    "output": null,
+    "process_failed": false,
+    "stderr": "test_normal_items (test_app.SummaryTests.test_normal_items) ... ok\ntest_observed_change_handles_targeted_perturbation (test_breakfix_regression.BreakFixRegressionTests.test_observed_change_handles_targeted_perturbation) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n",
+    "stdout": "",
+    "timed_out": false
+  },
+  "status": "VERIFIED",
+  "visible_tests": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "duration_ms": 953,
+    "exit_code": 0,
+    "experiment_id": "verified_visible_tests",
+    "output": null,
+    "process_failed": false,
+    "stderr": "test_normal_items (test_app.SummaryTests.test_normal_items) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+    "stdout": "",
+    "timed_out": false
+  }
+}

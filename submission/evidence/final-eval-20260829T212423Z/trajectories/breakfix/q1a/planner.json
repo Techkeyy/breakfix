@@ -1,0 +1,27 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "return {\"count\": len(items), \"average\": sum(items) / len(items)}",
+          "reason": "Division by len(items) will raise ZeroDivisionError if items is empty."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "ZeroDivisionError is raised when payload['items'] is empty.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "payload['items'] is a non-empty collection when average is calculated.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Add average of numeric items to the collection summary output.",
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

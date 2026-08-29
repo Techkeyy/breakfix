@@ -1,0 +1,57 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "if event == \"confirm\": confirmed = reserved",
+          "reason": "Confirmation captures whether a reserve was seen earlier; order is material."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "events": [
+              "confirm",
+              "reserve"
+            ]
+          }
+        },
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Return status remains pending for a confirm-before-reserve sequence even though a reserve exists later.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "A confirm event always appears after a reserve event in the event list.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "for event in payload[\"events\"]",
+          "reason": "The replay loop assumes at least one event; with no events, confirmed remains false and status is pending."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "events": []
+          }
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "Empty event list returns pending instead of the original default confirmed status.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "The payload events list is non-empty.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Replay reservation events to confirm only when a reserve precedes a confirm; otherwise pending.",
+  "selected_experiments": [
+    "events_reordered",
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

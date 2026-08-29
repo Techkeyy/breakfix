@@ -1,0 +1,59 @@
+{
+  "actual_behavior": {
+    "output": {
+      "open": false
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "line 2",
+        "reason": "hour is taken directly by slicing timestamp without timezone handling"
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "payload": {
+          "timestamp": "2025-03-09T13:00:00Z"
+        }
+      },
+      "type": "world_dst"
+    },
+    "failure_if_false": "Open/closed result can be wrong when timestamp is UTC or another timezone, especially around DST.",
+    "id": "A1",
+    "risk": "high",
+    "statement": "The hour extracted from payload['timestamp'] is the local hour in the requested timezone; no timezone conversion is needed.",
+    "surface": "world"
+  },
+  "description": "Evaluate a UTC instant across a daylight-saving timezone boundary.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q8h\\experiments\\world_dst",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "world_dst",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-03-29T20:30:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

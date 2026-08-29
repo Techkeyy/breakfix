@@ -1,0 +1,77 @@
+{
+  "change_kind": "canonical-demo",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": null,
+        "process_failed": true
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "run",
+            "reason": "division by len(items)"
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "the changed function raises",
+        "id": "A1",
+        "risk": "high",
+        "statement": "the selected change receives at least one item",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z\\experiments\\input_empty",
+      "evidence_state": "CONFIRMED BREAK",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 1,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "CONFIRMED BREAK",
+  "project_root": "C:\\Users\\HomePC\\Desktop\\BreakFix\\examples\\independent_sample\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "examples/independent_sample",
+  "regression": {
+    "valid": true
+  },
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "task": "Add a mean to the summary while preserving safe behavior.",
+  "telemetry_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

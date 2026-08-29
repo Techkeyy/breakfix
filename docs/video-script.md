@@ -1,39 +1,66 @@
-# Five-minute solution video script
+# Solution video script, target 4:50
 
-## 0:00 to 0:35: problem
+## 0:00 to 0:25: problem
 
-Show a small code change whose visible tests pass. Explain that ordinary review
-can identify a plausible assumption but cannot prove what happens at the
-boundary the change introduces.
+Show a small code change while its visible tests pass. Say: “Your tests check
+what you expected. BreakFix tests what you forgot to expect. The question is
+not whether review can imagine a boundary. It is whether we can execute it and
+preserve proof.”
 
-## 0:35 to 1:20: baseline
+## 0:25 to 0:45: simple baseline
 
-Show the generic comparator prompt and its recommendation. Make clear that it
-is reasoning only and does not get hidden probes.
+Show the generic comparator prompt and its JSON recommendation for the same
+change. Say that this lane receives only the public change and visible tests. It
+can identify a plausible risk, but it does not receive hidden probes and does
+not execute them.
 
-## 1:20 to 2:20: BreakFix workflow
+## 0:45 to 1:15: visible tests and selected change
 
-Open the local evidence page. Show the selected change, visible test result,
-ranked assumptions, and the supported perturbation catalogue. Run an analysis
-on the independent sample and show the isolated command, payload, stdout,
-stderr, and process-failure result.
+Run the canonical demo from the terminal and show the visible test pass, the
+selected change, and the selected sample project. Then open the local evidence
+page, where the saved run is indexed. Do not invent a UI state: use the actual
+terminal output and the saved canonical evidence.
 
-## 2:20 to 3:15: proof and regression
+## 1:15 to 1:45: assumptions and targeted execution
 
-Show the generated regression test, replay, and bounded reduced reproduction.
-Explain that the model proposes a probe but deterministic execution decides the
-verdict.
+Show the ranked assumption `input_empty`, the supported perturbation, and the
+isolated command. Narrate: “The planner proposes what to attack. The execution
+engine decides.” Show the payload, stdout, stderr, exit status, and timing.
 
-## 3:15 to 4:15: measured improvement
+## 1:45 to 2:30: confirmed break to regression proof
 
-Show the final frozen comparison: 8 of 8 faulty cases and 0 of 8 safe false
-confirmations for BreakFix, 38 targeted experiments versus 128 fixed, and a
-70.3125% reduction. Show the generic comparator's 7 of 8 fault recall as an
-honest secondary result.
+Show `CONFIRMED BREAK`, expected versus actual behavior, the replay command, the
+generated regression test, and the bounded reduced reproduction. State that the
+evidence is reproducible and that the reducer does not call a result minimal
+unless it attempted reduction.
 
-## 4:15 to 5:00: trust boundary and close
+## 2:30 to 3:25: approval-gated fix and verification
 
-Show the approval gate for candidate fixes, the sanitized execution boundary,
-provider recovery telemetry, and the oracle-free published evidence. Close
-with the scope: Python `app.run(payload)`, four supported surfaces, no merge or
-push, and reproducibility commands in `REPRODUCE.md`.
+Show the proposed fix, the required human approval, the approved application,
+the after-fix replay, and the original visible tests. End the section on
+`VERIFIED`. Say: “BreakFix does not silently write back, merge, or push. A
+candidate fix crosses an explicit approval boundary.”
+
+## 3:25 to 4:10: measured final evaluation
+
+Show the final summary and trajectory index. Say: “On a fresh opaque holdout,
+BreakFix confirmed 8 of 8 seeded faults and 0 of 8 safe controls. It used 38
+targeted experiments versus 128 in the fixed matrix, a 70.3% reduction. The
+generic comparator recalled 7 of 8 faults with 0 safe false confirmations.”
+Show the 32 live DeepSeek calls, 32 structured responses, two transport
+retries, and approximate recorded cost of `$0.138005824`.
+
+## 4:10 to 4:35: what changed
+
+Show the changelog entries for the Phase 2B Attempt 1 failure caused by the
+2,000-token truncation, the provider recovery, and the final independent
+evaluation. Say: “The failed run stays in the record. The recovery changed the
+provider contract and evidence handling; it did not change the frozen cases,
+prompts, thresholds, oracle, budget, or gate.”
+
+## 4:35 to 4:50: close
+
+Say: “Stop guessing what might break. Prove what actually does.” Show
+`REPRODUCE.md` and the scope: Python `app.run(payload)`, four supported
+surfaces, sanitized local execution, no automatic merge or push. End on the
+oracle-free final evidence and the clean-environment reproduction commands.

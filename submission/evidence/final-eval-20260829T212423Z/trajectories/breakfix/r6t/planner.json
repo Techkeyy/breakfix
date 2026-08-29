@@ -1,0 +1,83 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only a normal, non-empty context is exercised; empty context is not covered."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Empty context causes an exception or unstable summary output.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary generation handles an empty context collection without assuming a first item exists.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal current state is tested; legacy records with missing fields are not."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Loading an older record raises a missing-field error or changes the summary.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Summary code tolerates older persisted records that lack a newly assumed context field.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only a single normal order is tested; reordered event sequences are not."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Different event order produces a different summary, breaking stability.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary output is independent of the order of valid routine context events.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "No DST boundary case is covered by the normal context test."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "world_dst"
+      },
+      "failure_if_false": "Summary timestamp or duration changes when evaluated across a DST boundary.",
+      "id": "A4",
+      "risk": "low",
+      "statement": "Summary computation does not depend on local timezone DST boundaries when routine context changes include time information.",
+      "surface": "world"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes.",
+  "selected_experiments": [
+    "input_empty",
+    "state_legacy",
+    "events_reordered"
+  ],
+  "unsupported_assumptions": []
+}

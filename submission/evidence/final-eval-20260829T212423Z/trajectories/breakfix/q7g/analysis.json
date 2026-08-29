@@ -1,0 +1,144 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "pending"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "if event == \"confirm\": confirmed = reserved",
+            "reason": "Confirmation captures whether a reserve was seen earlier; order is material."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {
+              "events": [
+                "confirm",
+                "reserve"
+              ]
+            }
+          },
+          "type": "events_reordered"
+        },
+        "failure_if_false": "Return status remains pending for a confirm-before-reserve sequence even though a reserve exists later.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "A confirm event always appears after a reserve event in the event list.",
+        "surface": "timing"
+      },
+      "description": "Deliver a valid event sequence in a different order.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q7g\\experiments\\events_reordered",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "events_reordered",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "confirm",
+          "reserve"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "confirmed"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "for event in payload[\"events\"]",
+            "reason": "The replay loop assumes at least one event; with no events, confirmed remains false and status is pending."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {
+              "events": []
+            }
+          },
+          "type": "input_empty"
+        },
+        "failure_if_false": "Empty event list returns pending instead of the original default confirmed status.",
+        "id": "A2",
+        "risk": "high",
+        "statement": "The payload events list is non-empty.",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q7g\\experiments\\input_empty",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 2,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "NO BREAK CONFIRMED",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q7g\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q7g\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "q7g",
+  "regression": null,
+  "selected_experiments": [
+    "events_reordered",
+    "input_empty"
+  ],
+  "task": "Simplify reservation event replay while preserving confirmation.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q7g\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -1,0 +1,198 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": {
+          "accepted": 1
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "line 3-4",
+            "reason": "Loop increments accepted each invocation without any deduplication check."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "replay_count": 2
+          },
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "Delivering the same payload twice yields accepted count accumulating beyond one.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "run applies acceptance exactly once per unique logical delivery, even if the same payload is delivered multiple times.",
+        "surface": "timing"
+      },
+      "description": "Replay the same request twice to challenge idempotency.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\experiments\\retry_duplicate",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "retry_duplicate",
+      "payload": {
+        "amount": 25,
+        "attempts": 2,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "accepted": 1
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "line 3",
+            "reason": "Uses payload.get with default 1 and passes the value directly to range."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "field": "concurrent_calls",
+            "value": 0
+          },
+          "type": "input_boundary_zero"
+        },
+        "failure_if_false": "Providing concurrent_calls=0 yields accepted=0 instead of one; non-integer causes runtime error.",
+        "id": "A2",
+        "risk": "medium",
+        "statement": "payload.get('concurrent_calls',1) always returns a positive integer when present, and 1 when absent.",
+        "surface": "input"
+      },
+      "description": "Send the smallest numeric collection with a zero value.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\experiments\\input_boundary_zero",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_boundary_zero",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          0
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "accepted": 2
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "line 1-5",
+            "reason": "No synchronization or deduplication mechanism is present in the run function."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "copies": 2
+          },
+          "type": "concurrent_duplicate"
+        },
+        "failure_if_false": "Concurrent duplicates each increment accepted, causing total accepted greater than one.",
+        "id": "A3",
+        "risk": "high",
+        "statement": "Two concurrent copies of the same request are not both processed independently through run.",
+        "surface": "timing"
+      },
+      "description": "Deliver two concurrent copies of one request through the effect boundary.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\experiments\\concurrent_duplicate",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "concurrent_duplicate",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 2,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 3,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "NO BREAK CONFIRMED",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q6f\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "q6f",
+  "regression": null,
+  "selected_experiments": [
+    "retry_duplicate",
+    "input_boundary_zero",
+    "concurrent_duplicate"
+  ],
+  "task": "Make duplicate deliveries apply the acceptance once.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

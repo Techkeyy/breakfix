@@ -1,0 +1,58 @@
+{
+  "actual_behavior": {
+    "output": {
+      "total_charged": 25
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "range(payload.get(\"attempts\", 1))",
+        "reason": "range(0) yields no iterations, so total remains 0 even with a positive amount."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "payload": {
+          "amount": 100,
+          "attempts": 0
+        }
+      },
+      "type": "input_boundary_zero"
+    },
+    "failure_if_false": "total_charged is 0 despite a positive amount when attempts is 0.",
+    "id": "A3",
+    "risk": "medium",
+    "statement": "When 'attempts' is provided, it is a positive integer; zero attempts still performs one charge.",
+    "surface": "input"
+  },
+  "description": "Send the smallest numeric collection with a zero value.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\experiments\\input_boundary_zero",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "input_boundary_zero",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      0
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

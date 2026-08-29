@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "duration_ms": 1014,
+  "exit_code": 0,
+  "experiment_id": "visible_tests",
+  "output": null,
+  "process_failed": false,
+  "stderr": "test_normal_business_hours (test_app.BusinessHoursTests.test_normal_business_hours) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.228s\n\nOK\n",
+  "stdout": "",
+  "timed_out": false
+}

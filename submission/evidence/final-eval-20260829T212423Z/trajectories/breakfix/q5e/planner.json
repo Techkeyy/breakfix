@@ -1,0 +1,77 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "payload[\"amount\"]",
+          "reason": "Direct key access and arithmetic require 'amount' to be present and numeric."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {}
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "KeyError: 'amount' or TypeError if amount is non-numeric.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The input payload always contains a numeric 'amount'.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "for _ in range(payload.get(\"attempts\", 1))",
+          "reason": "Loop adds amount once per attempt, so attempts greater than one multiplies the charge."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "amount": 100,
+            "attempts": 2
+          }
+        },
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "total_charged equals amount * attempts, duplicating the charge on retry.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Retries do not duplicate the charge; total_charged equals a single amount regardless of attempts.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "range(payload.get(\"attempts\", 1))",
+          "reason": "range(0) yields no iterations, so total remains 0 even with a positive amount."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "amount": 100,
+            "attempts": 0
+          }
+        },
+        "type": "input_boundary_zero"
+      },
+      "failure_if_false": "total_charged is 0 despite a positive amount when attempts is 0.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "When 'attempts' is provided, it is a positive integer; zero attempts still performs one charge.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Handler now loops over payload attempts and sums amount each time, causing duplicate charges for attempts > 1.",
+  "selected_experiments": [
+    "input_empty",
+    "retry_duplicate",
+    "input_boundary_zero"
+  ],
+  "unsupported_assumptions": []
+}

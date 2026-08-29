@@ -1,0 +1,83 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only a normal context is exercised; empty input remains untested."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Empty context causes an exception or produces an unstable summary.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary generation handles an empty context collection without failing.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context includes new fields; legacy persisted records are not covered."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Legacy records without new fields cause KeyError or incorrect summary.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Summary generation does not require newly introduced context fields to be present.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only one execution is tested; idempotency is unverified."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "A second identical request yields a different summary.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Repeated identical requests produce the same summary.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal order is tested; reordered context is unverified."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Reordered context entries change the summary.",
+      "id": "A4",
+      "risk": "medium",
+      "statement": "Summary output does not depend on the order of context entries.",
+      "surface": "timing"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes.",
+  "selected_experiments": [
+    "input_empty",
+    "state_legacy",
+    "retry_duplicate"
+  ],
+  "unsupported_assumptions": []
+}

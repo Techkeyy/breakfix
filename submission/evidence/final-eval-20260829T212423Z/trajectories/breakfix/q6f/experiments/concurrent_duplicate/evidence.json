@@ -1,0 +1,57 @@
+{
+  "actual_behavior": {
+    "output": {
+      "accepted": 2
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "line 1-5",
+        "reason": "No synchronization or deduplication mechanism is present in the run function."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "copies": 2
+      },
+      "type": "concurrent_duplicate"
+    },
+    "failure_if_false": "Concurrent duplicates each increment accepted, causing total accepted greater than one.",
+    "id": "A3",
+    "risk": "high",
+    "statement": "Two concurrent copies of the same request are not both processed independently through run.",
+    "surface": "timing"
+  },
+  "description": "Deliver two concurrent copies of one request through the effect boundary.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q6f\\experiments\\concurrent_duplicate",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "concurrent_duplicate",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 2,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only normal context is tested; empty input edge case is not covered."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from task description about routine context changes."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "Summary generation crashes or produces unstable output when input collection is empty.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Summary generation tolerates an empty input collection where routine context may require at least one item.",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\experiments\\input_empty",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only current-state context is tested; legacy records with missing fields are not covered."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from task description about accepting routine context changes."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "state_legacy"
+        },
+        "failure_if_false": "Summary generation fails with a missing field error when loading legacy persisted state.",
+        "id": "A2",
+        "risk": "high",
+        "statement": "Summary generation handles older persisted records that lack a newly assumed context field.",
+        "surface": "state"
+      },
+      "description": "Load an older persisted record that lacks a newly assumed field.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\experiments\\state_legacy",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "state_legacy",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "balance": 100,
+          "version": 1
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only one execution is tested; duplicate request behavior is not exercised."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from stable summary behavior requirement."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "The second identical request produces a different summary or an error, breaking stable behavior.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "Summary generation is idempotent when the same request is replayed twice.",
+        "surface": "timing"
+      },
+      "description": "Replay the same request twice to challenge idempotency.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\experiments\\retry_duplicate",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "retry_duplicate",
+      "payload": {
+        "amount": 25,
+        "attempts": 2,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 3,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "NO BREAK CONFIRMED",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\r3p\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "r3p",
+  "regression": null,
+  "selected_experiments": [
+    "input_empty",
+    "state_legacy",
+    "retry_duplicate"
+  ],
+  "task": "Preserve the stable summary behavior while accepting routine context changes.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

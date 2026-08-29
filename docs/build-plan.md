@@ -167,7 +167,7 @@ executions.
 Result: PASS on `final-eval-20260829T212423Z`. The fixed matrix and BreakFix
 were both eligible at 100% seeded-fault recall and 0 safe false confirmed
 breaks. BreakFix used 38 targeted experiments versus 128 fixed experiments, a
-70.3125% reduction. The generic comparator scored 7/8 fault recall with no
+70.3% reduction. The generic comparator scored 7/8 fault recall with no
 safe false confirmations. The failed Attempt 1 remains preserved as historical
 provider-output evidence and is not overwritten.
 

@@ -1,0 +1,47 @@
+{
+  "finish_reason": "length",
+  "input_cache_hit_tokens": 0,
+  "input_cache_miss_tokens": 873,
+  "input_cache_status": "miss",
+  "input_tokens": 873,
+  "latency_ms": 36353,
+  "max_output_tokens": 2000,
+  "model": "deepseek-v4-pro",
+  "model_calls": 1,
+  "monetary_cost_usd": 0.00453618,
+  "output_tokens": 2000,
+  "pricing_input_rate_per_million": 0.66,
+  "pricing_output_rate_per_million": 1.98,
+  "pricing_period": "off-peak",
+  "pricing_retrieved_date": "2026-08-29",
+  "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "prompt_context": {
+    "public": {
+      "id": "m2v",
+      "task": "Update the routine while preserving the established behavior.",
+      "test_command": "python -m unittest discover -s tests -v",
+      "title": "Routine update"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "prompt_file": "docs/phase2b-prompts.md",
+  "prompt_id": "phase2b-breakfix-v1",
+  "prompt_sha256": "34e518435076d1bfa7991b0cebdbc1783c3335a2ae1cd06dd7c3277c31d85030",
+  "provider": "deepseek",
+  "reasoning_effort": "high",
+  "reasoning_mode": "enabled",
+  "replay_path": "trajectories/phase2b/breakfix/m2v/replay.json",
+  "request_timestamp_utc": "2026-08-29T18:52:21.775204Z",
+  "response_text": "",
+  "retries": 0,
+  "runtime_ms": 36353,
+  "temperature": null,
+  "tool_access": "direct provider receives the rendered public context only",
+  "tool_actions": [],
+  "total_tokens": 2873
+}

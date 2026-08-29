@@ -1,0 +1,16 @@
+{
+  "change_kind": "canonical-demo",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "project_root": "C:\\Users\\HomePC\\Desktop\\BreakFix\\examples\\independent_sample\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "reference": "examples/independent_sample",
+  "task": "Add a mean to the summary while preserving safe behavior.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

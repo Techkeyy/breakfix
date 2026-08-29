@@ -1,0 +1,103 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal context is tested; empty input edge case is not covered."
+        },
+        {
+          "file": "app.py",
+          "location": "summary generation",
+          "reason": "Source unreadable; assumption inferred from task description about routine context changes."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Summary generation crashes or produces unstable output when input collection is empty.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary generation tolerates an empty input collection where routine context may require at least one item.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only current-state context is tested; legacy records with missing fields are not covered."
+        },
+        {
+          "file": "app.py",
+          "location": "summary generation",
+          "reason": "Source unreadable; assumption inferred from task description about accepting routine context changes."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Summary generation fails with a missing field error when loading legacy persisted state.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Summary generation handles older persisted records that lack a newly assumed context field.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only one execution is tested; duplicate request behavior is not exercised."
+        },
+        {
+          "file": "app.py",
+          "location": "summary generation",
+          "reason": "Source unreadable; assumption inferred from stable summary behavior requirement."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "The second identical request produces a different summary or an error, breaking stable behavior.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary generation is idempotent when the same request is replayed twice.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal non-zero context is tested; boundary zero values are not covered."
+        },
+        {
+          "file": "app.py",
+          "location": "summary generation",
+          "reason": "Source unreadable; assumption inferred from task description about accepting routine context changes."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_boundary_zero"
+      },
+      "failure_if_false": "Zero numeric context values cause summary output to change unexpectedly or trigger an error.",
+      "id": "A4",
+      "risk": "low",
+      "statement": "Summary generation is unaffected by zero numeric values in routine context fields.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes; no source/diff readable, only one passing normal context test visible.",
+  "selected_experiments": [
+    "input_empty",
+    "state_legacy",
+    "retry_duplicate"
+  ],
+  "unsupported_assumptions": []
+}

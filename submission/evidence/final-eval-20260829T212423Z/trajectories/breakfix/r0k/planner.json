@@ -1,0 +1,83 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "selected_change",
+          "location": "summary generation",
+          "reason": "Change accepts routine context changes; empty context is a boundary context"
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Empty context causes exception or produces a summary different from normal context.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary generation tolerates an empty context as a routine context change without altering summary format.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "selected_change",
+          "location": "configuration handling",
+          "reason": "Stable summary should not require optional config"
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "config_missing"
+      },
+      "failure_if_false": "Removing optional configuration changes or breaks summary generation.",
+      "id": "A2",
+      "risk": "medium",
+      "statement": "Summary output does not depend on optional configuration fields that routine context changes may omit.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "selected_change",
+          "location": "summary generation",
+          "reason": "Stable summary behavior implies repeat requests yield same summary"
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Second identical request yields a different summary, indicating hidden state or non-determinism.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary generation is idempotent for the same core content and context.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "selected_change",
+          "location": "time handling",
+          "reason": "Routine context changes could include timezone; stable summary should not vary"
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "world_dst"
+      },
+      "failure_if_false": "Same instant evaluated across DST boundary yields a different summary.",
+      "id": "A4",
+      "risk": "low",
+      "statement": "Summary output is independent of local timezone, including DST transitions.",
+      "surface": "world"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes.",
+  "selected_experiments": [
+    "input_empty",
+    "config_missing",
+    "retry_duplicate"
+  ],
+  "unsupported_assumptions": []
+}

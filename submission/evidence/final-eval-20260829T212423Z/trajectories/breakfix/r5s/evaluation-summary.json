@@ -1,0 +1,36 @@
+{
+  "case_id": "r5s",
+  "duration_ms": 47589,
+  "experiments_run": 3,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 265,
+      "evidence_complete": true,
+      "experiment_id": "events_reordered",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    },
+    {
+      "duration_ms": 265,
+      "evidence_complete": true,
+      "experiment_id": "state_legacy",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    },
+    {
+      "duration_ms": 293,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    }
+  ],
+  "regression_valid": null,
+  "selected_experiments": [
+    "events_reordered",
+    "state_legacy",
+    "input_empty"
+  ],
+  "state": "NO BREAK CONFIRMED"
+}

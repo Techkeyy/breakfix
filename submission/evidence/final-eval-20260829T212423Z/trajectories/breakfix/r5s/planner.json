@@ -1,0 +1,83 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "test_normal_context",
+          "reason": "Only normal-order context is covered; reordering is a routine context change left untested."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Summary content changes when the same context items are provided in a different order.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary output is invariant to reordering of routine context entries.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "test_normal_context",
+          "reason": "Visible test provides normal context; absence of optional fields not exercised."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Summary fails or produces incorrect output when an optional context field is absent.",
+      "id": "A2",
+      "risk": "medium",
+      "statement": "Summary generation tolerates missing optional context fields.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "test_normal_context",
+          "reason": "Normal context implies non-empty; empty edge case is not covered."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "input_empty"
+      },
+      "failure_if_false": "Summary crashes, hangs, or returns invalid output for empty context.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary handles an empty collection of context items.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "test_normal_context",
+          "reason": "Only one invocation is tested; stability across repeats is assumed."
+        }
+      ],
+      "experiment": {
+        "parameters": {},
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Second identical request yields a different summary or side effect.",
+      "id": "A4",
+      "risk": "low",
+      "statement": "Repeated identical context produces the same summary (idempotent).",
+      "surface": "timing"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes.",
+  "selected_experiments": [
+    "events_reordered",
+    "state_legacy",
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

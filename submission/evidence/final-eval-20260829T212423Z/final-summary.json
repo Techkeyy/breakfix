@@ -1,0 +1,1937 @@
+{
+  "baseline": {
+    "confirmed_fault_cases": 7,
+    "eligible": false,
+    "error_cases": 0,
+    "false_confirmed_break_rate": 0.0,
+    "false_confirmed_breaks": 0,
+    "fault_cases": 8,
+    "lane": "generic-baseline",
+    "safe_cases": 8,
+    "seeded_fault_recall": 0.875,
+    "unsupported_cases": 0
+  },
+  "breakfix": {
+    "confirmed_fault_cases": 8,
+    "duration_ms": 1437409,
+    "eligible": true,
+    "error_cases": 0,
+    "false_confirmed_break_rate": 0.0,
+    "false_confirmed_breaks": 0,
+    "fault_cases": 8,
+    "lane": "breakfix-targeted",
+    "max_experiments_per_case": 3,
+    "observed_experiments": 38,
+    "planned_experiments": 48,
+    "regression_valid_count": 4,
+    "safe_cases": 8,
+    "seeded_fault_recall": 1.0,
+    "unsupported_cases": 0
+  },
+  "deepseek_credential_present": true,
+  "experiment_reduction_percentage": 70.3125,
+  "experiments_per_confirmed_defect": 4.75,
+  "fixed_case_results": [
+    {
+      "case_id": "q1a",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q1a",
+          "duration_ms": 1377,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": true,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 813,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 617,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 436,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 481,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 341,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 525,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q1a",
+          "duration_ms": 885,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q2b",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q2b",
+          "duration_ms": 1085,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": true,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 446,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 473,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 578,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 599,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 366,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 281,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q2b",
+          "duration_ms": 274,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q3c",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q3c",
+          "duration_ms": 618,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 2471,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 1361,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 1102,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": true,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 825,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 351,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 430,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q3c",
+          "duration_ms": 413,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": true,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q4d",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q4d",
+          "duration_ms": 482,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 581,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 454,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 481,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 390,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 322,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 354,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": true,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q4d",
+          "duration_ms": 221,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q5e",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q5e",
+          "duration_ms": 179,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 194,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 203,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 249,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 231,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 300,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 271,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q5e",
+          "duration_ms": 324,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q6f",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q6f",
+          "duration_ms": 213,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 232,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 209,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 208,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 180,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 126,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 122,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q6f",
+          "duration_ms": 132,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "CONFIRMED BREAK"
+        }
+      ]
+    },
+    {
+      "case_id": "q7g",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q7g",
+          "duration_ms": 124,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 127,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 129,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 130,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 133,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 201,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 221,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q7g",
+          "duration_ms": 322,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q8h",
+      "confirmed_break": true,
+      "experiments": [
+        {
+          "case_id": "q8h",
+          "duration_ms": 277,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 374,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 293,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 257,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 244,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 230,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "CONFIRMED BREAK"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 176,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        },
+        {
+          "case_id": "q8h",
+          "duration_ms": 152,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "case_id": "q9j",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "q9j",
+          "duration_ms": 180,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 181,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 151,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 126,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 120,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 155,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 143,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "q9j",
+          "duration_ms": 126,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r0k",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r0k",
+          "duration_ms": 121,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 125,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 143,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 156,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 197,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 211,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 191,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r0k",
+          "duration_ms": 370,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r1m",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r1m",
+          "duration_ms": 277,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 223,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 241,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 228,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 226,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 272,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 186,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r1m",
+          "duration_ms": 260,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r2n",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r2n",
+          "duration_ms": 197,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 223,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 229,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 219,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 215,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 213,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 202,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r2n",
+          "duration_ms": 193,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r3p",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r3p",
+          "duration_ms": 163,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 280,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 141,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 287,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 210,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 305,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 131,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r3p",
+          "duration_ms": 199,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r4q",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r4q",
+          "duration_ms": 198,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 158,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 153,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 139,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 120,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 136,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 121,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r4q",
+          "duration_ms": 131,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r5s",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r5s",
+          "duration_ms": 120,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 131,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 120,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 132,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 124,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 157,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 151,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r5s",
+          "duration_ms": 264,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    },
+    {
+      "case_id": "r6t",
+      "confirmed_break": false,
+      "experiments": [
+        {
+          "case_id": "r6t",
+          "duration_ms": 181,
+          "evidence_complete": true,
+          "experiment_id": "input_empty",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 203,
+          "evidence_complete": true,
+          "experiment_id": "input_boundary_zero",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 205,
+          "evidence_complete": true,
+          "experiment_id": "retry_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 196,
+          "evidence_complete": true,
+          "experiment_id": "state_legacy",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 153,
+          "evidence_complete": true,
+          "experiment_id": "events_reordered",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 146,
+          "evidence_complete": true,
+          "experiment_id": "world_dst",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 138,
+          "evidence_complete": true,
+          "experiment_id": "config_missing",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        },
+        {
+          "case_id": "r6t",
+          "duration_ms": 128,
+          "evidence_complete": true,
+          "experiment_id": "concurrent_duplicate",
+          "process_failed": false,
+          "state": "NO BREAK CONFIRMED"
+        }
+      ]
+    }
+  ],
+  "fixed_matrix": {
+    "confirmed_fault_cases": 8,
+    "duration_ms": 42198,
+    "eligible": true,
+    "error_cases": 0,
+    "execution_error_count": 0,
+    "false_confirmed_break_rate": 0.0,
+    "false_confirmed_breaks": 0,
+    "fault_cases": 8,
+    "lane": "fixed-matrix",
+    "observed_experiments": 128,
+    "planned_experiments": 128,
+    "safe_cases": 8,
+    "seeded_fault_recall": 1.0,
+    "unsupported_cases": 0,
+    "unsupported_probe_count": 56
+  },
+  "git_head_at_start": "aa8a4a8db63c6586221792320c2973ae6d4d512b",
+  "holdout_case_count": 16,
+  "holdout_manifest_sha256": "9a9fef98edcaf76f935731020e24a59d7fa9b8d7c2a1c99eb237892ba2fdc39a",
+  "leakage_audit": {
+    "case_id_sets_match": true,
+    "forbidden_term_hits": [],
+    "passed": true,
+    "public_case_count": 16,
+    "truth_case_count": 16,
+    "truth_path_hits": []
+  },
+  "live_case_results": {
+    "baseline": [
+      {
+        "case_id": "q1a",
+        "correct_against_external_truth": true,
+        "duration_ms": 23335,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q2b",
+        "correct_against_external_truth": true,
+        "duration_ms": 18050,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q3c",
+        "correct_against_external_truth": false,
+        "duration_ms": 28451,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q4d",
+        "correct_against_external_truth": true,
+        "duration_ms": 13189,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q5e",
+        "correct_against_external_truth": true,
+        "duration_ms": 6877,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q6f",
+        "correct_against_external_truth": true,
+        "duration_ms": 16774,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q7g",
+        "correct_against_external_truth": true,
+        "duration_ms": 16920,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q8h",
+        "correct_against_external_truth": true,
+        "duration_ms": 15430,
+        "provider_status": "OK",
+        "recommendation": "POTENTIAL_BREAK",
+        "valid_contract": true
+      },
+      {
+        "case_id": "q9j",
+        "correct_against_external_truth": true,
+        "duration_ms": 4549,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r0k",
+        "correct_against_external_truth": true,
+        "duration_ms": 3812,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r1m",
+        "correct_against_external_truth": true,
+        "duration_ms": 5568,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r2n",
+        "correct_against_external_truth": true,
+        "duration_ms": 4151,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r3p",
+        "correct_against_external_truth": true,
+        "duration_ms": 10128,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r4q",
+        "correct_against_external_truth": true,
+        "duration_ms": 3579,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r5s",
+        "correct_against_external_truth": true,
+        "duration_ms": 6105,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      },
+      {
+        "case_id": "r6t",
+        "correct_against_external_truth": true,
+        "duration_ms": 3845,
+        "provider_status": "OK",
+        "recommendation": "NO_BREAK_FOUND",
+        "valid_contract": true
+      }
+    ],
+    "breakfix": [
+      {
+        "case_id": "q1a",
+        "duration_ms": 51886,
+        "experiments_run": 1,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 984,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": true,
+            "state": "CONFIRMED BREAK"
+          }
+        ],
+        "regression_valid": true,
+        "selected_experiments": [
+          "input_empty"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q2b",
+        "duration_ms": 37618,
+        "experiments_run": 1,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 449,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": true,
+            "state": "CONFIRMED BREAK"
+          }
+        ],
+        "regression_valid": true,
+        "selected_experiments": [
+          "input_empty"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q3c",
+        "duration_ms": 335536,
+        "experiments_run": 1,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 232,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": true,
+            "state": "CONFIRMED BREAK"
+          }
+        ],
+        "regression_valid": true,
+        "selected_experiments": [
+          "state_legacy"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q4d",
+        "duration_ms": 61191,
+        "experiments_run": 1,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 532,
+            "evidence_complete": true,
+            "experiment_id": "config_missing",
+            "process_failed": true,
+            "state": "CONFIRMED BREAK"
+          }
+        ],
+        "regression_valid": true,
+        "selected_experiments": [
+          "config_missing"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q5e",
+        "duration_ms": 80770,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 220,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          },
+          {
+            "duration_ms": 279,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "CONFIRMED BREAK"
+          },
+          {
+            "duration_ms": 235,
+            "evidence_complete": true,
+            "experiment_id": "input_boundary_zero",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "retry_duplicate",
+          "input_boundary_zero"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q6f",
+        "duration_ms": 58236,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 253,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          },
+          {
+            "duration_ms": 282,
+            "evidence_complete": true,
+            "experiment_id": "input_boundary_zero",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          },
+          {
+            "duration_ms": 223,
+            "evidence_complete": true,
+            "experiment_id": "concurrent_duplicate",
+            "process_failed": false,
+            "state": "CONFIRMED BREAK"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "retry_duplicate",
+          "input_boundary_zero",
+          "concurrent_duplicate"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q7g",
+        "duration_ms": 89534,
+        "experiments_run": 2,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 256,
+            "evidence_complete": true,
+            "experiment_id": "events_reordered",
+            "process_failed": false,
+            "state": "CONFIRMED BREAK"
+          },
+          {
+            "duration_ms": 231,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "events_reordered",
+          "input_empty"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q8h",
+        "duration_ms": 105060,
+        "experiments_run": 2,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 381,
+            "evidence_complete": true,
+            "experiment_id": "world_dst",
+            "process_failed": false,
+            "state": "CONFIRMED BREAK"
+          },
+          {
+            "duration_ms": 286,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "UNSUPPORTED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "world_dst",
+          "input_empty"
+        ],
+        "state": "CONFIRMED BREAK"
+      },
+      {
+        "case_id": "q9j",
+        "duration_ms": 73415,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 301,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 433,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 241,
+            "evidence_complete": true,
+            "experiment_id": "events_reordered",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "state_legacy",
+          "events_reordered"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r0k",
+        "duration_ms": 47042,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 248,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 312,
+            "evidence_complete": true,
+            "experiment_id": "config_missing",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 245,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "config_missing",
+          "retry_duplicate"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r1m",
+        "duration_ms": 47933,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 256,
+            "evidence_complete": true,
+            "experiment_id": "events_reordered",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 246,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 526,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "events_reordered",
+          "input_empty",
+          "retry_duplicate"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r2n",
+        "duration_ms": 49216,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 301,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 249,
+            "evidence_complete": true,
+            "experiment_id": "config_missing",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 247,
+            "evidence_complete": true,
+            "experiment_id": "world_dst",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "config_missing",
+          "world_dst"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r3p",
+        "duration_ms": 40161,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 235,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 337,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 255,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "state_legacy",
+          "retry_duplicate"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r4q",
+        "duration_ms": 38443,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 325,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 339,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 356,
+            "evidence_complete": true,
+            "experiment_id": "retry_duplicate",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "state_legacy",
+          "retry_duplicate"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r5s",
+        "duration_ms": 47589,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 265,
+            "evidence_complete": true,
+            "experiment_id": "events_reordered",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 265,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 293,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "events_reordered",
+          "state_legacy",
+          "input_empty"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      },
+      {
+        "case_id": "r6t",
+        "duration_ms": 44441,
+        "experiments_run": 3,
+        "provider_status": "OK",
+        "records": [
+          {
+            "duration_ms": 324,
+            "evidence_complete": true,
+            "experiment_id": "input_empty",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 361,
+            "evidence_complete": true,
+            "experiment_id": "state_legacy",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          },
+          {
+            "duration_ms": 382,
+            "evidence_complete": true,
+            "experiment_id": "events_reordered",
+            "process_failed": false,
+            "state": "NO BREAK CONFIRMED"
+          }
+        ],
+        "regression_valid": null,
+        "selected_experiments": [
+          "input_empty",
+          "state_legacy",
+          "events_reordered"
+        ],
+        "state": "NO BREAK CONFIRMED"
+      }
+    ]
+  },
+  "platform": "Windows-11-10.0.22621-SP0",
+  "primary_gate": "PASS",
+  "product_checkpoint": "13b8c89",
+  "protocol_id": "final-independent-evaluation-v1",
+  "protocol_status": "frozen before evaluation",
+  "public_holdout_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "run_id": "final-eval-20260829T212423Z",
+  "started_at_utc": "2026-08-29T21:48:22.892343Z",
+  "telemetry": {
+    "all_live_provider_calls": {
+      "finish_reasons": [
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop"
+      ],
+      "input_tokens": 19559,
+      "latency_ms": 1342712,
+      "model_calls": 32,
+      "monetary_cost_usd": 0.13800582399999997,
+      "output_tokens": 66851,
+      "reasoning_content_present": true,
+      "response_formats": [
+        "json_object"
+      ],
+      "retries": 2,
+      "successful_provider_responses": 32,
+      "total_tokens": 86410
+    },
+    "baseline": {
+      "finish_reasons": [
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop"
+      ],
+      "input_tokens": 6976,
+      "latency_ms": 180760,
+      "model_calls": 16,
+      "monetary_cost_usd": 0.0200926,
+      "output_tokens": 9266,
+      "reasoning_content_present": true,
+      "response_formats": [
+        "json_object"
+      ],
+      "retries": 0,
+      "successful_provider_responses": 16,
+      "total_tokens": 16242
+    },
+    "breakfix": {
+      "finish_reasons": [
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop",
+        "stop"
+      ],
+      "input_tokens": 12583,
+      "latency_ms": 1161952,
+      "model_calls": 16,
+      "monetary_cost_usd": 0.117913224,
+      "output_tokens": 57585,
+      "reasoning_content_present": true,
+      "response_formats": [
+        "json_object"
+      ],
+      "retries": 2,
+      "successful_provider_responses": 16,
+      "total_tokens": 70168
+    }
+  }
+}

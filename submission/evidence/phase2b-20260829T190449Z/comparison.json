@@ -1,0 +1,1163 @@
+{
+  "cases": [
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py:_apply before: if request_id in _seen: return False; _seen.add(request_id); return True",
+              "app.py:_apply after: _seen.add(payload['request_id']); return True",
+              "visible test only asserts app.run({\"request_id\":\"a\"}) == {\"accepted\":1}"
+            ],
+            "severity": "high",
+            "summary": "Duplicate request_id behavior changed: previously a repeated request_id returned False and was not counted, now every attempt returns True and increments accepted."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/xq7/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/xq7",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/xq7/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,10 +1,7 @@\n _seen = set()\n \n def _apply(payload):\n-    request_id = payload[\"request_id\"]\n-    if request_id in _seen:\n-        return False\n-    _seen.add(request_id)\n+    _seen.add(payload[\"request_id\"])\n     return True\n \n def run(payload):\n",
+      "diff_path": "benchmark/phase2b_holdout/xq7/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "retry_duplicate"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/xq7",
+        "execution_runtime_ms": 3078,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "xq7",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 801,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_one_request (test_app.LedgerTests.test_one_request) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py: _apply still returns False for already-handled request IDs and True for the first occurrence.",
+              "app.py: run still invokes _apply once by default and sums boolean results, matching prior accepted count logic."
+            ],
+            "severity": "low",
+            "summary": "The refactor preserves established idempotency behavior for repeated request IDs."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/m2v/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/m2v",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/m2v/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,14 +1,12 @@\n-_seen = set()\n+_handled = set()\n \n def _apply(payload):\n     request_id = payload[\"request_id\"]\n-    if request_id in _seen:\n+    already_handled = request_id in _handled\n+    if already_handled:\n         return False\n-    _seen.add(request_id)\n+    _handled.add(request_id)\n     return True\n \n def run(payload):\n-    accepted = 0\n-    for _ in range(payload.get(\"attempts\", 1)):\n-        accepted += int(_apply(payload))\n-    return {\"accepted\": accepted}\n+    return {\"accepted\": sum(int(_apply(payload)) for _ in range(payload.get(\"attempts\", 1)))}\n",
+      "diff_path": "benchmark/phase2b_holdout/m2v/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/m2v",
+        "execution_runtime_ms": 8759,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "m2v",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 1021,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_one_request (test_app.LedgerTests.test_one_request) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py: return {\"peak\": max(values)}",
+              "BEFORE source had: return {\"peak\": max(values) if values else None}"
+            ],
+            "severity": "high",
+            "summary": "Empty items lists are no longer handled, so established behavior for empty input is not preserved."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/r9c/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/r9c",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/r9c/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,3 @@\n def run(payload):\n     values = payload[\"items\"]\n-    return {\"peak\": max(values) if values else None}\n+    return {\"peak\": max(values)}\n",
+      "diff_path": "benchmark/phase2b_holdout/r9c/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "input_empty"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/r9c",
+        "execution_runtime_ms": 13944,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "r9c",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 2843,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_populated_values (test_app.SummaryTests.test_populated_values) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py:1-5",
+              "tests/test_app.py:5-6"
+            ],
+            "severity": "low",
+            "summary": "The refactor preserves the established behavior for the visible populated-values test."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/k4d/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/k4d",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/k4d/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,5 @@\n+def _peak(values):\n+    return max(values) if values else None\n+\n def run(payload):\n-    values = payload[\"items\"]\n-    return {\"peak\": max(values) if values else None}\n+    return {\"peak\": _peak(payload[\"items\"])}\n",
+      "diff_path": "benchmark/phase2b_holdout/k4d/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/k4d",
+        "execution_runtime_ms": 15247,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "k4d",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 2257,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_populated_values (test_app.SummaryTests.test_populated_values) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "after source: return {\"tax_rate\": record[\"tax_rate\"]}",
+              "before source: return {\"tax_rate\": record.get(\"tax_rate\", 0.2)}",
+              "visible test only covers the case where tax_rate is present"
+            ],
+            "severity": "high",
+            "summary": "The after source raises KeyError when state has no tax_rate, whereas the before source returned the established default of 0.2."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/p6h/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/p6h",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/p6h/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,3 @@\n def run(payload):\n     record = payload[\"state\"]\n-    return {\"tax_rate\": record.get(\"tax_rate\", 0.2)}\n+    return {\"tax_rate\": record[\"tax_rate\"]}\n",
+      "diff_path": "benchmark/phase2b_holdout/p6h/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "state_legacy"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/p6h",
+        "execution_runtime_ms": 6522,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "p6h",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 3872,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_current_record (test_app.RecordTests.test_current_record) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "after source: _rate returns record.get(\"tax_rate\", 0.2)",
+              "visible test: app.run({'state':{'tax_rate':0.2}}) expects {'tax_rate':0.2}"
+            ],
+            "severity": "low",
+            "summary": "The extracted helper preserves the original default and key access behavior."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/w1s/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/w1s",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/w1s/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,5 @@\n+def _rate(record):\n+    return record.get(\"tax_rate\", 0.2)\n+\n def run(payload):\n-    record = payload[\"state\"]\n-    return {\"tax_rate\": record.get(\"tax_rate\", 0.2)}\n+    return {\"tax_rate\": _rate(payload[\"state\"])}\n",
+      "diff_path": "benchmark/phase2b_holdout/w1s/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/w1s",
+        "execution_runtime_ms": 4391,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "w1s",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 1270,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_current_record (test_app.RecordTests.test_current_record) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "after source:3",
+              "after source:5",
+              "Visible test only covers ['reserve','confirm'], but ['confirm','reserve'] would change from confirmed to pending."
+            ],
+            "severity": "high",
+            "summary": "The updated logic introduces order dependence: event lists containing both 'reserve' and 'confirm' but not starting with 'reserve' will now return 'pending', whereas the previous behavior returned 'confirmed'."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/b8n/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/b8n",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/b8n/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,5 @@\n def run(payload):\n-    events = set(payload[\"events\"])\n-    return {\"status\": \"confirmed\" if {\"reserve\", \"confirm\"} <= events else \"pending\"}\n+    events = payload[\"events\"]\n+    if not events or events[0] != \"reserve\":\n+        return {\"status\": \"pending\"}\n+    return {\"status\": \"confirmed\" if \"confirm\" in events else \"pending\"}\n",
+      "diff_path": "benchmark/phase2b_holdout/b8n/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "events_reordered"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/b8n",
+        "execution_runtime_ms": 3380,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "b8n",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 1044,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_normal_delivery (test_app.WorkflowTests.test_normal_delivery) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py:1-6",
+              "tests/test_app.py:5"
+            ],
+            "severity": "low",
+            "summary": "The refactor preserves the original logic and the visible test should still pass."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/z3f/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/z3f",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/z3f/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,6 @@\n+def _confirmed(events):\n+    seen = set(events)\n+    return {\"reserve\", \"confirm\"} <= seen\n+\n def run(payload):\n-    events = set(payload[\"events\"])\n-    return {\"status\": \"confirmed\" if {\"reserve\", \"confirm\"} <= events else \"pending\"}\n+    return {\"status\": \"confirmed\" if _confirmed(payload[\"events\"]) else \"pending\"}\n",
+      "diff_path": "benchmark/phase2b_holdout/z3f/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/z3f",
+        "execution_runtime_ms": 8180,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "z3f",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 2196,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_normal_delivery (test_app.WorkflowTests.test_normal_delivery) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "after source: local = datetime.fromisoformat(payload[\"timestamp\"]).replace(tzinfo=ZoneInfo(payload[\"timezone\"]))",
+              "visible test uses timestamp with +00:00 offset, so it does not distinguish conversion from replacement"
+            ],
+            "severity": "high",
+            "summary": "Using replace(tzinfo=...) only relabels the existing wall-clock time with the target timezone instead of converting the datetime to that timezone, changing behavior for non-UTC timestamps."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/u5j/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/u5j",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/u5j/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -2,5 +2,5 @@\n from zoneinfo import ZoneInfo\n \n def run(payload):\n-    local = datetime.fromisoformat(payload[\"timestamp\"]).astimezone(ZoneInfo(payload[\"timezone\"]))\n+    local = datetime.fromisoformat(payload[\"timestamp\"]).replace(tzinfo=ZoneInfo(payload[\"timezone\"]))\n     return {\"open\": 9 <= local.hour < 17}\n",
+      "diff_path": "benchmark/phase2b_holdout/u5j/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "world_dst"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/u5j",
+        "execution_runtime_ms": 18928,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "u5j",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 4299,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_daytime (test_app.ScheduleTests.test_daytime) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.599s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/e0r/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/e0r",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/e0r/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,6 +1,9 @@\n from datetime import datetime\n from zoneinfo import ZoneInfo\n \n+def _local_time(timestamp, timezone):\n+    return datetime.fromisoformat(timestamp).astimezone(ZoneInfo(timezone))\n+\n def run(payload):\n-    local = datetime.fromisoformat(payload[\"timestamp\"]).astimezone(ZoneInfo(payload[\"timezone\"]))\n+    local = _local_time(payload[\"timestamp\"], payload[\"timezone\"])\n     return {\"open\": 9 <= local.hour < 17}\n",
+      "diff_path": "benchmark/phase2b_holdout/e0r/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/e0r",
+        "execution_runtime_ms": 3609,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "e0r",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 1434,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_daytime (test_app.ScheduleTests.test_daytime) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.107s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py before: return {\"currency\": config.get(\"currency\", \"USD\")}",
+              "app.py after: return {\"currency\": payload[\"config\"][\"currency\"]}",
+              "Visible test only covers explicit EUR and would still pass."
+            ],
+            "severity": "high",
+            "summary": "Established default behavior was removed for missing config or missing currency."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/a6t/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/a6t",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/a6t/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,2 @@\n def run(payload):\n-    config = payload.get(\"config\", {})\n-    return {\"currency\": config.get(\"currency\", \"USD\")}\n+    return {\"currency\": payload[\"config\"][\"currency\"]}\n",
+      "diff_path": "benchmark/phase2b_holdout/a6t/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "config_missing"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/a6t",
+        "execution_runtime_ms": 1313,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "a6t",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 414,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_explicit_currency (test_app.ConfigurationTests.test_explicit_currency) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/d1y/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/d1y",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/d1y/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,3 +1,5 @@\n+def _currency(config):\n+    return config.get(\"currency\", \"USD\")\n+\n def run(payload):\n-    config = payload.get(\"config\", {})\n-    return {\"currency\": config.get(\"currency\", \"USD\")}\n+    return {\"currency\": _currency(payload.get(\"config\", {}))}\n",
+      "diff_path": "benchmark/phase2b_holdout/d1y/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/d1y",
+        "execution_runtime_ms": 1118,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "d1y",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 320,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_explicit_currency (test_app.ConfigurationTests.test_explicit_currency) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py:5-14 in AFTER SOURCE: request_id is checked before the barrier, and processed.add/effects.append are performed after the barrier without a lock.",
+              "BEFORE SOURCE used a Lock so only one thread could pass the request_id check and append effects; AFTER SOURCE removes that mutual exclusion.",
+              "Visible test only covers the default calls=1 path, so it does not exercise the regression."
+            ],
+            "severity": "high",
+            "summary": "Concurrent duplicate effects are no longer prevented when payload['concurrent_calls'] > 1."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/g8p/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/g8p",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/g8p/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,18 +1,19 @@\n-from threading import Lock, Thread\n+from threading import Barrier, Thread\n \n def run(payload):\n     processed = set()\n     effects = []\n-    lock = Lock()\n     request_id = payload[\"request_id\"]\n     calls = payload.get(\"concurrent_calls\", 1)\n+    barrier = Barrier(calls) if calls > 1 else None\n \n     def claim():\n-        with lock:\n-            if request_id in processed:\n-                return\n-            processed.add(request_id)\n-            effects.append(payload[\"amount\"])\n+        if request_id in processed:\n+            return\n+        if barrier is not None:\n+            barrier.wait()\n+        processed.add(request_id)\n+        effects.append(payload[\"amount\"])\n \n     threads = [Thread(target=claim) for _ in range(calls)]\n     for thread in threads:\n",
+      "diff_path": "benchmark/phase2b_holdout/g8p/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "concurrent_duplicate"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/g8p",
+        "execution_runtime_ms": 1217,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "g8p",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 419,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_one_delivery (test_app.DeliveryTests.test_one_delivery) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/n4k/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/n4k",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/n4k/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,4 +1,11 @@\n from threading import Lock, Thread\n+\n+def _claim(lock, processed, effects, request_id, amount):\n+    with lock:\n+        if request_id in processed:\n+            return\n+        processed.add(request_id)\n+        effects.append(amount)\n \n def run(payload):\n     processed = set()\n@@ -6,15 +13,7 @@\n     lock = Lock()\n     request_id = payload[\"request_id\"]\n     calls = payload.get(\"concurrent_calls\", 1)\n-\n-    def claim():\n-        with lock:\n-            if request_id in processed:\n-                return\n-            processed.add(request_id)\n-            effects.append(payload[\"amount\"])\n-\n-    threads = [Thread(target=claim) for _ in range(calls)]\n+    threads = [Thread(target=_claim, args=(lock, processed, effects, request_id, payload[\"amount\"])) for _ in range(calls)]\n     for thread in threads:\n         thread.start()\n     for thread in threads:\n",
+      "diff_path": "benchmark/phase2b_holdout/n4k/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/n4k",
+        "execution_runtime_ms": 1698,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "n4k",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 415,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_one_delivery (test_app.DeliveryTests.test_one_delivery) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "medium",
+            "evidence": [
+              "app.py:2",
+              "Visible test only checks positive values [10, 20] and does not cover zero/falsy items."
+            ],
+            "severity": "medium",
+            "summary": "Filtering falsy items alters count and mean for inputs that include zero values, which were previously counted as valid items."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "POTENTIAL_BREAK",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/s2m/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/s2m",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/s2m/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,4 +1,4 @@\n def run(payload):\n-    values = payload[\"items\"]\n+    values = [value for value in payload[\"items\"] if value]\n     total = sum(values)\n-    return {\"total\": total, \"count\": len(values), \"mean\": total / len(values)}\n+    return {\"total\": total, \"count\": len(values), \"mean\": total / len(values) if values else None}\n",
+      "diff_path": "benchmark/phase2b_holdout/s2m/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 1,
+        "confirmed_experiments": [
+          "input_boundary_zero"
+        ],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/s2m",
+        "execution_runtime_ms": 2964,
+        "experiments_run": 8,
+        "outcome": "CONFIRMED BREAK"
+      },
+      "id": "s2m",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 489,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_positive_values (test_app.MetricTests.test_positive_values) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    },
+    {
+      "baseline": {
+        "findings": [
+          {
+            "confidence": "high",
+            "evidence": [
+              "app.py: run now returns _summary(payload['items']), preserving the same dictionary structure and arithmetic."
+            ],
+            "severity": "low",
+            "summary": "The visible test passes conceptually because both before and after implementations return {'total': 30, 'count': 2, 'mean': 15.0} for items [10, 20]."
+          }
+        ],
+        "model_calls": 1,
+        "recommendation": "NO_BREAK_FOUND",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/baseline/v7c/trajectory.json",
+        "valid_response": true
+      },
+      "breakfix": {
+        "assumptions": [],
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/breakfix/v7c",
+        "execution_runtime_ms": 0,
+        "experiments_run": 0,
+        "experiments_selected": [],
+        "outcome": "ERROR",
+        "trajectory_path": "evidence/phase2b-20260829T190449Z/breakfix/v7c/trajectory.json",
+        "unsupported_assumptions": [],
+        "valid_response": false
+      },
+      "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,4 +1,6 @@\n-def run(payload):\n-    values = payload[\"items\"]\n+def _summary(values):\n     total = sum(values)\n     return {\"total\": total, \"count\": len(values), \"mean\": total / len(values)}\n+\n+def run(payload):\n+    return _summary(payload[\"items\"])\n",
+      "diff_path": "benchmark/phase2b_holdout/v7c/after/app.py",
+      "fixed_matrix": {
+        "complete_confirmed_experiments": 0,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase2b-20260829T190449Z/fixed-matrix/v7c",
+        "execution_runtime_ms": 1812,
+        "experiments_run": 8,
+        "outcome": "NO BREAK CONFIRMED"
+      },
+      "id": "v7c",
+      "task": "Update the routine while preserving the established behavior.",
+      "title": "Routine update",
+      "visible_tests": {
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "duration_ms": 794,
+        "exit_code": 0,
+        "experiment_id": "visible_tests",
+        "output": null,
+        "process_failed": false,
+        "stderr": "test_positive_values (test_app.MetricTests.test_positive_values) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "stdout": "",
+        "timed_out": false
+      }
+    }
+  ],
+  "confusion_matrices": {
+    "breakfix": {
+      "fault_as_confirmed_break": 0,
+      "fault_as_error": 8,
+      "fault_as_no_break_confirmed": 0,
+      "fault_as_unsupported": 0,
+      "safe_as_confirmed_break": 0,
+      "safe_as_error": 8,
+      "safe_as_no_break_confirmed": 0,
+      "safe_as_unsupported": 0
+    },
+    "fixed_matrix": {
+      "fault_as_confirmed_break": 8,
+      "fault_as_error": 0,
+      "fault_as_no_break_confirmed": 0,
+      "fault_as_unsupported": 0,
+      "safe_as_confirmed_break": 0,
+      "safe_as_error": 0,
+      "safe_as_no_break_confirmed": 8,
+      "safe_as_unsupported": 0
+    }
+  },
+  "holdout": "benchmark/phase2b_holdout",
+  "integrity": {
+    "breakfix_budget": 3,
+    "fixed_matrix_complete_catalogue": true,
+    "fresh_holdout": true,
+    "ground_truth_used_by_evaluator_only": true,
+    "previous_phase_cases_used_as_primary_evidence": false,
+    "real_subprocess_executions": true
+  },
+  "metrics": {
+    "baseline": {
+      "cases_total": 16,
+      "fault_cases": 8,
+      "fault_identification_recall": 1.0,
+      "model_calls": 16,
+      "potential_break_warnings": 0,
+      "recommendation_counts": {
+        "NO_BREAK_FOUND": 8,
+        "POTENTIAL_BREAK": 8
+      },
+      "safe_cases": 8,
+      "safe_no_break_specificity": 1.0
+    },
+    "breakfix": {
+      "cases_total": 16,
+      "confirmed_breaks": 0,
+      "executable_reproduction_rate": null,
+      "experiments_per_confirmed_defect": null,
+      "false_confirmed_break_rate": 0.0,
+      "false_confirmed_breaks": 0,
+      "fault_cases": 8,
+      "no_break_confirmed_rate": 0.0,
+      "outcome_counts": {
+        "ERROR": 16
+      },
+      "runtime_ms": 0,
+      "safe_cases": 8,
+      "seeded_fault_recall": 0.0,
+      "tool_runtime_failure_rate": 1.0,
+      "tool_runtime_failures": 16,
+      "total_experiments": 0,
+      "unsupported_assumption_rate": 0.0,
+      "unsupported_assumptions": 0
+    },
+    "fixed_matrix": {
+      "cases_total": 16,
+      "confirmed_breaks": 8,
+      "executable_reproduction_rate": 1.0,
+      "experiments_per_confirmed_defect": 16.0,
+      "false_confirmed_break_rate": 0.0,
+      "false_confirmed_breaks": 0,
+      "fault_cases": 8,
+      "no_break_confirmed_rate": 0.5,
+      "outcome_counts": {
+        "CONFIRMED BREAK": 8,
+        "NO BREAK CONFIRMED": 8
+      },
+      "runtime_ms": 96160,
+      "safe_cases": 8,
+      "seeded_fault_recall": 1.0,
+      "tool_runtime_failure_rate": 0.0,
+      "tool_runtime_failures": 0,
+      "total_experiments": 128,
+      "unsupported_assumption_rate": 0.0,
+      "unsupported_assumptions": 0
+    }
+  },
+  "model": {
+    "baseline": {
+      "api_errors": 0,
+      "input_tokens": 10152,
+      "latency_ms": 266326,
+      "max_output_tokens": 2000,
+      "model": "deepseek-v4-pro",
+      "model_calls": 16,
+      "monetary_cost_usd": 0.033251592,
+      "output_tokens": 15142,
+      "provider": "deepseek",
+      "reasoning_effort": "high",
+      "retries": 0,
+      "runtime_ms": 266326,
+      "temperature": null,
+      "total_tokens": 25294
+    },
+    "breakfix": {
+      "api_errors": 0,
+      "input_tokens": 13128,
+      "latency_ms": 617652,
+      "max_output_tokens": 2000,
+      "model": "deepseek-v4-pro",
+      "model_calls": 16,
+      "monetary_cost_usd": 0.067451296,
+      "output_tokens": 32000,
+      "provider": "deepseek",
+      "reasoning_effort": "high",
+      "retries": 0,
+      "runtime_ms": 617652,
+      "temperature": null,
+      "total_tokens": 45128
+    },
+    "direct_provider_required": true,
+    "same_model": true,
+    "same_provider": true,
+    "telemetry_available": true
+  },
+  "phase": "2B-evidence-efficient-break-confirmation",
+  "primary_metric": {
+    "eligible": false,
+    "experiment_reduction_percentage": 100.0,
+    "fixed_matrix_experiments": 128,
+    "frozen_false_confirmed_break_requirement": "0/8",
+    "frozen_fault_recall_requirement": "8/8",
+    "name": "total experiments required for complete seeded-fault recall with zero false confirmed breaks",
+    "observed_breakfix_experiments": 0,
+    "value": null
+  },
+  "protocol": {
+    "budget_per_case": 3,
+    "fixed_matrix_policy": "all 8 supported experiments once per case",
+    "path": "docs/phase2b-evaluation-protocol.md",
+    "primary_metric_frozen": true
+  },
+  "run_id": "phase2b-20260829T190449Z"
+}

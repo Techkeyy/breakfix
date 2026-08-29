@@ -1,0 +1,36 @@
+{
+  "case_id": "q5e",
+  "duration_ms": 80770,
+  "experiments_run": 3,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 220,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": false,
+      "state": "UNSUPPORTED"
+    },
+    {
+      "duration_ms": 279,
+      "evidence_complete": true,
+      "experiment_id": "retry_duplicate",
+      "process_failed": false,
+      "state": "CONFIRMED BREAK"
+    },
+    {
+      "duration_ms": 235,
+      "evidence_complete": true,
+      "experiment_id": "input_boundary_zero",
+      "process_failed": false,
+      "state": "UNSUPPORTED"
+    }
+  ],
+  "regression_valid": null,
+  "selected_experiments": [
+    "input_empty",
+    "retry_duplicate",
+    "input_boundary_zero"
+  ],
+  "state": "CONFIRMED BREAK"
+}

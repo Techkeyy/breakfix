@@ -1,0 +1,44 @@
+{
+  "run_id": "provider-recovery-smoke-20260829T194240Z",
+  "purpose": "engineering provider-contract gate; not benchmark evidence",
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "reasoning_effort": "high",
+  "cases": [
+    {
+      "case_id": "case_01",
+      "role": "faulty development case",
+      "outcome": "CONFIRMED BREAK",
+      "evidence_dir": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_01",
+      "selected_experiments": [
+        "input_empty"
+      ],
+      "experiments_run": 1,
+      "provider_status": "OK",
+      "regression_valid": true
+    },
+    {
+      "case_id": "case_05",
+      "role": "safe control development case",
+      "outcome": "NO BREAK CONFIRMED",
+      "evidence_dir": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_05",
+      "selected_experiments": [
+        "world_dst",
+        "input_empty"
+      ],
+      "experiments_run": 2,
+      "provider_status": "OK",
+      "regression_valid": null
+    }
+  ],
+  "checks": {
+    "both_provider_contracts_passed": true,
+    "both_selected_assumptions": true,
+    "both_executed_targeted_experiments": true,
+    "faulty_case_confirmed_break": true,
+    "faulty_case_regression_valid": true,
+    "control_not_confirmed_break": true,
+    "telemetry_and_evidence_written": true
+  },
+  "passed": true
+}

@@ -16,7 +16,7 @@ The final independent evaluation passed its frozen primary gate.
 | Fixed matrix | 8/8 (100%) | 0/8 | 128 |
 | BreakFix targeted | 8/8 (100%) | 0/8 | 38 |
 
-BreakFix used 70.3125% fewer deterministic experiments than the fixed matrix.
+BreakFix used 70.3% fewer deterministic experiments than the fixed matrix.
 The run used 32 recorded DeepSeek V4 Pro model calls, 32 successful structured
 responses, and preserved provider telemetry. The full claim ledger is in
 [`docs/claims.md`](docs/claims.md), and the complete final report is in
@@ -141,9 +141,10 @@ The final run is `evidence/final-eval-20260829T212423Z/`.
   [`docs/trajectory-index.md`](docs/trajectory-index.md).
 - The historical Phase 2B Attempt 1 output remains preserved as an ineligible
   FAIL. Its provider-output failure is not replaced by the final PASS.
-- Generated evidence is ignored by Git. The local final bundle contains
-  oracle-free trajectories, telemetry, fixed executions, and the final summary;
-  evaluator-only records remain outside the repository.
+- Development run outputs are ignored by Git. The curated `submission/evidence/`
+  bundle contains the oracle-free final trajectories, telemetry, fixed
+  executions, historical Attempt 1 evidence, and final summary; evaluator-only
+  records remain outside the repository.
 
 ## Provider disclosure
 

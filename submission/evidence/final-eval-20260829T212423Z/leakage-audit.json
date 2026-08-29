@@ -1,0 +1,8 @@
+{
+  "case_id_sets_match": true,
+  "forbidden_term_hits": [],
+  "passed": true,
+  "public_case_count": 16,
+  "truth_case_count": 16,
+  "truth_path_hits": []
+}

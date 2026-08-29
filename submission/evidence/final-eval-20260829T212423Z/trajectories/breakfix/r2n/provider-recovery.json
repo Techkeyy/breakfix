@@ -1,0 +1,132 @@
+{
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "output_failure": null,
+      "provider_error": null,
+      "response": {
+        "finish_reason": "stop",
+        "input_cache_hit_tokens": 640,
+        "input_cache_miss_tokens": 94,
+        "input_cache_status": "mixed",
+        "input_tokens": 734,
+        "latency_ms": 47293,
+        "model": "deepseek-v4-pro",
+        "monetary_cost_usd": 0.0063151,
+        "output_tokens": 3151,
+        "pricing_input_rate_per_million": 0.66,
+        "pricing_output_rate_per_million": 1.98,
+        "pricing_period": "off-peak",
+        "pricing_retrieved_date": "2026-08-29",
+        "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "provider": "deepseek",
+        "reasoning_mode": "enabled",
+        "reasoning_text": "We need answer only JSON, no prose. Need analyze selected change diff? It says selected change diff but no actual diff shown. Current changed source not readable. Visible test result only one passing. Need infer material assumptions across supported surfaces. Need \"Preserve the stable summary behavior while accepting routine context changes.\" We don't have details about code. Need construct assumptions likely based on context? We need infer from task statement? Maybe there is hidden context? The user mentions \"Preserve the stable summary behavior while accepting routine context changes.\" That sounds like requirement: change should not alter summary behavior under different context? Need output assumptions. But no actual source. We need somehow generate plausible assumptions. Since no changed source, we must rely on statement and visible test. Maybe we can assume there's a function that produces summary from input and context; test_normal_context passes. We need rank assumptions by falsification value and propose at most one experiment per assumption. The supported experiments list provides types. We need create JSON.\n\nNeed think: \"Preserve the stable summary behavior while accepting routine context changes.\" This might be about a summary generation feature that should be stable across context changes (like user locale, timezone, config). Change perhaps modified how summary is generated. Visible test only normal context passes. So assumptions might be:\n- A1: Summary output does not depend on locale/timezone or other routine context? (world)\n- A2: Summary handles empty input gracefully? (input)\n- A3: Summary handles zero-length collection? (input)\n- A4: Summary behavior is idempotent? (timing)\n- A5: Summary does not rely on legacy persisted config? (state)\netc.\n\nNeed select best assumptions based on task. \"Preserve the stable summary behavior while accepting routine context changes.\" That implies there is a function that takes context and input and returns summary. We need ensure behavior stable across context. The change likely altered how summary is produced, and we need test beyond normal context.\n\nWe have limited info: no changed source, no diff. The VISIBLE TEST RESULT shows one test passing: test_normal_context. So only normal context verified. Thus assumptions not falsified by this test are those that require different contexts.\n\nWe need pick assumptions with high falsification value. The list of supported experiments maps to surfaces.\n\nWe need decide assumptions likely to be relevant. Since no source, we can make generic ones:\n1. The summary is identical regardless of context fields (e.g., locale, timezone, user agent). Surface: world? Experiment: world_dst? But world_dst is about DST, not directly context. Could be different.\n2. The summary handles empty input without exception. Surface: input. Experiment: input_empty.\n3. The summary handles a zero value in numeric collection. Surface: input. Experiment: input_boundary_zero.\n4. The summary does not depend on optional configuration existing. Surface: state. Experiment: config_missing.\n5. The summary is idempotent when same request played twice. Surface: timing. Experiment: retry_duplicate.\n6. Summary stable when events reordered (if input events). Surface: timing. Experiment: events_reordered.\n\nBut we need rank by falsification value. Typically edge cases with high risk.\n\nNeed produce one compact JSON object. IDs A1... etc. Don't claim defects.\n\nWe need include evidence. Since we have no file paths, we can put \"unknown\" or perhaps \"test_app\" from test result? The test file is test_app.py, visible test. Could use that as evidence? It says evidence: file path, location. We can use \"test_app.py\", location \"VisibleTests.test_normal_context\" and reason \"only normal context covered\". But that's about test, not source. Better evidence for assumptions: we can cite the test result? The schema allows evidence for assumptions. We can say \"test_app.py:VisibleTests.test_normal_context\" shows only normal context passes, but not evidence for assumption. It's more like absence of evidence. But we can still cite as reason \"normal context test does not cover this assumption\".\n\nMaybe we should include evidence with file \"test_app.py\", location \"VisibleTests.test_normal_context\", reason \"passing normal context only, leaving this assumption unverified\". That is acceptable.\n\nAlternatively, we can omit evidence? Schema expects array, but can be empty? It says evidence: array of objects. Could be empty. But better include some.\n\nNeed avoid claiming break. We can phrase failure_if_false as observable failure.\n\nNeed produce at most one supported experiment per assumption. We can choose from supported experiments list. Ensure parameters are object {} or with values? The experiment type includes type and parameters. parameters can be empty or specify something. Should be meaningful. For input_empty parameters maybe {\"value\": []} or just {}. But schema says parameters: {}. We can include minimal.\n\nNeed include \"surface\" matching experiment type's surface? The supported experiments list gives surface. For each assumption, surface should match. For input_empty -> input, etc.\n\nWe can generate assumptions:\n\nA1: Input empty collection does not cause summary function to fail or produce inconsistent output.\nSurface: input\nRisk: medium? high? Empty input is common edge case. Risk high? Maybe medium.\nEvidence: test_app.py:VisibleTests.test_normal_context reason: normal context does not cover empty input path.\nFailure if false: summary function raises exception or returns null/empty output when input collection is empty.\nExperiment: {\"type\": \"input_empty\", \"parameters\": {}}\n\nA2: Zero value in numeric collection is handled consistently.\nSurface: input\nRisk: medium\nEvidence: similar.\nFailure if false: summary treats zero as missing or wrong aggregate, altering summary output.\nExperiment: {\"type\": \"input_boundary_zero\", \"parameters\": {}}\n\nA3: Summary remains identical when same input is processed twice (idempotency).\nSurface: timing\nRisk: low? Idempotency may not be expected? But \"stable summary behavior\" could imply idempotent. Risk medium.\nFailure: second call returns different summary due to internal state.\nExperiment: {\"type\":\"retry_duplicate\",\"parameters\":{}}\n\nA4: Summary does not depend on optional configuration field being present.\nSurface: state\nRisk: medium\nFailure: missing config causes summary to change or error.\nExperiment: {\"type\":\"config_missing\",\"parameters\":{\"field\":\"<optional_config_field>\"}} but we don't know field. Could leave parameters:{}.\n\nA5: Summary stable across daylight-saving timezone boundary (world).\nSurface: world\nRisk: low or medium\nFailure: timestamps in summary shift incorrectly across DST.\nExperiment: {\"type\":\"world_dst\",\"parameters\":{}}\n\nA6: Summary stable when events are reordered.\nSurface: timing\nRisk: low? depends if events order matters. If summary is order-independent, then reordering should not change. But if order is significant, maybe not. \"stable summary behavior\" might imply order not matter? But better not include too many.\n\nWe need \"at most one supported experiment per assumption\" so fine. We can have 4-5 assumptions.\n\nNeed \"rank assumptions by falsification value\" - high value likely input_empty and config_missing because normal context likely has non-empty and config present. So rank A1 (empty input) high, A2 (config missing) high, A3 (zero boundary) medium, A4 (DST) medium, A5 (idempotency) low.\n\nBut need align with \"accepting routine context changes\". Routine context changes include timezone, locale, config changes. So config_missing and world_dst are relevant. Also input changes maybe not context. So maybe focus on context: missing config (state), DST (world), concurrent duplicates? Routine context could be different events order? Not sure.\n\nGiven no actual code, we must be generic but plausible.\n\nLet's craft answer with assumptions that are material:\n\n- A1: The summary output is identical across different routine context values (e.g., locale/timezone) for the same input. Surface: world. Risk high? Evidence: test only covers normal context, no alternate. Experiment: world_dst (since DST is a timezone context boundary). But world_dst specifically tests DST boundary for an instant, not general context. Could still be used.\n\n- A2: The summary function handles an empty input collection without throwing. Surface: input. Risk high. Experiment: input_empty.\n\n- A3: The summary function does not depend on an optional configuration field being present; missing config should not alter summary output. Surface: state. Risk high. Experiment: config_missing.\n\n- A4: The summary remains stable when the same request is processed twice (idempotency, no side effects). Surface: timing. Risk medium. Experiment: retry_duplicate.\n\n- A5: Zero values in numeric input do not cause incorrect aggregation. Surface: input. Risk medium. Experiment: input_boundary_zero.\n\nBut we need avoid duplicates? That's okay.\n\nNeed include evidence. For A1, evidence: file \"test_app.py\", location \"VisibleTests.test_normal_context\", reason \"Passing test only exercises normal context, leaving world/DST context unverified.\" For A2: file same, reason \"Normal context input likely non-empty, empty path untested.\" etc.\n\nBut \"evidence\" usually source file, not test file. But we have no source. We'll use test file as only visible artifact.\n\nNeed ensure JSON valid. No markdown.\n\nLet's produce final with maybe 4 assumptions. We'll rank by risk/falsification: A1 empty input high, A2 config missing high, A3 DST medium, A4 idempotency medium? But \"state\" maybe higher? Need order.\n\nLet's decide assumptions to include:\n\n1. A1: Summary behavior is invariant across routine context changes such as timezone DST boundaries. Surface: world. Risk: medium. Experiment: world_dst.\n2. A2: Empty input collection is handled without failing or changing the stable summary contract. Surface: input. Risk: high. Experiment: input_empty.\n3. A3: Missing optional configuration field does not affect summary output. Surface: state. Risk: high. Experiment: config_missing.\n4. A4: Zero as a numeric input value does not cause incorrect summary computation. Surface: input. Risk: medium. Experiment: input_boundary_zero.\n5. A5: Summary generation is idempotent for the same request. Surface: timing. Risk: low. Experiment: retry_duplicate.\n\nMaybe too many. But schema doesn't limit number. At most one experiment per assumption. So fine.\n\nNeed \"change_summary\": short summary. Something like \"Change aims to keep summary stable across routine context variations while normal input passes; edge cases untested.\" But don't claim defect.\n\nNeed ensure no chain-of-thought. Just JSON.\n\nLet's craft final answer with no extra spaces? JSON object.\n\nWe'll include evidence for each: \nA1: evidence: {\"file\": \"test_app.py\", \"location\": \"VisibleTests.test_normal_context\", \"reason\": \"Only normal context is exercised, so DST boundary is unverified.\"}\nA2: {\"file\": \"test_app.py\", \"location\": \"VisibleTests.test_normal_context\", \"reason\": \"Normal context likely uses non-empty input; empty path not covered.\"}\netc.\n\nParameters: for config_missing, we could specify {\"field\": \"optional_config\"} but unknown. Better keep {}. For input_boundary_zero, maybe {\"value\": 0}? But parameters should be for experiment. We can use {}.\n\nWe'll output exactly one JSON.",
+        "request_timestamp_utc": "2026-08-29T21:43:35.624650Z",
+        "response_format": "json_object",
+        "response_text": "{\n  \"change_summary\": \"Summary behavior should remain stable across routine context changes, but only normal context is verified.\",\n  \"assumptions\": [\n    {\n      \"id\": \"A1\",\n      \"statement\": \"Empty input collection does not cause summary failure or deviate from stable output contract.\",\n      \"surface\": \"input\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Passing normal context provides no coverage for empty input path.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary function raises an exception or returns an unexpected empty/malformed summary.\",\n      \"experiment\": {\n        \"type\": \"input_empty\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A2\",\n      \"statement\": \"Missing optional configuration field does not alter the summary output.\",\n      \"surface\": \"state\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Normal context likely includes optional configuration; missing-field path is untested.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary changes, errors, or falls back to different default when config is absent.\",\n      \"experiment\": {\n        \"type\": \"config_missing\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A3\",\n      \"statement\": \"Summary remains consistent across daylight-saving timezone boundary for a UTC instant.\",\n      \"surface\": \"world\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Only normal context tested; DST boundary time representation unverified.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary timestamp or time-derived values shift incorrectly across DST.\",\n      \"experiment\": {\n        \"type\": \"world_dst\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A4\",\n      \"statement\": \"Zero numeric input value is handled without distorting summary calculations.\",\n      \"surface\": \"input\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Normal context likely uses non-zero values; zero boundary not exercised.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary aggregates treat zero incorrectly, causing wrong totals or counts.\",\n      \"experiment\": {\n        \"type\": \"input_boundary_zero\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A5\",\n      \"statement\": \"Replaying the same request twice produces the same summary (idempotency).\",\n      \"surface\": \"timing\",\n      \"risk\": \"low\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Single request test does not verify repeatability or side effects.\"\n        }\n      ],\n      \"failure_if_false\": \"Second call returns a different summary due to hidden state mutation.\",\n      \"experiment\": {\n        \"type\": \"retry_duplicate\",\n        \"parameters\": {}\n      }\n    }\n  ]\n}",
+        "retries": 0,
+        "total_tokens": 3885
+      },
+      "retry_reason": null
+    }
+  ],
+  "failure_code": null,
+  "output_contract_status": "OK",
+  "parsed": {
+    "assumptions": [
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Passing normal context provides no coverage for empty input path."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "Summary function raises an exception or returns an unexpected empty/malformed summary.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Empty input collection does not cause summary failure or deviate from stable output contract.",
+        "surface": "input"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Normal context likely includes optional configuration; missing-field path is untested."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "config_missing"
+        },
+        "failure_if_false": "Summary changes, errors, or falls back to different default when config is absent.",
+        "id": "A2",
+        "risk": "high",
+        "statement": "Missing optional configuration field does not alter the summary output.",
+        "surface": "state"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only normal context tested; DST boundary time representation unverified."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "world_dst"
+        },
+        "failure_if_false": "Summary timestamp or time-derived values shift incorrectly across DST.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "Summary remains consistent across daylight-saving timezone boundary for a UTC instant.",
+        "surface": "world"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Normal context likely uses non-zero values; zero boundary not exercised."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_boundary_zero"
+        },
+        "failure_if_false": "Summary aggregates treat zero incorrectly, causing wrong totals or counts.",
+        "id": "A4",
+        "risk": "medium",
+        "statement": "Zero numeric input value is handled without distorting summary calculations.",
+        "surface": "input"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Single request test does not verify repeatability or side effects."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "Second call returns a different summary due to hidden state mutation.",
+        "id": "A5",
+        "risk": "low",
+        "statement": "Replaying the same request twice produces the same summary (idempotency).",
+        "surface": "timing"
+      }
+    ],
+    "change_summary": "Summary behavior should remain stable across routine context changes, but only normal context is verified."
+  },
+  "success": true
+}

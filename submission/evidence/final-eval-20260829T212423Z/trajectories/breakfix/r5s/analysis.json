@@ -1,0 +1,189 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Only normal-order context is covered; reordering is a routine context change left untested."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "events_reordered"
+        },
+        "failure_if_false": "Summary content changes when the same context items are provided in a different order.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Summary output is invariant to reordering of routine context entries.",
+        "surface": "timing"
+      },
+      "description": "Deliver a valid event sequence in a different order.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r5s\\experiments\\events_reordered",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "events_reordered",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "confirm",
+          "reserve"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Visible test provides normal context; absence of optional fields not exercised."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "state_legacy"
+        },
+        "failure_if_false": "Summary fails or produces incorrect output when an optional context field is absent.",
+        "id": "A2",
+        "risk": "medium",
+        "statement": "Summary generation tolerates missing optional context fields.",
+        "surface": "state"
+      },
+      "description": "Load an older persisted record that lacks a newly assumed field.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r5s\\experiments\\state_legacy",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "state_legacy",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "balance": 100,
+          "version": 1
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "status": "ready"
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Normal context implies non-empty; empty edge case is not covered."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "Summary crashes, hangs, or returns invalid output for empty context.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "Summary handles an empty collection of context items.",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r5s\\experiments\\input_empty",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 3,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "NO BREAK CONFIRMED",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\r5s\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r5s\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "r5s",
+  "regression": null,
+  "selected_experiments": [
+    "events_reordered",
+    "state_legacy",
+    "input_empty"
+  ],
+  "task": "Preserve the stable summary behavior while accepting routine context changes.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r5s\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

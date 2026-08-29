@@ -1,0 +1,29 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "run",
+          "reason": "Direct indexing of payload['config']['currency']"
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "field": "config.currency"
+        },
+        "type": "config_missing"
+      },
+      "failure_if_false": "KeyError on missing config or currency",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The payload contains a config object with a currency value.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Return configured currency from payload config instead of static ready status.",
+  "selected_experiments": [
+    "config_missing"
+  ],
+  "unsupported_assumptions": []
+}

@@ -1,0 +1,59 @@
+{
+  "case_id": "r5s",
+  "ground_truth_supplied_to_agent": false,
+  "prompt_id": "final-generic-comparator-v1",
+  "prompt_sha256": "9ba5df7959ed15b04569077b05ac27d7e16be04a9ade6e93c91e9e8ef552febc",
+  "provider_result": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "output_failure": null,
+        "provider_error": null,
+        "response": {
+          "finish_reason": "stop",
+          "input_cache_hit_tokens": 384,
+          "input_cache_miss_tokens": 38,
+          "input_cache_status": "mixed",
+          "input_tokens": 422,
+          "latency_ms": 6105,
+          "model": "deepseek-v4-pro",
+          "monetary_cost_usd": 0.00047308800000000003,
+          "output_tokens": 222,
+          "pricing_input_rate_per_million": 0.66,
+          "pricing_output_rate_per_million": 1.98,
+          "pricing_period": "off-peak",
+          "pricing_retrieved_date": "2026-08-29",
+          "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "provider": "deepseek",
+          "reasoning_mode": "enabled",
+          "reasoning_text": "We need answer JSON only. We need review selected change using public task, before/after source, visible tests. Before and after identical? Let's inspect. Public task: \"Preserve the stable summary behavior while accepting routine context changes.\" Before source app.py:\ndef run(payload):\n    return {\"status\": \"ready\"}\n\nAfter source app.py:\ndef run(payload):\n    return {\"status\": \"ready\"}\n\nIdentical. Visible test checks run returns status ready. No behavior change. Recommendation likely NO_BREAK_FOUND. Need compact JSON. findings empty? tests_run maybe visible command? \"tests_run\": [] likely. tool_actions: []. final conclusion. Ensure no markdown.",
+          "request_timestamp_utc": "2026-08-29T21:45:57.655634Z",
+          "response_format": "json_object",
+          "response_text": "{\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"change_summary\": \"The before and after source are identical, with no changes to behavior.\",\n  \"findings\": [],\n  \"tests_run\": [],\n  \"tool_actions\": [],\n  \"final_conclusion\": \"No break found as the code is unchanged and the visible test passes.\"\n}",
+          "retries": 0,
+          "total_tokens": 644
+        },
+        "retry_reason": null
+      }
+    ],
+    "failure_code": null,
+    "output_contract_status": "OK",
+    "parsed": {
+      "change_summary": "The before and after source are identical, with no changes to behavior.",
+      "final_conclusion": "No break found as the code is unchanged and the visible test passes.",
+      "findings": [],
+      "recommendation": "NO_BREAK_FOUND",
+      "tests_run": [],
+      "tool_actions": []
+    },
+    "success": true
+  },
+  "result": {
+    "case_id": "r5s",
+    "correct_against_external_truth": true,
+    "duration_ms": 6105,
+    "provider_status": "OK",
+    "recommendation": "NO_BREAK_FOUND",
+    "valid_contract": true
+  }
+}

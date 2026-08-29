@@ -1,0 +1,51 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "run.timestamp",
+          "reason": "datetime.astimezone treats naive datetime objects as system local time before converting."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "timestamp": "2024-01-02T13:00:00",
+          "timezone": "America/New_York"
+        },
+        "type": "world_dst"
+      },
+      "failure_if_false": "A naive timestamp shifts by the system timezone, producing an incorrect open/closed result.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The input timestamp is timezone-aware or intended as UTC; naive timestamps are not interpreted as local time in the requested timezone.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "run.local_time",
+          "reason": "Direct payload indexing and ZoneInfo construction will raise on missing or unknown timezone."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {}
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "KeyError or ZoneInfoNotFoundError instead of returning an open/closed JSON response.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "The payload contains both a parseable 'timestamp' and a valid IANA 'timezone' key.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "Convert business-hour check from raw timestamp hour to requested IANA timezone using ZoneInfo and astimezone.",
+  "selected_experiments": [
+    "world_dst",
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

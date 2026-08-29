@@ -1,0 +1,10 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "diff": "--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,5 @@\n def run(payload):\n-    return {\"accepted\": 1}\n+    accepted = 0\n+    for _ in range(payload.get(\"concurrent_calls\", 1)):\n+        accepted += 1\n+    return {\"accepted\": accepted}\n",
+  "reference": "q6f",
+  "task": "Make duplicate deliveries apply the acceptance once.",
+  "visible_test_command": "python -m unittest discover -s tests -v"
+}

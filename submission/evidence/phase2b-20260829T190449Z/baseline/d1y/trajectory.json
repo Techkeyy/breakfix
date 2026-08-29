@@ -1,0 +1,66 @@
+{
+  "context": {
+    "public": {
+      "id": "d1y",
+      "task": "Update the routine while preserving the established behavior.",
+      "test_command": "python -m unittest discover -s tests -v",
+      "title": "Routine update"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "final_conclusion": {
+    "change_summary": "Refactored the currency lookup from run() into a module-level _currency(config) helper. run() still passes payload.get('config', {}) to the helper and returns the same {\"currency\": ...} shape.",
+    "final_conclusion": "The refactor appears behavior-preserving for the provided public test and for the default currency case. No break was found.",
+    "findings": [],
+    "recommendation": "NO_BREAK_FOUND",
+    "retries": 0,
+    "tests_run": [
+      "python -m unittest discover -s tests -v (conceptual: test_explicit_currency passes because app.run({\"config\":{\"currency\":\"EUR\"}}) returns {\"currency\":\"EUR\"})"
+    ],
+    "tool_actions": [
+      {
+        "action": "inspection",
+        "result": "Compared before and after source. The helper preserves the config.get('currency', 'USD') behavior, and run() still supplies payload.get('config', {}), matching the original behavior for the visible explicit-currency test and the default/missing config path."
+      }
+    ]
+  },
+  "ground_truth_supplied_to_agent": false,
+  "instructions": {
+    "prompt_file": "docs/phase2b-prompts.md",
+    "prompt_id": "phase2b-baseline-v1"
+  },
+  "lane": "phase2b-direct-provider-baseline",
+  "model": "deepseek-v4-pro",
+  "parse_or_load_failure": null,
+  "provider": "deepseek",
+  "retries": 0,
+  "structured_agent_result": {
+    "findings": [],
+    "parsed": {
+      "change_summary": "Refactored the currency lookup from run() into a module-level _currency(config) helper. run() still passes payload.get('config', {}) to the helper and returns the same {\"currency\": ...} shape.",
+      "final_conclusion": "The refactor appears behavior-preserving for the provided public test and for the default currency case. No break was found.",
+      "findings": [],
+      "recommendation": "NO_BREAK_FOUND",
+      "retries": 0,
+      "tests_run": [
+        "python -m unittest discover -s tests -v (conceptual: test_explicit_currency passes because app.run({\"config\":{\"currency\":\"EUR\"}}) returns {\"currency\":\"EUR\"})"
+      ],
+      "tool_actions": [
+        {
+          "action": "inspection",
+          "result": "Compared before and after source. The helper preserves the config.get('currency', 'USD') behavior, and run() still supplies payload.get('config', {}), matching the original behavior for the visible explicit-currency test and the default/missing config path."
+        }
+      ]
+    },
+    "raw_response": "{\n  \"change_summary\": \"Refactored the currency lookup from run() into a module-level _currency(config) helper. run() still passes payload.get('config', {}) to the helper and returns the same {\\\"currency\\\": ...} shape.\",\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"findings\": [],\n  \"tests_run\": [\n    \"python -m unittest discover -s tests -v (conceptual: test_explicit_currency passes because app.run({\\\"config\\\":{\\\"currency\\\":\\\"EUR\\\"}}) returns {\\\"currency\\\":\\\"EUR\\\"})\"\n  ],\n  \"tool_actions\": [\n    {\n      \"action\": \"inspection\",\n      \"result\": \"Compared before and after source. The helper preserves the config.get('currency', 'USD') behavior, and run() still supplies payload.get('config', {}), matching the original behavior for the visible explicit-currency test and the default/missing config path.\"\n    }\n  ],\n  \"retries\": 0,\n  \"final_conclusion\": \"The refactor appears behavior-preserving for the provided public test and for the default currency case. No break was found.\"\n}",
+    "recommendation": "NO_BREAK_FOUND",
+    "valid": true,
+    "validation_failures": []
+  },
+  "tool_actions": []
+}

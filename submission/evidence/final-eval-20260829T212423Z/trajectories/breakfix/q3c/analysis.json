@@ -1,0 +1,83 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": null,
+        "process_failed": true
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "line 3: state['tax_rate']",
+            "reason": "Multiplies balance by (1 + state['tax_rate']); a missing key raises KeyError."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "field": "tax_rate"
+          },
+          "type": "state_legacy"
+        },
+        "failure_if_false": "Processing a legacy state record without tax_rate raises KeyError and returns no total.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Persisted state objects include the tax_rate key.",
+        "surface": "state"
+      },
+      "description": "Load an older persisted record that lacks a newly assumed field.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q3c\\experiments\\state_legacy",
+      "evidence_state": "CONFIRMED BREAK",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "state_legacy",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "balance": 100,
+          "version": 1
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 1,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "CONFIRMED BREAK",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q3c\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q3c\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "q3c",
+  "regression": {
+    "valid": true
+  },
+  "selected_experiments": [
+    "state_legacy"
+  ],
+  "task": "Use the persisted tax rate when calculating the account total.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q3c\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

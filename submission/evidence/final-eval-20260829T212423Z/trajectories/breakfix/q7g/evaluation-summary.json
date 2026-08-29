@@ -1,0 +1,28 @@
+{
+  "case_id": "q7g",
+  "duration_ms": 89534,
+  "experiments_run": 2,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 256,
+      "evidence_complete": true,
+      "experiment_id": "events_reordered",
+      "process_failed": false,
+      "state": "CONFIRMED BREAK"
+    },
+    {
+      "duration_ms": 231,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": false,
+      "state": "UNSUPPORTED"
+    }
+  ],
+  "regression_valid": null,
+  "selected_experiments": [
+    "events_reordered",
+    "input_empty"
+  ],
+  "state": "CONFIRMED BREAK"
+}

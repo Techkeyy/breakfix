@@ -15,7 +15,7 @@ Public holdout checkpoint: `4939d76`
 | Fixed matrix | 8/8 (100%) | 0/8 | 128 | Yes |
 | BreakFix targeted | 8/8 (100%) | 0/8 | 38 | Yes |
 
-BreakFix used 70.3125% fewer deterministic experiments than the fixed matrix
+BreakFix used 70.3% fewer deterministic experiments than the fixed matrix
 and averaged 4.75 targeted experiments per confirmed faulty case. All 16 live
 provider outputs were structured and valid on the first recorded model
 completion attempt; the two transport retries are preserved in telemetry.

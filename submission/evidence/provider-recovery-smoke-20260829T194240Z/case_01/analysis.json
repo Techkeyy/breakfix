@@ -1,0 +1,78 @@
+{
+  "change_kind": "development-case",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": null,
+        "process_failed": true
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "after/app.py",
+            "location": "payload['items']",
+            "reason": "Direct key access assumes the key exists, unlike the previous get default."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {}
+          },
+          "type": "input_empty"
+        },
+        "failure_if_false": "KeyError: 'items' when payload lacks the key.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "The input payload always contains an 'items' key.",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_01\\experiments\\input_empty",
+      "evidence_state": "CONFIRMED BREAK",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 1,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "CONFIRMED BREAK",
+  "project_root": "C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\phase1_5_cases\\case_01\\after",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "case_01",
+  "regression": {
+    "valid": true
+  },
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "task": "Change the summary result to expose an average for numeric items.",
+  "telemetry_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_01\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

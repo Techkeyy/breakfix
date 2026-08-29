@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))
+                                                                                                        ~~~~~~~^^^^^^^^^
+  File "C:\Users\HomePC\AppData\Local\Temp\breakfix-sandbox-8lf32cso\project\app.py", line 3, in run
+    return {"count": len(items), "mean": sum(items) / len(items)}
+                                         ~~~~~~~~~~~^~~~~~~~~~~~
+ZeroDivisionError: division by zero

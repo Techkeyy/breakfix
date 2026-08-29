@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "-I",
+    "-c",
+    "import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))"
+  ],
+  "duration_ms": 300,
+  "exit_code": 0,
+  "experiment_id": "world_dst",
+  "output": {
+    "total_charged": 25
+  },
+  "process_failed": false,
+  "stderr": "",
+  "stdout": "{\"total_charged\": 25}\n",
+  "timed_out": false
+}

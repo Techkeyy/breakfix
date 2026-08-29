@@ -1,0 +1,199 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": {
+          "total_charged": 25
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "payload[\"amount\"]",
+            "reason": "Direct key access and arithmetic require 'amount' to be present and numeric."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {}
+          },
+          "type": "input_empty"
+        },
+        "failure_if_false": "KeyError: 'amount' or TypeError if amount is non-numeric.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "The input payload always contains a numeric 'amount'.",
+        "surface": "input"
+      },
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\experiments\\input_empty",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_empty",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "total_charged": 50
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "for _ in range(payload.get(\"attempts\", 1))",
+            "reason": "Loop adds amount once per attempt, so attempts greater than one multiplies the charge."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {
+              "amount": 100,
+              "attempts": 2
+            }
+          },
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "total_charged equals amount * attempts, duplicating the charge on retry.",
+        "id": "A2",
+        "risk": "high",
+        "statement": "Retries do not duplicate the charge; total_charged equals a single amount regardless of attempts.",
+        "surface": "timing"
+      },
+      "description": "Replay the same request twice to challenge idempotency.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\experiments\\retry_duplicate",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "retry_duplicate",
+      "payload": {
+        "amount": 25,
+        "attempts": 2,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    },
+    {
+      "actual_behavior": {
+        "output": {
+          "total_charged": 25
+        },
+        "process_failed": false
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "range(payload.get(\"attempts\", 1))",
+            "reason": "range(0) yields no iterations, so total remains 0 even with a positive amount."
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "payload": {
+              "amount": 100,
+              "attempts": 0
+            }
+          },
+          "type": "input_boundary_zero"
+        },
+        "failure_if_false": "total_charged is 0 despite a positive amount when attempts is 0.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "When 'attempts' is provided, it is a positive integer; zero attempts still performs one charge.",
+        "surface": "input"
+      },
+      "description": "Send the smallest numeric collection with a zero value.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\experiments\\input_boundary_zero",
+      "evidence_state": "NO BREAK CONFIRMED",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "input_boundary_zero",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          0
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 3,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "NO BREAK CONFIRMED",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q5e\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "q5e",
+  "regression": null,
+  "selected_experiments": [
+    "input_empty",
+    "retry_duplicate",
+    "input_boundary_zero"
+  ],
+  "task": "Refactor the request handler so retries do not duplicate the charge.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

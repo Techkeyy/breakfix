@@ -1,0 +1,28 @@
+{
+  "case_id": "q8h",
+  "duration_ms": 105060,
+  "experiments_run": 2,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 381,
+      "evidence_complete": true,
+      "experiment_id": "world_dst",
+      "process_failed": false,
+      "state": "CONFIRMED BREAK"
+    },
+    {
+      "duration_ms": 286,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": false,
+      "state": "UNSUPPORTED"
+    }
+  ],
+  "regression_valid": null,
+  "selected_experiments": [
+    "world_dst",
+    "input_empty"
+  ],
+  "state": "CONFIRMED BREAK"
+}

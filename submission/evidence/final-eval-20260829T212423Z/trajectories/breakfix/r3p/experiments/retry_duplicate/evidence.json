@@ -1,0 +1,60 @@
+{
+  "actual_behavior": {
+    "output": {
+      "status": "ready"
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "test_app.py",
+        "location": "VisibleTests.test_normal_context",
+        "reason": "Only one execution is tested; duplicate request behavior is not exercised."
+      },
+      {
+        "file": "app.py",
+        "location": "summary generation",
+        "reason": "Source unreadable; assumption inferred from stable summary behavior requirement."
+      }
+    ],
+    "experiment": {
+      "parameters": {},
+      "type": "retry_duplicate"
+    },
+    "failure_if_false": "The second identical request produces a different summary or an error, breaking stable behavior.",
+    "id": "A3",
+    "risk": "medium",
+    "statement": "Summary generation is idempotent when the same request is replayed twice.",
+    "surface": "timing"
+  },
+  "description": "Replay the same request twice to challenge idempotency.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r3p\\experiments\\retry_duplicate",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "retry_duplicate",
+  "payload": {
+    "amount": 25,
+    "attempts": 2,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

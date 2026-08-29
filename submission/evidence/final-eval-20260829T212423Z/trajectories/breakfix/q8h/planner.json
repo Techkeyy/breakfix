@@ -1,0 +1,74 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 2",
+          "reason": "hour is taken directly by slicing timestamp without timezone handling"
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "timestamp": "2025-03-09T13:00:00Z"
+          }
+        },
+        "type": "world_dst"
+      },
+      "failure_if_false": "Open/closed result can be wrong when timestamp is UTC or another timezone, especially around DST.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The hour extracted from payload['timestamp'] is the local hour in the requested timezone; no timezone conversion is needed.",
+      "surface": "world"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 2",
+          "reason": "payload['timestamp'] is indexed directly without key check"
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {}
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "KeyError raised and request fails.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "payload is a mapping containing the key 'timestamp'.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 2",
+          "reason": "int() over substring [11:13] assumes two numeric characters"
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "payload": {
+            "timestamp": ""
+          }
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "ValueError/IndexError, or wrong hour parsed from malformed timestamp.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "payload['timestamp'] is a string with at least 13 characters and numeric hour at positions 11-13.",
+      "surface": "input"
+    }
+  ],
+  "change_summary": "run now slices hour from payload['timestamp'] and returns open if hour is 9-16, else closed; replaced unconditional true.",
+  "selected_experiments": [
+    "world_dst",
+    "input_empty"
+  ],
+  "unsupported_assumptions": []
+}

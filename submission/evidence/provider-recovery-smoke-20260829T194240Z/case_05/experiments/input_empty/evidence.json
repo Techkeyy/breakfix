@@ -1,0 +1,53 @@
+{
+  "actual_behavior": {
+    "output": {
+      "open": true
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "run.local_time",
+        "reason": "Direct payload indexing and ZoneInfo construction will raise on missing or unknown timezone."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "payload": {}
+      },
+      "type": "input_empty"
+    },
+    "failure_if_false": "KeyError or ZoneInfoNotFoundError instead of returning an open/closed JSON response.",
+    "id": "A2",
+    "risk": "high",
+    "statement": "The payload contains both a parseable 'timestamp' and a valid IANA 'timezone' key.",
+    "surface": "input"
+  },
+  "description": "Send an empty collection where the change may assume an item exists.",
+  "evidence_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_05\\experiments\\input_empty",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "input_empty",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

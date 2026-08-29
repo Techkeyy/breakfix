@@ -1,0 +1,16 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q7g\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q7g\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "reference": "q7g",
+  "task": "Simplify reservation event replay while preserving confirmation.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

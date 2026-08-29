@@ -1,0 +1,29 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 3: state['tax_rate']",
+          "reason": "Multiplies balance by (1 + state['tax_rate']); a missing key raises KeyError."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "field": "tax_rate"
+        },
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Processing a legacy state record without tax_rate raises KeyError and returns no total.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Persisted state objects include the tax_rate key.",
+      "surface": "state"
+    }
+  ],
+  "change_summary": "Calculate total by applying persisted tax_rate to balance instead of returning raw balance.",
+  "selected_experiments": [
+    "state_legacy"
+  ],
+  "unsupported_assumptions": []
+}

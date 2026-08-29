@@ -1,0 +1,72 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 3-4",
+          "reason": "Loop increments accepted each invocation without any deduplication check."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "replay_count": 2
+        },
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Delivering the same payload twice yields accepted count accumulating beyond one.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "run applies acceptance exactly once per unique logical delivery, even if the same payload is delivered multiple times.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 3",
+          "reason": "Uses payload.get with default 1 and passes the value directly to range."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "field": "concurrent_calls",
+          "value": 0
+        },
+        "type": "input_boundary_zero"
+      },
+      "failure_if_false": "Providing concurrent_calls=0 yields accepted=0 instead of one; non-integer causes runtime error.",
+      "id": "A2",
+      "risk": "medium",
+      "statement": "payload.get('concurrent_calls',1) always returns a positive integer when present, and 1 when absent.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "app.py",
+          "location": "line 1-5",
+          "reason": "No synchronization or deduplication mechanism is present in the run function."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "copies": 2
+        },
+        "type": "concurrent_duplicate"
+      },
+      "failure_if_false": "Concurrent duplicates each increment accepted, causing total accepted greater than one.",
+      "id": "A3",
+      "risk": "high",
+      "statement": "Two concurrent copies of the same request are not both processed independently through run.",
+      "surface": "timing"
+    }
+  ],
+  "change_summary": "Replaced constant accepted count with a loop over payload.concurrent_calls to accumulate accepted count.",
+  "selected_experiments": [
+    "retry_duplicate",
+    "input_boundary_zero",
+    "concurrent_duplicate"
+  ],
+  "unsupported_assumptions": []
+}

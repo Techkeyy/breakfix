@@ -1,0 +1,59 @@
+{
+  "case_id": "r1m",
+  "ground_truth_supplied_to_agent": false,
+  "prompt_id": "final-generic-comparator-v1",
+  "prompt_sha256": "9ba5df7959ed15b04569077b05ac27d7e16be04a9ade6e93c91e9e8ef552febc",
+  "provider_result": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "output_failure": null,
+        "provider_error": null,
+        "response": {
+          "finish_reason": "stop",
+          "input_cache_hit_tokens": 384,
+          "input_cache_miss_tokens": 38,
+          "input_cache_status": "mixed",
+          "input_tokens": 422,
+          "latency_ms": 5568,
+          "model": "deepseek-v4-pro",
+          "monetary_cost_usd": 0.000330528,
+          "output_tokens": 150,
+          "pricing_input_rate_per_million": 0.66,
+          "pricing_output_rate_per_million": 1.98,
+          "pricing_period": "off-peak",
+          "pricing_retrieved_date": "2026-08-29",
+          "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "provider": "deepseek",
+          "reasoning_mode": "enabled",
+          "reasoning_text": "We need answer as JSON. Need analyze change. Before and after identical. Task preserve stable summary behavior while accepting routine context changes. Visible test passes. Need recommendation likely NO_BREAK_FOUND. Must output compact JSON. No break. Findings empty. tests_run maybe visible test? The schema says tests_run [] but likely can include? We need return exactly compact JSON object. final conclusion short.",
+          "request_timestamp_utc": "2026-08-29T21:42:36.870761Z",
+          "response_format": "json_object",
+          "response_text": "{\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"change_summary\": \"No functional change; before and after source are identical.\",\n  \"findings\": [],\n  \"tests_run\": [],\n  \"tool_actions\": [],\n  \"final_conclusion\": \"The change does not introduce a behavior break.\"\n}",
+          "retries": 0,
+          "total_tokens": 572
+        },
+        "retry_reason": null
+      }
+    ],
+    "failure_code": null,
+    "output_contract_status": "OK",
+    "parsed": {
+      "change_summary": "No functional change; before and after source are identical.",
+      "final_conclusion": "The change does not introduce a behavior break.",
+      "findings": [],
+      "recommendation": "NO_BREAK_FOUND",
+      "tests_run": [],
+      "tool_actions": []
+    },
+    "success": true
+  },
+  "result": {
+    "case_id": "r1m",
+    "correct_against_external_truth": true,
+    "duration_ms": 5568,
+    "provider_status": "OK",
+    "recommendation": "NO_BREAK_FOUND",
+    "valid_contract": true
+  }
+}

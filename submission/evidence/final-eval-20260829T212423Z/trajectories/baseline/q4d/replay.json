@@ -1,0 +1,66 @@
+{
+  "case_id": "q4d",
+  "ground_truth_supplied_to_agent": false,
+  "prompt_id": "final-generic-comparator-v1",
+  "prompt_sha256": "19912a64f8c9aa074d639d77aff85d250a11912ce96d254c1d83632f5e5823a2",
+  "provider_result": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "output_failure": null,
+        "provider_error": null,
+        "response": {
+          "finish_reason": "stop",
+          "input_cache_hit_tokens": 256,
+          "input_cache_miss_tokens": 165,
+          "input_cache_status": "mixed",
+          "input_tokens": 421,
+          "latency_ms": 13189,
+          "model": "deepseek-v4-pro",
+          "monetary_cost_usd": 0.001589632,
+          "output_tokens": 745,
+          "pricing_input_rate_per_million": 0.66,
+          "pricing_output_rate_per_million": 1.98,
+          "pricing_period": "off-peak",
+          "pricing_retrieved_date": "2026-08-29",
+          "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "provider": "deepseek",
+          "reasoning_mode": "enabled",
+          "reasoning_text": "We need answer JSON only. Need review selected change. We have before source and after source. Public task: Expose configured currency in account summary. Before run returns status ready. After returns currency from payload config. Visible test expects app.run({\"config\":{\"currency\":\"USD\"}}) == {'currency':'USD'}. Need determine if change contains plausible behavior break. We only have visible tests. Before behavior for existing callers? Before returned status ready. After assumes payload[\"config\"][\"currency\"] exists. Potential KeyError if payload missing config/currency. But public task requires expose currency. Plausible behavior break? Need recommend POTENTIAL_BREAK or NO_BREAK_FOUND or INCONCLUSIVE. We should not invent hidden tests. Need evaluate visible test only. The change satisfies visible test. Behavior break relative to before? Existing callers may expect status ready, now changed. But public task says expose configured currency, so intended break? A break in behavior from old API. However in BreakFix context, a \"behavior break\" likely means does change introduce bugs? We need review change for plausible behavior break: after source removed \"status\": \"ready\" and now requires payload config currency. If payload missing currency, KeyError. The visible test only has valid payload. The task says expose configured currency in account summary. Could be potential break because no default / missing key handling. Need decide recommendation.\n\nSchema: recommendation, change_summary, findings, tests_run empty, tool_actions empty, final_conclusion.\n\nNeed compact JSON no markdown. Need include findings with evidence. Could say potential break due to KeyError on missing config. But is that a plausible behavior break? Yes. We can recommend POTENTIAL_BREAK. But maybe visible tests pass, no hidden known. However reviewer should identify missing robustness. Let's craft.\n\nWe need output exactly one JSON object. No markdown.\n\nFinal:\n{\n \"recommendation\": \"POTENTIAL_BREAK\",\n \"change_summary\": \"Replaced static status response with currency extraction from payload config.\",\n \"findings\": [\n  {\"summary\": \"Function now raises KeyError if payload lacks 'config' or 'currency'.\", \"evidence\": [\"app.py\"]}\n ],\n \"tests_run\": [],\n \"tool_actions\": [],\n \"final_conclusion\": \"The change meets the visible test but drops the previous response shape and adds an unguarded required key access, making it fragile for callers with missing or differently shaped payloads.\"\n}\n\nNeed ensure no extra fields? schema includes tests_run, tool_actions arrays. Good.\n\nBut is recommendation POTENTIAL_BREAK correct? Could also be INCONCLUSIVE if not enough. But we can infer missing key issue. The prompt: \"Do not invent hidden test results. Do not propose or run BreakFix experiment catalogue. Give a reasoning-only recommendation about whether the change contains a plausible behavior break.\" So potential break due to KeyError is plausible. Recommendation POTENTIAL_BREAK. Fine.\n\nNeed ensure JSON valid.",
+          "request_timestamp_utc": "2026-08-29T21:32:41.935025Z",
+          "response_format": "json_object",
+          "response_text": "{\n  \"recommendation\": \"POTENTIAL_BREAK\",\n  \"change_summary\": \"Replaced static status response with currency extraction from payload config.\",\n  \"findings\": [\n    {\n      \"summary\": \"Function now raises KeyError if payload lacks 'config' or 'currency'.\",\n      \"evidence\": [\"app.py\"]\n    }\n  ],\n  \"tests_run\": [],\n  \"tool_actions\": [],\n  \"final_conclusion\": \"The change meets the visible test but drops the previous response shape and adds an unguarded required key access, making it fragile for callers with missing or differently shaped payloads.\"\n}",
+          "retries": 0,
+          "total_tokens": 1166
+        },
+        "retry_reason": null
+      }
+    ],
+    "failure_code": null,
+    "output_contract_status": "OK",
+    "parsed": {
+      "change_summary": "Replaced static status response with currency extraction from payload config.",
+      "final_conclusion": "The change meets the visible test but drops the previous response shape and adds an unguarded required key access, making it fragile for callers with missing or differently shaped payloads.",
+      "findings": [
+        {
+          "evidence": [
+            "app.py"
+          ],
+          "summary": "Function now raises KeyError if payload lacks 'config' or 'currency'."
+        }
+      ],
+      "recommendation": "POTENTIAL_BREAK",
+      "tests_run": [],
+      "tool_actions": []
+    },
+    "success": true
+  },
+  "result": {
+    "case_id": "q4d",
+    "correct_against_external_truth": true,
+    "duration_ms": 13189,
+    "provider_status": "OK",
+    "recommendation": "POTENTIAL_BREAK",
+    "valid_contract": true
+  }
+}

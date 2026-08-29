@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "-I",
+    "-c",
+    "import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))"
+  ],
+  "duration_ms": 286,
+  "exit_code": 0,
+  "experiment_id": "input_empty",
+  "output": {
+    "open": false
+  },
+  "process_failed": false,
+  "stderr": "",
+  "stdout": "{\"open\": false}\n",
+  "timed_out": false
+}

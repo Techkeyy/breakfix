@@ -1,0 +1,46 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "reasoning_effort": "high",
+  "reasoning_mode": "enabled",
+  "temperature": null,
+  "max_output_tokens": 2000,
+  "prompt_id": "phase2b-baseline-v1",
+  "prompt_file": "docs/phase2b-prompts.md",
+  "prompt_sha256": "540e2c74b31f609be87e7aad7eed2d4644840d60e957270c46b1a120546a4a62",
+  "prompt_context": {
+    "public": {
+      "id": "d1y",
+      "title": "Routine update",
+      "task": "Update the routine while preserving the established behavior.",
+      "test_command": "python -m unittest discover -s tests -v"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "model_calls": 1,
+  "tool_access": "direct provider receives the rendered public context only",
+  "tool_actions": [],
+  "response_text": "{\n  \"change_summary\": \"Refactored the currency lookup from run() into a module-level _currency(config) helper. run() still passes payload.get('config', {}) to the helper and returns the same {\\\"currency\\\": ...} shape.\",\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"findings\": [],\n  \"tests_run\": [\n    \"python -m unittest discover -s tests -v (conceptual: test_explicit_currency passes because app.run({\\\"config\\\":{\\\"currency\\\":\\\"EUR\\\"}}) returns {\\\"currency\\\":\\\"EUR\\\"})\"\n  ],\n  \"tool_actions\": [\n    {\n      \"action\": \"inspection\",\n      \"result\": \"Compared before and after source. The helper preserves the config.get('currency', 'USD') behavior, and run() still supplies payload.get('config', {}), matching the original behavior for the visible explicit-currency test and the default/missing config path.\"\n    }\n  ],\n  \"retries\": 0,\n  \"final_conclusion\": \"The refactor appears behavior-preserving for the provided public test and for the default currency case. No break was found.\"\n}",
+  "runtime_ms": 14241,
+  "latency_ms": 14241,
+  "request_timestamp_utc": "2026-08-29T18:50:00.737524Z",
+  "input_tokens": 579,
+  "output_tokens": 822,
+  "input_cache_hit_tokens": 384,
+  "input_cache_miss_tokens": 195,
+  "total_tokens": 1401,
+  "monetary_cost_usd": 0.001764708,
+  "pricing_period": "off-peak",
+  "input_cache_status": "mixed",
+  "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "pricing_retrieved_date": "2026-08-29",
+  "pricing_input_rate_per_million": 0.66,
+  "pricing_output_rate_per_million": 1.98,
+  "finish_reason": "stop",
+  "retries": 0
+}

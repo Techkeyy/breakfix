@@ -27,6 +27,10 @@ Audit date: 2026-08-29
   now patched to exclude `evaluation.json` automatically.
 - A post-cleanup scan found no `expected_outputs`, oracle, truth, or evaluator
   fields in the published final evidence.
+- The curated `submission/evidence/` copy was scanned with the same oracle-field
+  checks and is clean. The older Phase 1 and Phase 2A evaluator fixtures remain
+  in the frozen development benchmark because their historical replay tests use
+  them; they are not part of the final holdout or curated final evidence.
 
 ## Product mutation boundaries
 

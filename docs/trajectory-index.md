@@ -1,8 +1,8 @@
 # Trajectory and evidence index
 
 All paths below are relative to the project directory unless marked as
-external. Generated evidence is ignored by Git so provider responses and local
-paths are not accidentally submitted with source.
+external. Development evidence is ignored by Git; the curated copies needed
+for submission are tracked under `submission/evidence/`.
 
 | Run | Contents | Status |
 | --- | --- | --- |
@@ -42,3 +42,11 @@ index.
 The trajectories preserve visible prompts, tool inputs and outputs, retries,
 validation, and final results without exposing chain-of-thought, credentials,
 or evaluator truth.
+
+## Curated submission copy
+
+The portable package copies the final public bundle, canonical demo, historical
+Phase 2B Attempt 1 result, provider-recovery smoke, and independent acceptance
+evidence under `submission/evidence/`. The copied final and Phase 2B evidence is
+oracle-free. The evaluator-only truth remains in the external Temp run
+workspace and is not copied.

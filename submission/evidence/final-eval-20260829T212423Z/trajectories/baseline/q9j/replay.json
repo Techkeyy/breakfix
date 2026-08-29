@@ -1,0 +1,59 @@
+{
+  "case_id": "q9j",
+  "ground_truth_supplied_to_agent": false,
+  "prompt_id": "final-generic-comparator-v1",
+  "prompt_sha256": "9ba5df7959ed15b04569077b05ac27d7e16be04a9ade6e93c91e9e8ef552febc",
+  "provider_result": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "output_failure": null,
+        "provider_error": null,
+        "response": {
+          "finish_reason": "stop",
+          "input_cache_hit_tokens": 256,
+          "input_cache_miss_tokens": 166,
+          "input_cache_status": "mixed",
+          "input_tokens": 422,
+          "latency_ms": 4549,
+          "model": "deepseek-v4-pro",
+          "monetary_cost_usd": 0.000485452,
+          "output_tokens": 187,
+          "pricing_input_rate_per_million": 0.66,
+          "pricing_output_rate_per_million": 1.98,
+          "pricing_period": "off-peak",
+          "pricing_retrieved_date": "2026-08-29",
+          "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "provider": "deepseek",
+          "reasoning_mode": "enabled",
+          "reasoning_text": "We need answer JSON. We have before/after identical. Task preserve stable summary behavior accepting routine context changes. Visible test passes. Need recommend no break. Need output compact JSON only. Schema. Findings empty? tests_run maybe [] or mention visible test? \"tests_run\": [] likely no actual run. Could include visible test? They ask do not invent hidden. We can say tests_run [] since we didn't run. Need change_summary. Recommendation NO_BREAK_FOUND. Final conclusion no behavior change. Need no markdown. Ensure valid JSON.",
+          "request_timestamp_utc": "2026-08-29T21:40:27.506664Z",
+          "response_format": "json_object",
+          "response_text": "{\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"change_summary\": \"No functional change; before and after source are identical.\",\n  \"findings\": [],\n  \"tests_run\": [],\n  \"tool_actions\": [],\n  \"final_conclusion\": \"The change does not alter behavior, so no break is plausible.\"\n}",
+          "retries": 0,
+          "total_tokens": 609
+        },
+        "retry_reason": null
+      }
+    ],
+    "failure_code": null,
+    "output_contract_status": "OK",
+    "parsed": {
+      "change_summary": "No functional change; before and after source are identical.",
+      "final_conclusion": "The change does not alter behavior, so no break is plausible.",
+      "findings": [],
+      "recommendation": "NO_BREAK_FOUND",
+      "tests_run": [],
+      "tool_actions": []
+    },
+    "success": true
+  },
+  "result": {
+    "case_id": "q9j",
+    "correct_against_external_truth": true,
+    "duration_ms": 4549,
+    "provider_status": "OK",
+    "recommendation": "NO_BREAK_FOUND",
+    "valid_contract": true
+  }
+}

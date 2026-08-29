@@ -1,0 +1,37 @@
+{
+  "context": {
+    "public": {
+      "id": "n4k",
+      "task": "Update the routine while preserving the established behavior.",
+      "test_command": "python -m unittest discover -s tests -v",
+      "title": "Routine update"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "execution_decides_success": true,
+  "final_conclusion": null,
+  "ground_truth_supplied_to_agent": false,
+  "instructions": {
+    "budget": 3,
+    "prompt_file": "docs/phase2b-prompts.md",
+    "prompt_id": "phase2b-breakfix-v1"
+  },
+  "lane": "phase2b-direct-provider-breakfix",
+  "model": "deepseek-v4-pro",
+  "parse_or_load_failure": null,
+  "provider": "deepseek",
+  "retries": 0,
+  "structured_agent_result": {
+    "assumptions": [],
+    "parse_error": "invalid JSON: Expecting value at character 0",
+    "raw_response": "",
+    "unsupported_assumptions": [],
+    "valid": false
+  },
+  "tool_actions": []
+}

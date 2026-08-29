@@ -1,0 +1,114 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only normal context order is tested; no reordering coverage."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "sequence": [
+            "context_event_a",
+            "context_event_b"
+          ]
+        },
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Reordered context events produce a different summary than normal context.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "Summary output is invariant to the order of context events.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context test may not cover empty input."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "collection": "context"
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "Empty context triggers an exception or produces an unstable summary.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Summary handles an empty context collection without error.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only single occurrence tested; duplicates may be routine."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "times": 2
+        },
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Replaying the same context twice yields a different summary or non-idempotent side effect.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Duplicate context entries do not change the summary.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context likely includes default config; missing optional field untested."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "field": "optional_config"
+        },
+        "type": "config_missing"
+      },
+      "failure_if_false": "Removing an optional config field alters the summary or causes failure.",
+      "id": "A4",
+      "risk": "medium",
+      "statement": "Summary is independent of optional configuration fields.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Normal context may use UTC or a single timezone; DST boundary not covered."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "instant": "UTC_instant"
+        },
+        "type": "world_dst"
+      },
+      "failure_if_false": "A context timestamp near DST transition yields a different summary or misclassified date.",
+      "id": "A5",
+      "risk": "low",
+      "statement": "Summary remains stable across daylight-saving timezone boundaries.",
+      "surface": "world"
+    }
+  ],
+  "change_summary": "Preserve stable summary behavior while accepting routine context changes.",
+  "selected_experiments": [
+    "events_reordered",
+    "input_empty",
+    "retry_duplicate"
+  ],
+  "unsupported_assumptions": []
+}

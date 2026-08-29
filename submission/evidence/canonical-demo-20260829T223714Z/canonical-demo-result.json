@@ -1,0 +1,33 @@
+{
+  "run_id": "canonical-demo-20260829T223714Z",
+  "evidence_dir": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z",
+  "analysis": {
+    "outcome": "CONFIRMED BREAK",
+    "evidence_dir": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z",
+    "selected_experiments": [
+      "input_empty"
+    ],
+    "experiments_run": 1,
+    "provider_status": "OK",
+    "regression_valid": true
+  },
+  "replay": {
+    "experiment_id": "input_empty",
+    "reproduced": true,
+    "evidence_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\canonical-demo-20260829T223714Z\\reproduction\\input_empty"
+  },
+  "proposal": {
+    "status": "PROPOSED",
+    "human_approval_required": true
+  },
+  "application": {
+    "approved": true,
+    "applied": true
+  },
+  "verification": {
+    "status": "VERIFIED",
+    "experiment_process_failed_after_fix": false,
+    "visible_tests_exit_code": 0,
+    "regression_exit_code": 0
+  }
+}

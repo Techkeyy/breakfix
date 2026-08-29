@@ -1,0 +1,65 @@
+{
+  "attempts": [
+    {
+      "output": null,
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {
+          "currency": "USD"
+        },
+        "items": [],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      },
+      "process_failed": true,
+      "removed_key": "events",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))\n                                                                                                        ~~~~~~~^^^^^^^^^\n  File \"C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-sandbox-nhwgtpb2\\project\\app.py\", line 3, in run\n    return {\"count\": len(items), \"average\": sum(items) / len(items)}\n                                            ~~~~~~~~~~~^~~~~~~~~~~~\nZeroDivisionError: division by zero\n"
+    }
+  ],
+  "experiment_id": "input_empty",
+  "minimality_claim": false,
+  "original_payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  },
+  "reduced_payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "items": [],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  },
+  "status": "REDUCED REPRODUCTION"
+}

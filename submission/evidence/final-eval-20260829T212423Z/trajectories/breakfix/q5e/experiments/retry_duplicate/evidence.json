@@ -1,0 +1,60 @@
+{
+  "actual_behavior": {
+    "output": {
+      "total_charged": 50
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "for _ in range(payload.get(\"attempts\", 1))",
+        "reason": "Loop adds amount once per attempt, so attempts greater than one multiplies the charge."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "payload": {
+          "amount": 100,
+          "attempts": 2
+        }
+      },
+      "type": "retry_duplicate"
+    },
+    "failure_if_false": "total_charged equals amount * attempts, duplicating the charge on retry.",
+    "id": "A2",
+    "risk": "high",
+    "statement": "Retries do not duplicate the charge; total_charged equals a single amount regardless of attempts.",
+    "surface": "timing"
+  },
+  "description": "Replay the same request twice to challenge idempotency.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q5e\\experiments\\retry_duplicate",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "retry_duplicate",
+  "payload": {
+    "amount": 25,
+    "attempts": 2,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

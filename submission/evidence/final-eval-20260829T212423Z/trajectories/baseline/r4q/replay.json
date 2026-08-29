@@ -1,0 +1,59 @@
+{
+  "case_id": "r4q",
+  "ground_truth_supplied_to_agent": false,
+  "prompt_id": "final-generic-comparator-v1",
+  "prompt_sha256": "9ba5df7959ed15b04569077b05ac27d7e16be04a9ade6e93c91e9e8ef552febc",
+  "provider_result": {
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "output_failure": null,
+        "provider_error": null,
+        "response": {
+          "finish_reason": "stop",
+          "input_cache_hit_tokens": 384,
+          "input_cache_miss_tokens": 38,
+          "input_cache_status": "mixed",
+          "input_tokens": 422,
+          "latency_ms": 3579,
+          "model": "deepseek-v4-pro",
+          "monetary_cost_usd": 0.000340428,
+          "output_tokens": 155,
+          "pricing_input_rate_per_million": 0.66,
+          "pricing_output_rate_per_million": 1.98,
+          "pricing_period": "off-peak",
+          "pricing_retrieved_date": "2026-08-29",
+          "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "provider": "deepseek",
+          "reasoning_mode": "enabled",
+          "reasoning_text": "We need answer JSON. Need review selected change. Before and after source identical. Public task preserve stable summary behavior while accepting routine context changes. Visible test only normal context. No break. Need output compact JSON. Need include recommendation NO_BREAK_FOUND. change_summary. findings empty? tests_run maybe [] as schema, tool_actions []. final_conclusion. Ensure no markdown.",
+          "request_timestamp_utc": "2026-08-29T21:45:15.027081Z",
+          "response_format": "json_object",
+          "response_text": "{\n  \"recommendation\": \"NO_BREAK_FOUND\",\n  \"change_summary\": \"No functional change detected between before and after source.\",\n  \"findings\": [],\n  \"tests_run\": [],\n  \"tool_actions\": [],\n  \"final_conclusion\": \"The change is identical to the original, so no behavior break is plausible.\"\n}",
+          "retries": 0,
+          "total_tokens": 577
+        },
+        "retry_reason": null
+      }
+    ],
+    "failure_code": null,
+    "output_contract_status": "OK",
+    "parsed": {
+      "change_summary": "No functional change detected between before and after source.",
+      "final_conclusion": "The change is identical to the original, so no behavior break is plausible.",
+      "findings": [],
+      "recommendation": "NO_BREAK_FOUND",
+      "tests_run": [],
+      "tool_actions": []
+    },
+    "success": true
+  },
+  "result": {
+    "case_id": "r4q",
+    "correct_against_external_truth": true,
+    "duration_ms": 3579,
+    "provider_status": "OK",
+    "recommendation": "NO_BREAK_FOUND",
+    "valid_contract": true
+  }
+}

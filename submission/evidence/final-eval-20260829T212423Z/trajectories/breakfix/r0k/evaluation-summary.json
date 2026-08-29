@@ -1,0 +1,36 @@
+{
+  "case_id": "r0k",
+  "duration_ms": 47042,
+  "experiments_run": 3,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 248,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    },
+    {
+      "duration_ms": 312,
+      "evidence_complete": true,
+      "experiment_id": "config_missing",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    },
+    {
+      "duration_ms": 245,
+      "evidence_complete": true,
+      "experiment_id": "retry_duplicate",
+      "process_failed": false,
+      "state": "NO BREAK CONFIRMED"
+    }
+  ],
+  "regression_valid": null,
+  "selected_experiments": [
+    "input_empty",
+    "config_missing",
+    "retry_duplicate"
+  ],
+  "state": "NO BREAK CONFIRMED"
+}

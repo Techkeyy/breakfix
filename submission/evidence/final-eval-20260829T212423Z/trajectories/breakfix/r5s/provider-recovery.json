@@ -1,0 +1,114 @@
+{
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "output_failure": null,
+      "provider_error": null,
+      "response": {
+        "finish_reason": "stop",
+        "input_cache_hit_tokens": 640,
+        "input_cache_miss_tokens": 94,
+        "input_cache_status": "mixed",
+        "input_tokens": 734,
+        "latency_ms": 44091,
+        "model": "deepseek-v4-pro",
+        "monetary_cost_usd": 0.0062359,
+        "output_tokens": 3111,
+        "pricing_input_rate_per_million": 0.66,
+        "pricing_output_rate_per_million": 1.98,
+        "pricing_period": "off-peak",
+        "pricing_retrieved_date": "2026-08-29",
+        "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "provider": "deepseek",
+        "reasoning_mode": "enabled",
+        "reasoning_text": "We need answer as JSON only. Need infer assumptions from selected change, current source unreadable, visible test result normal_context ok. Task: Preserve stable summary behavior while accepting routine context changes. Selected change diff is empty? \"SELECTED CHANGE DIFF\" blank. Current changed source unreadable. Visible test result one test ok. Need inspect change? We have no diff. We must infer material assumptions across supported surfaces: input, state, timing, world. Rank by falsification value. Propose at most one supported experiment per assumption. Do not claim DEFECT/SAFE.\n\nWe need output JSON. Need craft assumptions. Since change diff empty and source unreadable, only visible test result. Task says preserve stable summary behavior while accepting routine context changes. That suggests change likely about summarizing something, maybe reading context? We need infer assumptions. However we only have task statement: \"Preserve the stable summary behavior while accepting routine context changes.\" Could be about a summary cache or text summarization. Need infer possible assumptions.\n\nWe need produce assumptions based on available info. Since selected change diff blank, no source. But we can infer from task: stable summary behavior, accepting routine context changes. Routine context changes could be input changes. Summary behavior stable. Need assumptions: maybe summary is deterministic, input can have variations; context changes are routine and should not break summary. The visible test normal_context passes. Assumptions: The summary depends only on stable part, not routine context; normal context represented in test. Surface: input? state? timing? world? We need at most one experiment per assumption, supported experiments list. We have 8 experiment types.\n\nWe need rank by falsification value. Need maybe assumptions:\nA1: Summary output is insensitive to routine context variations (input surface). risk high? If false, summary changes for normal context variant. experiment: input_empty? Not fitting. Supported experiments: input_empty, input_boundary_zero, retry_duplicate, state_legacy, events_reordered, world_dst, config_missing, concurrent_duplicate. Need map to context changes. Routine context changes could be input with different values. input_boundary_zero? Maybe send smallest numeric collection with zero value. Could test if summary stable with zero context. But not sure.\n\nA2: Summary behavior requires at least one item in context? input_empty test. Risk medium. If false, empty context causes crash. But task says accepting routine context changes, maybe routine includes empty? Not sure.\n\nA3: Summary is idempotent under repeated same context? retry_duplicate surface timing. If false, duplicates produce different summary or side effects. But task not about idempotency.\n\nA4: Summary may rely on configuration field? config_missing surface state. If false, missing optional config breaks summary. But no evidence.\n\nNeed likely produce multiple assumptions with experiments. The instruction \"Inspect the selected change, current source, and visible test result. Infer only material assumptions across these supported surfaces.\" Since change diff blank, source unreadable, only test result. We can infer from task. Need not overcomplicate. We need output one compact JSON object.\n\nPotential assumptions:\n- The summary remains stable when trivial input context fields change (input surface) -> experiment input_boundary_zero? Hmm.\n- The summary does not depend on ordering of context items? events_reordered timing? Could be context order is routine change. experiments: events_reordered \"Deliver a valid event sequence in a different order.\" surface timing. That could test if context order affects summary.\n- The summary works with empty context? input_empty.\n- The summary handles duplicate context items? retry_duplicate or concurrent_duplicate? Actually duplicate can be input or timing. retry_duplicate description \"Replay the same request twice to challenge idempotency.\" That is timing, but may test duplicate context? concurrent_duplicate similar.\n\nGiven task \"Preserve the stable summary behavior while accepting routine context changes.\" Routine context changes might include different context values, order, optional fields. So assumptions: \n1. Summary output is invariant to reordering of context entries. Surface timing? The experiment events_reordered fits. Risk medium/high. Failure: summary changes when context order changes.\n2. Summary output tolerates missing optional context fields. Surface state. Experiment config_missing (remove optional configuration field) but that's configuration, not context field. Maybe state_legacy? \"Load an older persisted record that lacks a newly assumed field.\" That is state. Could be applicable if summary reads persisted context. But context changes routine may include missing field. So use state_legacy? Hmm.\n3. Summary output handles empty context input. Surface input. Experiment input_empty. Risk medium.\n4. Summary output is deterministic given same context. Surface timing? retry_duplicate. Risk low? But deterministic assumed.\n\nNeed choose perhaps 3 assumptions. Must include evidence. Evidence can use visible test result? File \"test_app.VisibleTests.test_normal_context\" location \"test_normal_context\" reason \"only visible test passes with normal context; no other contexts covered\". That is evidence. But source unreadable, diff blank. Evidence list required: [{\"file\": \"...\", \"location\": \"...\", \"reason\": \"...\"}]. We can cite test file. Need maybe also cite change summary? No file. Use summary? Hmm. We can put file \"selected_change\" location \"diff\" reason \"change diff blank, so no direct evidence\". But maybe keep simple: evidence from test result. Need evidence that assumption is material. We can say file \"test_app.py\" location \"test_normal_context\" reason \"visible test only covers normal context, leaving routine variants untested\". That works.\n\nNeed be careful: we don't claim defect. The failure_if_false describes observable failure if assumption false.\n\nNeed output JSON with change_summary. Change summary: \"Preserve stable summary output when routine context changes occur.\" That is from task.\n\nNow decide assumptions and experiments. We can propose up to one experiment per assumption. Supported experiments have type and parameters. Need parameters objects, maybe empty or with some fields. Examples? not provided. We can set parameters to {} or something relevant. Since schema says parameters: {}. Could be empty. But supported experiments list gives descriptions, not parameters. We can set parameters empty object. That should be acceptable.\n\nNeed rank by falsification value. Order assumptions A1 highest risk? \"falsification value\" - potentially most likely to reveal break? Usually high risk/high value. We can rank high first.\n\nPossible assumptions ranked:\nA1: Summary is invariant to reordering of routine context entries. Surface timing, risk high, experiment events_reordered. Failure if false: summary changes when same context entries are delivered in different order. Evidence: visible test only normal context, no order variation.\nA2: Summary tolerates missing or legacy optional context fields. Surface state, risk medium/high, experiment state_legacy or config_missing. Need choose one. config_missing \"Remove an optional configuration field to test the dependency boundary.\" surface state. But context field isn't configuration. state_legacy \"Load an older persisted record that lacks a newly assumed field.\" That could model missing context field if summary reads persisted record. I think better: \"Summary operates without a previously present optional context field\" surface state, experiment state_legacy. But state_legacy description specifically \"older persisted record that lacks a newly assumed field\" - matches missing field. Use state_legacy.\nA3: Summary handles an empty context collection. Surface input, risk medium, experiment input_empty. Failure: summary crashes or returns invalid output when context is empty.\nA4: Summary is idempotent for identical context repeated over time. Surface timing, risk low/medium, experiment retry_duplicate. Failure: second call produces different summary or side effect. But idempotency may be less directly implied by \"stable summary behavior\". Still possible.\n\nCould include A4 as lower. But maybe too many? At most one experiment per assumption; no limit on assumptions. But compact JSON; perhaps 3-4.\n\nWe need \"material assumptions across these supported surfaces\": input, state, timing, world. We should cover maybe all four? Not necessary but maybe include world? The task doesn't mention timezone. Routine context changes could involve time context? world_dst could test if summary uses UTC instant across DST. But no evidence. Maybe not.\n\nBetter to focus on likely assumptions. The user says \"Infer only material assumptions\" - we should not fabricate unrelated. Given minimal info, three assumptions are okay.\n\nNeed ensure no markdown, no prose outside object. Output JSON only.\n\nLet's craft JSON:\n\n{\n  \"change_summary\": \"Preserve stable summary behavior while accepting routine context changes.\",\n  \"assumptions\": [\n    {\n      \"id\": \"A1\",\n      \"statement\": \"Summary output is invariant to reordering of routine context entries.\",\n      \"surface\": \"timing\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Only normal-order context is covered; reordering is a routine context change left untested.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary content changes when the same context items are provided in a different order.\",\n      \"experiment\": {\n        \"type\": \"events_reordered\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A2\",\n      \"statement\": \"Summary generation tolerates missing optional context fields.\",\n      \"surface\": \"state\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Visible test provides normal context; absence of optional fields not exercised.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary fails or produces incorrect output when an optional context field is absent.\",\n      \"experiment\": {\n        \"type\": \"state_legacy\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A3\",\n      \"statement\": \"Summary handles an empty collection of context items.\",\n      \"surface\": \"input\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Normal context implies non-empty; empty edge case is not covered.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary crashes, hangs, or returns invalid output for empty context.\",\n      \"experiment\": {\n        \"type\": \"input_empty\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A4\",\n      \"statement\": \"Repeated identical context produces the same summary (idempotent).\",\n      \"surface\": \"timing\",\n      \"risk\": \"low\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Only one invocation is tested; stability across repeats is assumed.\"\n        }\n      ],\n      \"failure_if_false\": \"Second identical request yields a different summary or side effect.\",\n      \"experiment\": {\n        \"type\": \"retry_duplicate\",\n        \"parameters\": {}\n      }\n    }\n  ]\n}\n\nNeed check risk ranking: A1 high, A2 medium, A3 medium, A4 low. Falsification value roughly risk. Good.\n\nBut we need consider \"preserve stable summary behavior while accepting routine context changes\" maybe the change is about caching summary based on context hash. If context changes routine but summary stable, maybe summary should be cached and not recomputed? Hmm.\n\nCould maybe include world_dst: If context has timestamps, summary stable across DST? Not enough.\n\nWe need ensure output is one compact JSON. No extra text.\n\nBut maybe we can improve evidence: file could be \"unknown\" because source unreadable, but we can cite test result. The schema evidence requires file and location. We'll use \"test_app.py\" and \"test_normal_context\". That's fine.\n\nLet's produce JSON.",
+        "request_timestamp_utc": "2026-08-29T21:46:06.030221Z",
+        "response_format": "json_object",
+        "response_text": "{\n  \"change_summary\": \"Preserve stable summary behavior while accepting routine context changes.\",\n  \"assumptions\": [\n    {\n      \"id\": \"A1\",\n      \"statement\": \"Summary output is invariant to reordering of routine context entries.\",\n      \"surface\": \"timing\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Only normal-order context is covered; reordering is a routine context change left untested.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary content changes when the same context items are provided in a different order.\",\n      \"experiment\": {\n        \"type\": \"events_reordered\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A2\",\n      \"statement\": \"Summary generation tolerates missing optional context fields.\",\n      \"surface\": \"state\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Visible test provides normal context; absence of optional fields not exercised.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary fails or produces incorrect output when an optional context field is absent.\",\n      \"experiment\": {\n        \"type\": \"state_legacy\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A3\",\n      \"statement\": \"Summary handles an empty collection of context items.\",\n      \"surface\": \"input\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Normal context implies non-empty; empty edge case is not covered.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary crashes, hangs, or returns invalid output for empty context.\",\n      \"experiment\": {\n        \"type\": \"input_empty\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A4\",\n      \"statement\": \"Repeated identical context produces the same summary (idempotent).\",\n      \"surface\": \"timing\",\n      \"risk\": \"low\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"test_normal_context\",\n          \"reason\": \"Only one invocation is tested; stability across repeats is assumed.\"\n        }\n      ],\n      \"failure_if_false\": \"Second identical request yields a different summary or side effect.\",\n      \"experiment\": {\n        \"type\": \"retry_duplicate\",\n        \"parameters\": {}\n      }\n    }\n  ]\n}",
+        "retries": 0,
+        "total_tokens": 3845
+      },
+      "retry_reason": null
+    }
+  ],
+  "failure_code": null,
+  "output_contract_status": "OK",
+  "parsed": {
+    "assumptions": [
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Only normal-order context is covered; reordering is a routine context change left untested."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "events_reordered"
+        },
+        "failure_if_false": "Summary content changes when the same context items are provided in a different order.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Summary output is invariant to reordering of routine context entries.",
+        "surface": "timing"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Visible test provides normal context; absence of optional fields not exercised."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "state_legacy"
+        },
+        "failure_if_false": "Summary fails or produces incorrect output when an optional context field is absent.",
+        "id": "A2",
+        "risk": "medium",
+        "statement": "Summary generation tolerates missing optional context fields.",
+        "surface": "state"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Normal context implies non-empty; empty edge case is not covered."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "Summary crashes, hangs, or returns invalid output for empty context.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "Summary handles an empty collection of context items.",
+        "surface": "input"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "test_normal_context",
+            "reason": "Only one invocation is tested; stability across repeats is assumed."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "Second identical request yields a different summary or side effect.",
+        "id": "A4",
+        "risk": "low",
+        "statement": "Repeated identical context produces the same summary (idempotent).",
+        "surface": "timing"
+      }
+    ],
+    "change_summary": "Preserve stable summary behavior while accepting routine context changes."
+  },
+  "success": true
+}

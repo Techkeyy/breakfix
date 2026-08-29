@@ -1,0 +1,15 @@
+{
+  "change_kind": "development-case",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "project_root": "C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\phase1_5_cases\\case_01\\after",
+  "prompt_id": "breakfix-product-planner-v1",
+  "reference": "case_01",
+  "task": "Change the summary result to expose an average for numeric items.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

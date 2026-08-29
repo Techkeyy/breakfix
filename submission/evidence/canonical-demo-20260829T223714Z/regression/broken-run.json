@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "duration_ms": 2113,
+  "exit_code": 1,
+  "experiment_id": "generated_regression",
+  "generated_test": "tests/test_breakfix_regression.py",
+  "output": null,
+  "process_failed": true,
+  "stderr": "test_normal_items (test_app.SummaryTests.test_normal_items) ... ok\ntest_observed_change_handles_targeted_perturbation (test_breakfix_regression.BreakFixRegressionTests.test_observed_change_handles_targeted_perturbation) ... ERROR\n\n======================================================================\nERROR: test_observed_change_handles_targeted_perturbation (test_breakfix_regression.BreakFixRegressionTests.test_observed_change_handles_targeted_perturbation)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-sandbox-ckbpgbh4\\project\\tests\\test_breakfix_regression.py\", line 8, in test_observed_change_handles_targeted_perturbation\n    result = app.run(payload)\n  File \"C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-sandbox-ckbpgbh4\\project\\app.py\", line 3, in run\n    return {\"count\": len(items), \"mean\": sum(items) / len(items)}\n                                         ~~~~~~~~~~~^~~~~~~~~~~~\nZeroDivisionError: division by zero\n\n----------------------------------------------------------------------\nRan 2 tests in 0.009s\n\nFAILED (errors=1)\n",
+  "stdout": "",
+  "timed_out": false
+}

@@ -1,0 +1,134 @@
+{
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "output_failure": null,
+      "provider_error": null,
+      "response": {
+        "finish_reason": "stop",
+        "input_cache_hit_tokens": 640,
+        "input_cache_miss_tokens": 94,
+        "input_cache_status": "mixed",
+        "input_tokens": 734,
+        "latency_ms": 38344,
+        "model": "deepseek-v4-pro",
+        "monetary_cost_usd": 0.0051033400000000005,
+        "output_tokens": 2539,
+        "pricing_input_rate_per_million": 0.66,
+        "pricing_output_rate_per_million": 1.98,
+        "pricing_period": "off-peak",
+        "pricing_retrieved_date": "2026-08-29",
+        "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "provider": "deepseek",
+        "reasoning_mode": "enabled",
+        "reasoning_text": "We need answer JSON only. Need inspect selected change diff? But no diff given? We have task \"Preserve stable summary behavior while accepting routine context changes.\" Selected change diff blank? Current changed source unreadable. Visible test result: test_normal_context ok. Need infer assumptions across surfaces. We need propose at most one supported experiment per assumption. We have supported experiments list. Need output compact JSON. No markdown/prose. We need fill assumptions.\n\nWe need think: selected change diff and source not readable. But task says Preserve stable summary behavior while accepting routine context changes. Perhaps change involves summary behavior? Need infer from test name: test_normal_context. Likely change to summary function? We need inferred assumptions. We have no source, no diff. Could use visible test result only. We need not claim defect. We need produce assumptions likely about input, state, timing, world. Need use supported experiments only. We need at most one per assumption. Maybe 2-3 assumptions.\n\nGiven context: \"Preserve the stable summary behavior while accepting routine context changes.\" This suggests a change that modifies summary generation so that normal context (routine context changes) does not alter summary? Need assumptions: The new summary behavior ignores additional context that was not part of original? Hmm.\n\nWe have \"selected change diff\" blank. \"CURRENT CHANGED SOURCE No changed source was readable.\" So we only know the task and test result. We need infer material assumptions. We can derive assumptions likely from change intention.\n\nWhat is \"stable summary behavior\"? Could be a function that returns a stable summary across non-material changes. Routine context changes include perhaps timestamp, user agent, etc. So assumption: The summary function produces identical output for normal context variations (input). Surface input. Risk maybe medium. experiment? input_empty? That doesn't fit. We need supported experiments. We have input_empty, input_boundary_zero, retry_duplicate, state_legacy, events_reordered, world_dst, config_missing, concurrent_duplicate. We can only propose these types.\n\nMaybe change is around a summary/cache? \"stable summary behavior\" maybe deterministic output for input. Need test normal_context passes. Assumption: normal context input contains all expected fields. Experiment input_empty could test if missing field causes break. But task says preserving stable summary behavior while accepting routine context changes: maybe change added handling for new context fields? So assumption: input can be empty or missing optional fields. Surface input. Experiment: input_empty. failure if false: summary generation crashes? Risk medium.\n\nAnother assumption: context can include zero values (boundary). Experiment input_boundary_zero. Surface input. Risk low? The test normal context passes, but boundary zero maybe untested. Assumption: zero numeric fields in context don't affect summary. Experiment input_boundary_zero. But supported experiment list includes that.\n\nTiming: Replaying same request twice should produce same summary (idempotency). experiment retry_duplicate. Surface timing. Risk medium. Assumption: summary generation is idempotent with respect to repeated context. Failure if false: second summary differs or error.\n\nState: Older persisted record lacking newly assumed field could be used. experiment state_legacy. Assumption: summary handles context records from previous schema without newly assumed field. Risk medium/high. failure: summary generation fails on missing field. This aligns with \"accepting routine context changes\" maybe backward compatibility.\n\nWorld: DST boundary? Summary might include date/time. Assumption: UTC instant across DST timezone boundary yields stable summary. experiment world_dst. Risk low/medium.\n\nConfig_missing: optional config. Assumption: summary generation doesn't require optional configuration field. Risk medium. experiment config_missing.\n\nEvents_reordered: changing order of events? Summary over event sequence might be order-dependent? Assumption: summary is invariant to reordering of routine context updates. Experiment events_reordered. Risk medium.\n\nConcurrent_duplicate: two concurrent copies of request producing summary? Assumption: concurrency-safe idempotent. Experiment concurrent_duplicate. Risk high.\n\nWe need rank by falsification value. Which assumptions are most likely break? Given task \"Preserve stable summary behavior while accepting routine context changes.\" The change likely added handling for new context? Current source unreadable. Test only normal. Potential breaks likely on edge cases: missing/legacy state, empty input, zero boundary, duplicate timing, etc. Need choose perhaps 3 assumptions. We need include evidence maybe path/location unknown. We can use generic \"unknown\" but schema requires file path and location. We can use \"not_readable\" maybe. But should be plausible. We can use \"app.py\" maybe or \"summary.py\"? Since test_app.VisibleTests suggests app module. Could use \"app.py\" at line unknown. Need provide reason. Evidence can be from visible test result: \"test_normal_context passed\" maybe file \"test_app.py\" location \"VisibleTests.test_normal_context\". That's evidence. Also maybe change summary? We can include evidence from diff? No diff. We can cite \"selected_change_diff\" but unavailable. But schema says evidence: list of {file, location, reason}. We can provide file \"test_app.py\", location \"VisibleTests.test_normal_context\", reason \"Only visible passing test; no edge cases covered.\" Also maybe \"changed source unreadable\" as file \"\"? Better use file \"app.py\" or \"summary.py\" with location \"unknown\" reason \"source unreadable, assumption from task description\". Could be acceptable. Need not be perfect.\n\nWe need output exactly one JSON object. No markdown.\n\nLet's decide assumptions. We can propose 4 assumptions:\nA1: Summary generation tolerates missing optional context fields (surface input, risk high, experiment input_empty)\nA2: Summary generation handles legacy persisted records lacking newly added fields (surface state, risk high, experiment state_legacy)\nA3: Summary generation is idempotent over duplicate identical requests (surface timing, risk medium, experiment retry_duplicate)\nA4: Summary generation handles zero numeric values in context without changing summary (surface input, risk low, experiment input_boundary_zero)\nMaybe also world_dst? Could include but not too many. At most one experiment per assumption. Need rank by falsification value: highest first. So order A1, A2, A3, A4. Risk high. But is input_empty the correct experiment for missing optional fields? input_empty sends empty collection where change may assume item exists. Yes.\n\nFor state_legacy: loads older persisted record that lacks a newly assumed field. Yes.\n\nFor retry_duplicate: replay same request twice to challenge idempotency. Yes.\n\nFor input_boundary_zero: send smallest numeric collection with zero value. Yes.\n\nNeed state why assumption based on task: \"accepting routine context changes\" implies context may vary, so missing/empty/legacy/zero should not alter stable summary. Good.\n\nNeed evidence list. For each, maybe include:\nA1: evidence: {\"file\":\"test_app.py\",\"location\":\"VisibleTests.test_normal_context\",\"reason\":\"Only normal context tested; empty context is not covered.\"}, {\"file\":\"app.py\",\"location\":\"summary generation\",\"reason\":\"Source unreadable; assumption inferred from change summary task.\"}\nA2: similar but state_legacy.\nA3: similar but retry_duplicate.\nA4: similar.\n\nNeed ensure JSON valid, no extra text. We'll produce object with change_summary, assumptions array. change_summary: \"Preserve stable summary behavior while accepting routine context changes; no source/diff readable, only one passing normal context test visible.\" But keep short.\n\nLet's craft final JSON. Use double quotes. No trailing commas. Ensure risk values \"low|medium|high\". surface values exactly supported: input, state, timing, world. We won't use world maybe. Could include world_dst as A5? But need maybe not. \"at most one supported experiment per assumption\" not maximum assumptions. Could include 5. But we need balance. Since no source, maybe less is more. But task asks \"Rank assumptions by falsification value.\" We can include 4.\n\nLet's verify experiment parameters. Schema says parameters: {}. Supported experiments have descriptions but no specific params. We can put empty object. That's acceptable. Could include some keys? Probably empty is fine.\n\nPotential issue: experiment \"input_empty\" is surface input, okay. parameters empty.\n\nNow output only JSON.",
+        "request_timestamp_utc": "2026-08-29T21:44:35.223189Z",
+        "response_format": "json_object",
+        "response_text": "{\n  \"change_summary\": \"Preserve stable summary behavior while accepting routine context changes; no source/diff readable, only one passing normal context test visible.\",\n  \"assumptions\": [\n    {\n      \"id\": \"A1\",\n      \"statement\": \"Summary generation tolerates an empty input collection where routine context may require at least one item.\",\n      \"surface\": \"input\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Only normal context is tested; empty input edge case is not covered.\"\n        },\n        {\n          \"file\": \"app.py\",\n          \"location\": \"summary generation\",\n          \"reason\": \"Source unreadable; assumption inferred from task description about routine context changes.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary generation crashes or produces unstable output when input collection is empty.\",\n      \"experiment\": {\n        \"type\": \"input_empty\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A2\",\n      \"statement\": \"Summary generation handles older persisted records that lack a newly assumed context field.\",\n      \"surface\": \"state\",\n      \"risk\": \"high\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Only current-state context is tested; legacy records with missing fields are not covered.\"\n        },\n        {\n          \"file\": \"app.py\",\n          \"location\": \"summary generation\",\n          \"reason\": \"Source unreadable; assumption inferred from task description about accepting routine context changes.\"\n        }\n      ],\n      \"failure_if_false\": \"Summary generation fails with a missing field error when loading legacy persisted state.\",\n      \"experiment\": {\n        \"type\": \"state_legacy\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A3\",\n      \"statement\": \"Summary generation is idempotent when the same request is replayed twice.\",\n      \"surface\": \"timing\",\n      \"risk\": \"medium\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Only one execution is tested; duplicate request behavior is not exercised.\"\n        },\n        {\n          \"file\": \"app.py\",\n          \"location\": \"summary generation\",\n          \"reason\": \"Source unreadable; assumption inferred from stable summary behavior requirement.\"\n        }\n      ],\n      \"failure_if_false\": \"The second identical request produces a different summary or an error, breaking stable behavior.\",\n      \"experiment\": {\n        \"type\": \"retry_duplicate\",\n        \"parameters\": {}\n      }\n    },\n    {\n      \"id\": \"A4\",\n      \"statement\": \"Summary generation is unaffected by zero numeric values in routine context fields.\",\n      \"surface\": \"input\",\n      \"risk\": \"low\",\n      \"evidence\": [\n        {\n          \"file\": \"test_app.py\",\n          \"location\": \"VisibleTests.test_normal_context\",\n          \"reason\": \"Only normal non-zero context is tested; boundary zero values are not covered.\"\n        },\n        {\n          \"file\": \"app.py\",\n          \"location\": \"summary generation\",\n          \"reason\": \"Source unreadable; assumption inferred from task description about accepting routine context changes.\"\n        }\n      ],\n      \"failure_if_false\": \"Zero numeric context values cause summary output to change unexpectedly or trigger an error.\",\n      \"experiment\": {\n        \"type\": \"input_boundary_zero\",\n        \"parameters\": {}\n      }\n    }\n  ]\n}",
+        "retries": 0,
+        "total_tokens": 3273
+      },
+      "retry_reason": null
+    }
+  ],
+  "failure_code": null,
+  "output_contract_status": "OK",
+  "parsed": {
+    "assumptions": [
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only normal context is tested; empty input edge case is not covered."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from task description about routine context changes."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_empty"
+        },
+        "failure_if_false": "Summary generation crashes or produces unstable output when input collection is empty.",
+        "id": "A1",
+        "risk": "high",
+        "statement": "Summary generation tolerates an empty input collection where routine context may require at least one item.",
+        "surface": "input"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only current-state context is tested; legacy records with missing fields are not covered."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from task description about accepting routine context changes."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "state_legacy"
+        },
+        "failure_if_false": "Summary generation fails with a missing field error when loading legacy persisted state.",
+        "id": "A2",
+        "risk": "high",
+        "statement": "Summary generation handles older persisted records that lack a newly assumed context field.",
+        "surface": "state"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only one execution is tested; duplicate request behavior is not exercised."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from stable summary behavior requirement."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "retry_duplicate"
+        },
+        "failure_if_false": "The second identical request produces a different summary or an error, breaking stable behavior.",
+        "id": "A3",
+        "risk": "medium",
+        "statement": "Summary generation is idempotent when the same request is replayed twice.",
+        "surface": "timing"
+      },
+      {
+        "evidence": [
+          {
+            "file": "test_app.py",
+            "location": "VisibleTests.test_normal_context",
+            "reason": "Only normal non-zero context is tested; boundary zero values are not covered."
+          },
+          {
+            "file": "app.py",
+            "location": "summary generation",
+            "reason": "Source unreadable; assumption inferred from task description about accepting routine context changes."
+          }
+        ],
+        "experiment": {
+          "parameters": {},
+          "type": "input_boundary_zero"
+        },
+        "failure_if_false": "Zero numeric context values cause summary output to change unexpectedly or trigger an error.",
+        "id": "A4",
+        "risk": "low",
+        "statement": "Summary generation is unaffected by zero numeric values in routine context fields.",
+        "surface": "input"
+      }
+    ],
+    "change_summary": "Preserve stable summary behavior while accepting routine context changes; no source/diff readable, only one passing normal context test visible."
+  },
+  "success": true
+}

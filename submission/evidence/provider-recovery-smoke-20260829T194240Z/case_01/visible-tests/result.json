@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "duration_ms": 1172,
+  "exit_code": 0,
+  "experiment_id": "visible_tests",
+  "output": null,
+  "process_failed": false,
+  "stderr": "test_average_for_normal_collection (test_app.SummaryTests.test_average_for_normal_collection) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+  "stdout": "",
+  "timed_out": false
+}

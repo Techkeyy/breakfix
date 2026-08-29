@@ -1,0 +1,17 @@
+{
+  "finish_reasons": [
+    "stop"
+  ],
+  "input_tokens": 844,
+  "latency_ms": 329416,
+  "model_calls": 1,
+  "monetary_cost_usd": 0.008297916,
+  "output_tokens": 4157,
+  "reasoning_content_present": true,
+  "response_formats": [
+    "json_object"
+  ],
+  "retries": 2,
+  "successful_provider_responses": 1,
+  "total_tokens": 5001
+}

@@ -1,0 +1,20 @@
+{
+  "case_id": "q1a",
+  "duration_ms": 51886,
+  "experiments_run": 1,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 984,
+      "evidence_complete": true,
+      "experiment_id": "input_empty",
+      "process_failed": true,
+      "state": "CONFIRMED BREAK"
+    }
+  ],
+  "regression_valid": true,
+  "selected_experiments": [
+    "input_empty"
+  ],
+  "state": "CONFIRMED BREAK"
+}

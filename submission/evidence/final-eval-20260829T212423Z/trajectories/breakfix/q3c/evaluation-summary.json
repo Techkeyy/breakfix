@@ -1,0 +1,20 @@
+{
+  "case_id": "q3c",
+  "duration_ms": 335536,
+  "experiments_run": 1,
+  "provider_status": "OK",
+  "records": [
+    {
+      "duration_ms": 232,
+      "evidence_complete": true,
+      "experiment_id": "state_legacy",
+      "process_failed": true,
+      "state": "CONFIRMED BREAK"
+    }
+  ],
+  "regression_valid": true,
+  "selected_experiments": [
+    "state_legacy"
+  ],
+  "state": "CONFIRMED BREAK"
+}

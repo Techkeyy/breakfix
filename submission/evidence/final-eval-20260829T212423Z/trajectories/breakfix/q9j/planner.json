@@ -1,0 +1,115 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only a non-empty normal context is exercised."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "input": []
+        },
+        "type": "input_empty"
+      },
+      "failure_if_false": "Summary raises an exception or returns unstable output when context is empty.",
+      "id": "A1",
+      "risk": "high",
+      "statement": "The summary logic tolerates an empty context collection without failing.",
+      "surface": "input"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "No legacy record coverage; new fields may be implicitly required."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "record_version": "legacy"
+        },
+        "type": "state_legacy"
+      },
+      "failure_if_false": "Summary fails with missing field error or returns a degraded summary for legacy records.",
+      "id": "A2",
+      "risk": "high",
+      "statement": "Older persisted context records that lack newly introduced fields still produce the same summary.",
+      "surface": "state"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Only a single order is tested; reordering may affect aggregation."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "events": [
+            "context_update_a",
+            "context_update_b"
+          ]
+        },
+        "type": "events_reordered"
+      },
+      "failure_if_false": "Different event ordering yields a different summary, violating stability.",
+      "id": "A3",
+      "risk": "medium",
+      "statement": "Summary output is independent of the order of routine context changes.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "Single request in visible test; idempotency is unverified."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "request": "same_payload"
+        },
+        "type": "retry_duplicate"
+      },
+      "failure_if_false": "Second identical request yields a different summary or errors due to state.",
+      "id": "A4",
+      "risk": "medium",
+      "statement": "Repeated identical context requests return the same summary without accumulating side effects.",
+      "surface": "timing"
+    },
+    {
+      "evidence": [
+        {
+          "file": "test_app.py",
+          "location": "VisibleTests.test_normal_context",
+          "reason": "No timezone boundary coverage; summary may format or compare local times."
+        }
+      ],
+      "experiment": {
+        "parameters": {
+          "instant": "2025-03-30T01:30:00Z",
+          "timezone": "Europe/Berlin"
+        },
+        "type": "world_dst"
+      },
+      "failure_if_false": "Summary timestamp shifts or becomes inconsistent around a DST boundary.",
+      "id": "A5",
+      "risk": "low",
+      "statement": "Summary calculations involving timestamps remain stable across daylight-saving transitions.",
+      "surface": "world"
+    }
+  ],
+  "change_summary": "Preserve stable summary output across routine context variations.",
+  "selected_experiments": [
+    "input_empty",
+    "state_legacy",
+    "events_reordered"
+  ],
+  "unsupported_assumptions": []
+}

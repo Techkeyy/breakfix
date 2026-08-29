@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))
+                                                                                                        ~~~~~~~^^^^^^^^^
+  File "C:\Users\HomePC\AppData\Local\Temp\breakfix-sandbox-ftko727e\project\app.py", line 2, in run
+    return {"currency": payload["config"]["currency"]}
+                        ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: 'currency'

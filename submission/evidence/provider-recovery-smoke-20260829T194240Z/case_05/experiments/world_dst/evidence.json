@@ -1,0 +1,58 @@
+{
+  "actual_behavior": {
+    "output": {
+      "open": true
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "app.py",
+        "location": "run.timestamp",
+        "reason": "datetime.astimezone treats naive datetime objects as system local time before converting."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "timestamp": "2024-01-02T13:00:00",
+        "timezone": "America/New_York"
+      },
+      "type": "world_dst"
+    },
+    "failure_if_false": "A naive timestamp shifts by the system timezone, producing an incorrect open/closed result.",
+    "id": "A1",
+    "risk": "high",
+    "statement": "The input timestamp is timezone-aware or intended as UTC; naive timestamps are not interpreted as local time in the requested timezone.",
+    "surface": "input"
+  },
+  "description": "Evaluate a UTC instant across a daylight-saving timezone boundary.",
+  "evidence_path": "C:\\Users\\HomePC\\Desktop\\BreakFix\\evidence\\provider-recovery-smoke-20260829T194240Z\\case_05\\experiments\\world_dst",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "world_dst",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-03-29T20:30:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

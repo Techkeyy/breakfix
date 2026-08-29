@@ -1,0 +1,53 @@
+{
+  "actual_behavior": {
+    "output": {
+      "status": "ready"
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "test_app.py",
+        "location": "VisibleTests.test_normal_context",
+        "reason": "Only a non-empty normal context is exercised."
+      }
+    ],
+    "experiment": {
+      "parameters": {
+        "input": []
+      },
+      "type": "input_empty"
+    },
+    "failure_if_false": "Summary raises an exception or returns unstable output when context is empty.",
+    "id": "A1",
+    "risk": "high",
+    "statement": "The summary logic tolerates an empty context collection without failing.",
+    "surface": "input"
+  },
+  "description": "Send an empty collection where the change may assume an item exists.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q9j\\experiments\\input_empty",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "input_empty",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [],
+    "request_id": "charge-001",
+    "state": {
+      "tax_rate": 0.2,
+      "version": 2
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}

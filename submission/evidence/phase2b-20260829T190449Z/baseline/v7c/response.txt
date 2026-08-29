@@ -1,0 +1,25 @@
+{
+  "change_summary": "Extracted the summary computation into a private helper function `_summary` and updated `run` to delegate to it. The input handling and return value are unchanged.",
+  "recommendation": "NO_BREAK_FOUND",
+  "findings": [
+    {
+      "summary": "The visible test passes conceptually because both before and after implementations return {'total': 30, 'count': 2, 'mean': 15.0} for items [10, 20].",
+      "severity": "low",
+      "evidence": [
+        "app.py: run now returns _summary(payload['items']), preserving the same dictionary structure and arithmetic."
+      ],
+      "confidence": "high"
+    }
+  ],
+  "tests_run": [
+    "conceptual: python -m unittest discover -s tests -v -> expected test_positive_values pass"
+  ],
+  "tool_actions": [
+    {
+      "action": "inspection",
+      "result": "Compared before and after source. Before: run computed total, count, mean inline. After: _summary computes the same values and run delegates to it. Visible test input [10, 20] produces {'total': 30, 'count': 2, 'mean': 15.0} in both versions."
+    }
+  ],
+  "retries": 0,
+  "final_conclusion": "No break found. The refactor preserves the established behavior for the visible test and the same input/output contract."
+}

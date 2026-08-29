@@ -1,0 +1,81 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "dependency_installation": "disabled by default",
+  "experiment_records": [
+    {
+      "actual_behavior": {
+        "output": null,
+        "process_failed": true
+      },
+      "assumption": {
+        "evidence": [
+          {
+            "file": "app.py",
+            "location": "run",
+            "reason": "Direct indexing of payload['config']['currency']"
+          }
+        ],
+        "experiment": {
+          "parameters": {
+            "field": "config.currency"
+          },
+          "type": "config_missing"
+        },
+        "failure_if_false": "KeyError on missing config or currency",
+        "id": "A1",
+        "risk": "high",
+        "statement": "The payload contains a config object with a currency value.",
+        "surface": "input"
+      },
+      "description": "Remove an optional configuration field to test the dependency boundary.",
+      "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q4d\\experiments\\config_missing",
+      "evidence_state": "CONFIRMED BREAK",
+      "expected_behavior": "the compatible project returns a structured result without a process failure",
+      "experiment_id": "config_missing",
+      "payload": {
+        "amount": 25,
+        "attempts": 1,
+        "concurrent_calls": 1,
+        "config": {},
+        "events": [
+          "reserve",
+          "confirm"
+        ],
+        "items": [
+          10,
+          20,
+          30
+        ],
+        "request_id": "charge-001",
+        "state": {
+          "tax_rate": 0.2,
+          "version": 2
+        },
+        "timestamp": "2026-01-15T19:00:00+00:00",
+        "timezone": "America/New_York"
+      }
+    }
+  ],
+  "experiments_run": 1,
+  "ground_truth_supplied_to_agent": false,
+  "max_experiments": 3,
+  "max_recovery_attempts": 1,
+  "outcome": "CONFIRMED BREAK",
+  "project_root": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\workspace\\benchmark\\final_holdout\\q4d\\after",
+  "project_snapshot": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q4d\\project_snapshot",
+  "prompt_id": "breakfix-product-planner-v1",
+  "provider_status": "OK",
+  "reference": "q4d",
+  "regression": {
+    "valid": true
+  },
+  "selected_experiments": [
+    "config_missing"
+  ],
+  "task": "Expose the configured currency in the account summary.",
+  "telemetry_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\q4d\\provider-telemetry.json",
+  "test_command": "python -m unittest discover -s tests -v"
+}

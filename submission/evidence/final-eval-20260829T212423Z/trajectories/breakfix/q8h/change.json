@@ -1,0 +1,10 @@
+{
+  "change_kind": "final-holdout",
+  "changed_files": [
+    "app.py"
+  ],
+  "diff": "--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,3 @@\n def run(payload):\n-    return {\"open\": True}\n+    hour = int(payload[\"timestamp\"][11:13])\n+    return {\"open\": 9 <= hour < 17}\n",
+  "reference": "q8h",
+  "task": "Interpret business hours in the requested timezone.",
+  "visible_test_command": "python -m unittest discover -s tests -v"
+}

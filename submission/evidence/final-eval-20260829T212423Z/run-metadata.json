@@ -1,0 +1,11 @@
+{
+  "deepseek_credential_present": true,
+  "git_head_at_start": "aa8a4a8db63c6586221792320c2973ae6d4d512b",
+  "holdout_manifest_sha256": "9a9fef98edcaf76f935731020e24a59d7fa9b8d7c2a1c99eb237892ba2fdc39a",
+  "product_checkpoint": "13b8c89",
+  "protocol_id": "final-independent-evaluation-v1",
+  "public_holdout_cases": 16,
+  "run_id": "final-eval-20260829T212423Z",
+  "truth_loaded_externally": true,
+  "truth_path_published": false
+}

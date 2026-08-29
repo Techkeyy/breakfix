@@ -1,0 +1,55 @@
+{
+  "actual_behavior": {
+    "output": {
+      "status": "ready"
+    },
+    "process_failed": false
+  },
+  "assumption": {
+    "evidence": [
+      {
+        "file": "test_app.py",
+        "location": "VisibleTests.test_normal_context",
+        "reason": "Normal context includes new fields; legacy persisted records are not covered."
+      }
+    ],
+    "experiment": {
+      "parameters": {},
+      "type": "state_legacy"
+    },
+    "failure_if_false": "Legacy records without new fields cause KeyError or incorrect summary.",
+    "id": "A2",
+    "risk": "high",
+    "statement": "Summary generation does not require newly introduced context fields to be present.",
+    "surface": "state"
+  },
+  "description": "Load an older persisted record that lacks a newly assumed field.",
+  "evidence_path": "C:\\Users\\HomePC\\AppData\\Local\\Temp\\breakfix-final-eval-20260829T212423Z\\breakfix\\r4q\\experiments\\state_legacy",
+  "evidence_state": "NO BREAK CONFIRMED",
+  "expected_behavior": "the compatible project returns a structured result without a process failure",
+  "experiment_id": "state_legacy",
+  "payload": {
+    "amount": 25,
+    "attempts": 1,
+    "concurrent_calls": 1,
+    "config": {
+      "currency": "USD"
+    },
+    "events": [
+      "reserve",
+      "confirm"
+    ],
+    "items": [
+      10,
+      20,
+      30
+    ],
+    "request_id": "charge-001",
+    "state": {
+      "balance": 100,
+      "version": 1
+    },
+    "timestamp": "2026-01-15T19:00:00+00:00",
+    "timezone": "America/New_York"
+  }
+}
