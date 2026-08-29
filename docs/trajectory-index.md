@@ -31,13 +31,13 @@ index.
 
 ## Representative trajectories for judges
 
-| Representative | Purpose and instructions | Important actions and result | Artifact |
-| --- | --- | --- | --- |
-| BreakFix planner | Analyze the selected change and rank falsifiable assumptions | Product prompt, structured planner output, selected input_empty, isolated execution | evidence/final-eval-20260829T212423Z/trajectories/breakfix/q1a/ |
-| Generic baseline | Review the same public change without hidden probes | Same-model JSON recommendation, validation, reasoning/final-output separation | evidence/final-eval-20260829T212423Z/trajectories/baseline/q1a/ |
-| Provider recovery | Preserve a response-contract failure and bounded recovery behavior | Historical 2,000-token truncation is preserved; later smoke records repaired structured output | evidence/phase2b-20260829T190449Z/ and evidence/provider-recovery-smoke-20260829T194240Z/ |
-| Confirmed break | Show deterministic evidence rather than model assertion | Empty-input process failure, payload, command, stdout, stderr, timing, replay, and regression | evidence/canonical-demo-20260829T223714Z/ |
-| Approval and verification | Show the human checkpoint before a consequential patch | Proposal requires approval, approved application is recorded, exact reproduction and visible tests pass, status VERIFIED | evidence/canonical-demo-20260829T223714Z/fix/ |
+| Representative | Purpose | Agent instructions and input/context | Important tool calls and outputs | Retries/failures | Human checkpoint | Final result | Artifact |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BreakFix planner | Analyze the selected change and rank falsifiable assumptions | Product planner prompt; public q1a change, visible tests, and supported catalogue | Provider call, schema validation, assumption ranking, selected `input_empty`, isolated execution | Provider telemetry and recovery record; no hidden oracle in context | None before analysis | `CONFIRMED BREAK` with regression evidence | `evidence/final-eval-20260829T212423Z/trajectories/breakfix/q1a/` |
+| Generic baseline | Review the same public change without hidden probes | Generic comparator prompt; same q1a public change and visible tests | Provider call, JSON validation, separated reasoning/final output | Retries and finish reason are preserved in replay metadata | None; reasoning only | Structured recommendation, scored as the secondary baseline | `evidence/final-eval-20260829T212423Z/trajectories/baseline/q1a/` |
+| Provider recovery | Preserve a response-contract failure and bounded recovery behavior | Historical Phase 2B Attempt 1 and two authorized smoke controls | Truncated response, explicit provider-output error, recovered JSON response, telemetry | Attempt 1 failed at the 2,000-token ceiling; one bounded recovery path is recorded | Authorization was required for the smoke calls | Historical FAIL preserved; smoke PASS | `evidence/phase2b-20260829T190449Z/` and `evidence/provider-recovery-smoke-20260829T194240Z/` |
+| Confirmed break | Show deterministic evidence rather than model assertion | Canonical independent sample, selected change, visible tests, and `input_empty` payload | Visible tests, planner, isolated subprocess, replay, regression generation, reducer | No provider failure; execution process failure is recorded | None before evidence capture | Reproduced break and valid regression | `evidence/canonical-demo-20260829T223714Z/` |
+| Approval and verification | Show the human checkpoint before a consequential patch | Candidate patch generated from the canonical confirmed-break evidence | Proposal, explicit approval, application, after-fix replay, visible tests | Approval is required; no merge or push | Human approval recorded as `approved=true` | `VERIFIED`; regression and original tests pass | `evidence/canonical-demo-20260829T223714Z/fix/` |
 
 The trajectories preserve visible prompts, tool inputs and outputs, retries,
 validation, and final results without exposing chain-of-thought, credentials,

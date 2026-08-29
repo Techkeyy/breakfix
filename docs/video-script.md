@@ -2,17 +2,17 @@
 
 ## 0:00 to 0:25: problem
 
-Show a small code change while its visible tests pass. Say: “Your tests check
-what you expected. BreakFix tests what you forgot to expect. The question is
-not whether review can imagine a boundary. It is whether we can execute it and
-preserve proof.”
+Show an ordinary coding-agent-generated change while its visible tests pass.
+Say: “AI can already suggest many things that might be wrong. The expensive
+part is proving which suspicions are real.” Then say: “Your tests check what you
+expected. BreakFix tests what you forgot to expect.”
 
 ## 0:25 to 0:45: simple baseline
 
 Show the generic comparator prompt and its JSON recommendation for the same
 change. Say that this lane receives only the public change and visible tests. It
 can identify a plausible risk, but it does not receive hidden probes and does
-not execute them.
+not execute them. Say: “BreakFix does not stop at a warning.”
 
 ## 0:45 to 1:15: visible tests and selected change
 
@@ -60,7 +60,10 @@ prompts, thresholds, oracle, budget, or gate.”
 
 ## 4:35 to 4:50: close
 
-Say: “Stop guessing what might break. Prove what actually does.” Show
+Say: “As coding agents become better at imagining possible failures, generating
+more suspicions stops being the hard part. The bottleneck becomes deciding
+which suspicions are worth executing and proving which failures are real.” Then
+say: “Stop guessing what might break. Prove what actually does.” Show
 `REPRODUCE.md` and the scope: Python `app.run(payload)`, four supported
 surfaces, sanitized local execution, no automatic merge or push. End on the
 oracle-free final evidence and the clean-environment reproduction commands.

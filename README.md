@@ -6,6 +6,12 @@ execution and preserves the evidence needed to reproduce it.
 
 > Stop guessing what might break. Prove what actually does.
 
+BreakFix uses an agent to identify which hidden assumptions in a code change are
+worth attacking, executes those attacks in isolation, and produces reproducible
+evidence when a real break occurs.
+
+Your tests check what you expected. BreakFix tests what you forgot to expect.
+
 ## The result
 
 The final independent evaluation passed its frozen primary gate.

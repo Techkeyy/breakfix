@@ -15,7 +15,7 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 
 ## Requirement matrix
 
-| Official requirement | Source | BreakFix implementation | Evidence | Status |
+| REQUIREMENT | SOURCE | IMPLEMENTATION | EVIDENCE | STATUS |
 | --- | --- | --- | --- | --- |
 | Online challenge | HackerEarth challenge page, Overview | Local-first CLI and evidence bundle; no deployment claimed | README and run output | PASS |
 | Individual entry, team size 1 | Challenge page, header and FAQ | Participant obligation, not a software gate | Final form must be completed by entrant | N/A |
@@ -28,6 +28,11 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | One registration and one final submission | Challenge page, Eligibility | No submission automation built | Final form and submission remain manual | N/A |
 | Coding-agent use is required | Challenge page, Overview and FAQ | Phase 1.5 and final evaluation use real model lanes with captured replay traces | evidence/final-eval-20260829T212423Z/trajectories/; integrity metadata | PASS |
 | Disclose tools used | Challenge page, Overview and FAQ | README and docs name the local prototype and limitations | README; docs | PASS |
+| Simple baseline | Challenge page, Theme and Submission Package | Same-case generic comparator receives only public context and visible tests | evidence/final-eval-20260829T212423Z/trajectories/baseline/; docs/final-evaluation-protocol.md | PASS |
+| Advanced solution | Challenge page, Theme and Submission Package | BreakFix planner, bounded targeted execution, evidence, replay, regression, approval, and verification | breakfix/; docs/canonical-demo.md; final evidence | PASS |
+| Fair same-case evaluation | Challenge page, Evaluation Criteria | Generic, fixed, and BreakFix lanes use the same fresh opaque 16-case holdout and visible context | docs/final-evaluation-protocol.md; final summary | PASS |
+| Frozen primary metric | Director-verified protocol | Count executable experiments needed for complete seeded-fault recall with zero safe false confirmed breaks | docs/final-evaluation-protocol.md; final summary | PASS |
+| Defined success criteria | Director-verified protocol | Every faulty case must confirm a break, every safe control must avoid a confirmed break, and both eligible lanes must beat the fixed count | docs/final-evaluation-protocol.md; final summary | PASS |
 | Submit representative trajectories for every agent used | Challenge page, Submission Package and FAQ | Baseline and BreakFix trajectories capture prompt hashes, context, tool actions, outputs, retries, validation, telemetry, and the no-ground-truth boundary | evidence/final-eval-20260829T212423Z/trajectories/; docs/trajectory-index.md | PASS |
 | Complete solution code | Challenge page, Submission Package | Source, benchmark, tests, and runner are present | canonical project directory | PASS |
 | Improvement changelog with evidence-linked iterations | Challenge page, Submission Package | Changelog records baseline, matrix, planner miss, timeout fix, provider recovery, and final rerun | docs/improvement-changelog.md | PASS |
