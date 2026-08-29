@@ -1,0 +1,17 @@
+{
+  "agent": "generic-review-baseline",
+  "decision": "needs-review",
+  "findings": [
+    {
+      "finding": "The changed state read may reject older persisted records.",
+      "severity": "high"
+    }
+  ],
+  "hidden_checks_run": 0,
+  "implementation": "offline deterministic surrogate, no hidden experiments",
+  "limitations": [
+    "This checkpoint does not call a live model.",
+    "The baseline cannot prove a failure without executing a hidden perturbation."
+  ],
+  "visible_tests_passed": true
+}

@@ -1,0 +1,12 @@
+{
+  "agent": "generic-review-baseline",
+  "implementation": "offline deterministic surrogate, no hidden experiments",
+  "visible_tests_passed": true,
+  "decision": "accept",
+  "findings": [],
+  "hidden_checks_run": 0,
+  "limitations": [
+    "This checkpoint does not call a live model.",
+    "The baseline cannot prove a failure without executing a hidden perturbation."
+  ]
+}

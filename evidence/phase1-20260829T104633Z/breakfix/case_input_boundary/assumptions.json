@@ -1,0 +1,18 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        "The diff introduces direct input access or an operation with a boundary case."
+      ],
+      "id": "input-shape",
+      "risk": 0.86,
+      "selected_experiments": [
+        "input_empty",
+        "input_boundary_zero"
+      ],
+      "statement": "The changed path still receives a non-empty, well-shaped input.",
+      "surface": "input"
+    }
+  ],
+  "ground_truth_supplied_to_agent": false
+}

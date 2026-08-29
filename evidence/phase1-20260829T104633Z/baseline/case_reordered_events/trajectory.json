@@ -1,0 +1,42 @@
+{
+  "agent": "generic-review-baseline",
+  "context": {
+    "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,16 +1,10 @@\n def run(payload):\n     reserved = False\n     confirmed = False\n-    pending_confirmation = False\n     for event in payload[\"events\"]:\n         if event == \"confirm\":\n-            if reserved:\n-                confirmed = True\n-            else:\n-                pending_confirmation = True\n+            confirmed = reserved\n         elif event == \"reserve\":\n             reserved = True\n-            if pending_confirmation:\n-                confirmed = True\n     return {\"status\": \"confirmed\" if confirmed else \"pending\"}\n \n",
+    "visible_tests": {
+      "command": [
+        "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "duration_ms": 3454,
+      "exit_code": 0,
+      "experiment_id": "visible_tests",
+      "output": null,
+      "process_failed": false,
+      "stderr": "test_happy_path_order (test_app.ReplayTests.test_happy_path_order) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+      "stdout": "",
+      "timed_out": false
+    }
+  },
+  "instructions": "Review the selected change using only the diff, surrounding code, and provided tests. Do not invent hidden results.",
+  "output": {
+    "agent": "generic-review-baseline",
+    "decision": "accept",
+    "findings": [],
+    "hidden_checks_run": 0,
+    "implementation": "offline deterministic surrogate, no hidden experiments",
+    "limitations": [
+      "This checkpoint does not call a live model.",
+      "The baseline cannot prove a failure without executing a hidden perturbation."
+    ],
+    "visible_tests_passed": true
+  },
+  "tool_calls": [
+    "read_selected_diff",
+    "read_visible_test_result"
+  ]
+}

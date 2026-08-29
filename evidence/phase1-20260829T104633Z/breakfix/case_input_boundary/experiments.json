@@ -1,0 +1,15 @@
+{
+  "available_library_size": 6,
+  "selected": [
+    {
+      "description": "Send an empty collection where the change may assume an item exists.",
+      "id": "input_empty",
+      "why": "The changed path still receives a non-empty, well-shaped input."
+    },
+    {
+      "description": "Send the smallest numeric collection with a zero value.",
+      "id": "input_boundary_zero",
+      "why": "The changed path still receives a non-empty, well-shaped input."
+    }
+  ]
+}

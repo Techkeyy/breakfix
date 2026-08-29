@@ -1,0 +1,10 @@
+{
+  "available_library_size": 6,
+  "selected": [
+    {
+      "description": "Evaluate a UTC instant across a daylight-saving timezone boundary.",
+      "id": "world_dst",
+      "why": "The changed time calculation remains correct across timezone boundaries."
+    }
+  ]
+}

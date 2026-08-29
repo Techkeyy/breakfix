@@ -1,0 +1,26 @@
+{
+  "command": [
+    "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "-I",
+    "-c",
+    "import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))"
+  ],
+  "duration_ms": 2108,
+  "evaluation": {
+    "confirmed_break": false,
+    "execution_proved_failure": false,
+    "expected_output": null,
+    "fault_experiment": false,
+    "matches_expected": true
+  },
+  "exit_code": 0,
+  "experiment_id": "input_boundary_zero",
+  "output": {
+    "average": 0.0,
+    "count": 1
+  },
+  "process_failed": false,
+  "stderr": "",
+  "stdout": "{\"average\": 0.0, \"count\": 1}\n",
+  "timed_out": false
+}

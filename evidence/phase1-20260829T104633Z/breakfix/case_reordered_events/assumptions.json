@@ -1,0 +1,17 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        "The diff processes a multi-step event sequence."
+      ],
+      "id": "event-order",
+      "risk": 0.79,
+      "selected_experiments": [
+        "events_reordered"
+      ],
+      "statement": "Valid events arrive in the same order as the happy-path test.",
+      "surface": "timing"
+    }
+  ],
+  "ground_truth_supplied_to_agent": false
+}

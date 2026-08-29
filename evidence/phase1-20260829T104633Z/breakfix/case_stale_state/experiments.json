@@ -1,0 +1,10 @@
+{
+  "available_library_size": 6,
+  "selected": [
+    {
+      "description": "Load an older persisted record that lacks a newly assumed field.",
+      "id": "state_legacy",
+      "why": "Persisted state always contains the newly accessed field."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        "The diff changes how a field is read from persisted state."
+      ],
+      "id": "persisted-state-shape",
+      "risk": 0.88,
+      "selected_experiments": [
+        "state_legacy"
+      ],
+      "statement": "Persisted state always contains the newly accessed field.",
+      "surface": "state"
+    }
+  ],
+  "ground_truth_supplied_to_agent": false
+}

@@ -1,0 +1,17 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        "The diff changes timestamp or timezone interpretation."
+      ],
+      "id": "clock-and-world",
+      "risk": 0.63,
+      "selected_experiments": [
+        "world_dst"
+      ],
+      "statement": "The changed time calculation remains correct across timezone boundaries.",
+      "surface": "world"
+    }
+  ],
+  "ground_truth_supplied_to_agent": false
+}

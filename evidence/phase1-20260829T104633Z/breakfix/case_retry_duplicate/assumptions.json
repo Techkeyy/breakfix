@@ -1,0 +1,17 @@
+{
+  "assumptions": [
+    {
+      "evidence": [
+        "The diff changes retry or duplicate-operation handling."
+      ],
+      "id": "operation-idempotency",
+      "risk": 0.91,
+      "selected_experiments": [
+        "retry_duplicate"
+      ],
+      "statement": "A repeated delivery of the same operation cannot apply its side effect twice.",
+      "surface": "timing"
+    }
+  ],
+  "ground_truth_supplied_to_agent": false
+}

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+    "-I",
+    "-c",
+    "import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))"
+  ],
+  "duration_ms": 3461,
+  "evaluation": {
+    "confirmed_break": false,
+    "execution_proved_failure": true,
+    "expected_output": null,
+    "fault_experiment": false,
+    "matches_expected": true
+  },
+  "exit_code": 1,
+  "experiment_id": "world_dst",
+  "output": null,
+  "process_failed": true,
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json, sys; sys.path.insert(0, '.'); import app; payload=json.loads(sys.stdin.read()); result=app.run(payload); print(json.dumps(result, sort_keys=True))\n                                                                                                        ~~~~~~~^^^^^^^^^\n  File \"C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\cases\\case_stale_state\\after\\app.py\", line 4, in run\n    return {\"total\": round(state[\"balance\"] * (1 + tax_rate), 2)}\n                           ~~~~~^^^^^^^^^^^\nKeyError: 'balance'\n",
+  "stdout": "",
+  "timed_out": false
+}

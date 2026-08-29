@@ -1,0 +1,10 @@
+{
+  "available_library_size": 6,
+  "selected": [
+    {
+      "description": "Replay the same request twice to challenge idempotency.",
+      "id": "retry_duplicate",
+      "why": "A repeated delivery of the same operation cannot apply its side effect twice."
+    }
+  ]
+}

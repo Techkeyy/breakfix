@@ -1,0 +1,14 @@
+# Python caches and run outputs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Secrets and local environments
+.env
+.env.*
+!.env.example
+
+# Generated evidence and scratch output
+evidence/
+.tmp/

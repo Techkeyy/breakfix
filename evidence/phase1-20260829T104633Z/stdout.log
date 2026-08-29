@@ -1,0 +1,348 @@
+{
+  "run_id": "phase1-20260829T104633Z",
+  "lanes": {},
+  "cases": [
+    {
+      "id": "case_input_boundary",
+      "title": "Averages after a collection change",
+      "surface": "input",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_average_for_normal_collection (test_app.SummaryTests.test_average_for_normal_collection) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK\n",
+        "output": null,
+        "duration_ms": 1409,
+        "process_failed": false
+      },
+      "baseline": {
+        "flagged": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "result_path": "evidence/phase1-20260829T104633Z/baseline/case_input_boundary/result.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "confirmed_experiments": [
+          "input_empty"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/fixed-matrix/case_input_boundary"
+      },
+      "breakfix": {
+        "assumptions": [
+          {
+            "id": "input-shape",
+            "surface": "input",
+            "statement": "The changed path still receives a non-empty, well-shaped input.",
+            "evidence": [
+              "The diff introduces direct input access or an operation with a boundary case."
+            ],
+            "risk": 0.86,
+            "selected_experiments": [
+              "input_empty",
+              "input_boundary_zero"
+            ]
+          }
+        ],
+        "experiments_selected": [
+          "input_empty",
+          "input_boundary_zero"
+        ],
+        "experiments_run": 2,
+        "detected": true,
+        "confirmed_experiments": [
+          "input_empty"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/breakfix/case_input_boundary"
+      }
+    },
+    {
+      "id": "case_reordered_events",
+      "title": "Reservation replay after event handling changes",
+      "surface": "timing",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_happy_path_order (test_app.ReplayTests.test_happy_path_order) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "output": null,
+        "duration_ms": 3454,
+        "process_failed": false
+      },
+      "baseline": {
+        "flagged": false,
+        "detection": false,
+        "false_approval": true,
+        "false_positive": false,
+        "result_path": "evidence/phase1-20260829T104633Z/baseline/case_reordered_events/result.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "confirmed_experiments": [
+          "events_reordered"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/fixed-matrix/case_reordered_events"
+      },
+      "breakfix": {
+        "assumptions": [
+          {
+            "id": "event-order",
+            "surface": "timing",
+            "statement": "Valid events arrive in the same order as the happy-path test.",
+            "evidence": [
+              "The diff processes a multi-step event sequence."
+            ],
+            "risk": 0.79,
+            "selected_experiments": [
+              "events_reordered"
+            ]
+          }
+        ],
+        "experiments_selected": [
+          "events_reordered"
+        ],
+        "experiments_run": 1,
+        "detected": true,
+        "confirmed_experiments": [
+          "events_reordered"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/breakfix/case_reordered_events"
+      }
+    },
+    {
+      "id": "case_retry_duplicate",
+      "title": "Charge processing after a retry refactor",
+      "surface": "timing",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_single_delivery_charges_once (test_app.ChargeTests.test_single_delivery_charges_once) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "output": null,
+        "duration_ms": 2994,
+        "process_failed": false
+      },
+      "baseline": {
+        "flagged": false,
+        "detection": false,
+        "false_approval": true,
+        "false_positive": false,
+        "result_path": "evidence/phase1-20260829T104633Z/baseline/case_retry_duplicate/result.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "confirmed_experiments": [
+          "retry_duplicate"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/fixed-matrix/case_retry_duplicate"
+      },
+      "breakfix": {
+        "assumptions": [
+          {
+            "id": "operation-idempotency",
+            "surface": "timing",
+            "statement": "A repeated delivery of the same operation cannot apply its side effect twice.",
+            "evidence": [
+              "The diff changes retry or duplicate-operation handling."
+            ],
+            "risk": 0.91,
+            "selected_experiments": [
+              "retry_duplicate"
+            ]
+          }
+        ],
+        "experiments_selected": [
+          "retry_duplicate"
+        ],
+        "experiments_run": 1,
+        "detected": true,
+        "confirmed_experiments": [
+          "retry_duplicate"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/breakfix/case_retry_duplicate"
+      }
+    },
+    {
+      "id": "case_stale_state",
+      "title": "Totals after a persisted-state migration",
+      "surface": "state",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_current_state_total (test_app.TotalTests.test_current_state_total) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+        "output": null,
+        "duration_ms": 3475,
+        "process_failed": false
+      },
+      "baseline": {
+        "flagged": true,
+        "detection": true,
+        "false_approval": false,
+        "false_positive": false,
+        "result_path": "evidence/phase1-20260829T104633Z/baseline/case_stale_state/result.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": true,
+        "confirmed_experiments": [
+          "state_legacy"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/fixed-matrix/case_stale_state"
+      },
+      "breakfix": {
+        "assumptions": [
+          {
+            "id": "persisted-state-shape",
+            "surface": "state",
+            "statement": "Persisted state always contains the newly accessed field.",
+            "evidence": [
+              "The diff changes how a field is read from persisted state."
+            ],
+            "risk": 0.88,
+            "selected_experiments": [
+              "state_legacy"
+            ]
+          }
+        ],
+        "experiments_selected": [
+          "state_legacy"
+        ],
+        "experiments_run": 1,
+        "detected": true,
+        "confirmed_experiments": [
+          "state_legacy"
+        ],
+        "evidence_path": "evidence/phase1-20260829T104633Z/breakfix/case_stale_state"
+      }
+    },
+    {
+      "id": "case_timezone_robust",
+      "title": "Business hours across timezone boundaries",
+      "surface": "world",
+      "visible_tests": {
+        "experiment_id": "visible_tests",
+        "command": [
+          "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "stdout": "",
+        "stderr": "test_normal_business_hours (test_app.BusinessHoursTests.test_normal_business_hours) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.931s\n\nOK\n",
+        "output": null,
+        "duration_ms": 3536,
+        "process_failed": false
+      },
+      "baseline": {
+        "flagged": false,
+        "detection": false,
+        "false_approval": false,
+        "false_positive": false,
+        "result_path": "evidence/phase1-20260829T104633Z/baseline/case_timezone_robust/result.json"
+      },
+      "fixed_matrix": {
+        "experiments_run": 6,
+        "detected": false,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase1-20260829T104633Z/fixed-matrix/case_timezone_robust"
+      },
+      "breakfix": {
+        "assumptions": [
+          {
+            "id": "clock-and-world",
+            "surface": "world",
+            "statement": "The changed time calculation remains correct across timezone boundaries.",
+            "evidence": [
+              "The diff changes timestamp or timezone interpretation."
+            ],
+            "risk": 0.63,
+            "selected_experiments": [
+              "world_dst"
+            ]
+          }
+        ],
+        "experiments_selected": [
+          "world_dst"
+        ],
+        "experiments_run": 1,
+        "detected": false,
+        "confirmed_experiments": [],
+        "evidence_path": "evidence/phase1-20260829T104633Z/breakfix/case_timezone_robust"
+      }
+    }
+  ],
+  "metrics": {
+    "fault_cases": 4,
+    "safe_cases": 1,
+    "baseline": {
+      "defect_detection_rate": 0.5,
+      "false_approval_rate": 0.5,
+      "false_positive_rate": 0.0,
+      "experiments": 0
+    },
+    "fixed_matrix": {
+      "defect_detection_rate": 1.0,
+      "experiments": 30
+    },
+    "breakfix": {
+      "defect_detection_rate": 1.0,
+      "experiments": 6
+    }
+  },
+  "integrity": {
+    "ground_truth_used_by_evaluator_only": true,
+    "real_subprocess_executions": true,
+    "live_model_used": false,
+    "baseline_is_offline_surrogate": true
+  }
+}

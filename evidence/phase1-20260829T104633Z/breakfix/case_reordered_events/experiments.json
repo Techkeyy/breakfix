@@ -1,0 +1,10 @@
+{
+  "available_library_size": 6,
+  "selected": [
+    {
+      "description": "Deliver a valid event sequence in a different order.",
+      "id": "events_reordered",
+      "why": "Valid events arrive in the same order as the happy-path test."
+    }
+  ]
+}

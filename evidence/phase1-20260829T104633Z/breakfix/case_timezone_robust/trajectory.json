@@ -1,0 +1,33 @@
+{
+  "agent": "breakfix-assumption-planner",
+  "context": {
+    "diff": "--- before/app.py\n+++ after/app.py\n@@ -1,7 +1,9 @@\n from datetime import datetime\n+from zoneinfo import ZoneInfo\n \n \n def run(payload):\n     timestamp = datetime.fromisoformat(payload[\"timestamp\"])\n-    return {\"open\": 9 <= timestamp.hour < 17}\n+    local_time = timestamp.astimezone(ZoneInfo(payload[\"timezone\"]))\n+    return {\"open\": 9 <= local_time.hour < 17}\n \n",
+    "visible_tests": {
+      "command": [
+        "C:\\Users\\HomePC\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "duration_ms": 3536,
+      "exit_code": 0,
+      "experiment_id": "visible_tests",
+      "output": null,
+      "process_failed": false,
+      "stderr": "test_normal_business_hours (test_app.BusinessHoursTests.test_normal_business_hours) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.931s\n\nOK\n",
+      "stdout": "",
+      "timed_out": false
+    }
+  },
+  "ground_truth_supplied_to_agent": false,
+  "instructions": "Infer hidden assumptions from the selected diff, rank their risk, select targeted experiments, execute them, and report only observed results.",
+  "tool_calls": [
+    "read_selected_diff",
+    "infer_assumptions",
+    "rank_assumptions",
+    "select_targeted_experiments"
+  ]
+}
