@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from breakfix.agent_contract import validate_phase2b_baseline_response, validate_phase2b_breakfix_response
-from breakfix.phase2b import PHASE2B_CASE_IDS, PHASE2B_MAX_EXPERIMENTS, _evaluate_execution, _select_experiments, _targeted_outcome
+from breakfix.phase2b import PHASE2B_CASE_IDS, PHASE2B_MAX_EXPERIMENTS, _evaluate_execution, _public_case_record, _select_experiments, _targeted_outcome
 from breakfix.provider import DirectProvider
 
 
@@ -105,6 +105,19 @@ class Phase2BContractTests(unittest.TestCase):
         self.assertEqual(body["thinking"], {"type": "enabled"})
         self.assertEqual(body["reasoning_effort"], "high")
         self.assertNotIn("temperature", body)
+
+    def test_persisted_case_record_omits_evaluator_truth(self):
+        public = _public_case_record({
+            "id": "xq7",
+            "surface": "state",
+            "fault": True,
+            "truth_for_evaluator": {"fault": True},
+            "breakfix": {"outcome": "CONFIRMED BREAK"},
+        })
+        self.assertNotIn("surface", public)
+        self.assertNotIn("fault", public)
+        self.assertNotIn("truth_for_evaluator", public)
+        self.assertEqual(public["breakfix"]["outcome"], "CONFIRMED BREAK")
 
 
 if __name__ == "__main__":

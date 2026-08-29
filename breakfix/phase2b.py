@@ -212,6 +212,11 @@ def _confusion_matrix(cases: list[dict[str, Any]], lane: str) -> dict[str, int]:
     }
 
 
+def _public_case_record(case: dict[str, Any]) -> dict[str, Any]:
+    """Remove evaluator-only truth before comparison evidence is persisted."""
+    return {key: value for key, value in case.items() if key not in {"surface", "fault", "truth_for_evaluator"}}
+
+
 def run_phase2b(root: Path) -> dict[str, Any]:
     root = root.resolve()
     truth_by_case = _load_truth(root)
@@ -279,11 +284,11 @@ def run_phase2b(root: Path) -> dict[str, Any]:
         breakfix_case_root = breakfix_root / case_id
         write_json(baseline_case_root / "agent-validation.json", baseline_validation)
         write_json(baseline_case_root / "replay-metadata.json", baseline_replay or {"load_error": baseline_error})
-        write_json(baseline_case_root / "trajectory.json", {"lane": "phase2b-direct-provider-baseline", "provider": baseline_replay.get("provider") if baseline_replay else None, "model": baseline_replay.get("model") if baseline_replay else None, "instructions": {"prompt_file": "docs/phase2b-prompts.md", "prompt_id": baseline_replay.get("prompt_id") if baseline_replay else None}, "context": baseline_replay.get("context") if baseline_replay else None, "structured_agent_result": baseline_validation, "tool_actions": baseline_replay.get("tool_actions", []) if baseline_replay else [], "retries": baseline_replay.get("retries", 0) if baseline_replay else 0, "parse_or_load_failure": baseline_error, "final_conclusion": baseline_validation.get("parsed") if baseline_validation.get("valid") else None, "ground_truth_supplied_to_agent": False})
+        write_json(baseline_case_root / "trajectory.json", {"lane": "phase2b-direct-provider-baseline", "provider": baseline_replay.get("provider") if baseline_replay else None, "model": baseline_replay.get("model") if baseline_replay else None, "instructions": {"prompt_file": "docs/phase2b-prompts.md", "prompt_id": baseline_replay.get("prompt_id") if baseline_replay else None}, "context": baseline_replay.get("prompt_context") if baseline_replay else None, "structured_agent_result": baseline_validation, "tool_actions": baseline_replay.get("tool_actions", []) if baseline_replay else [], "retries": baseline_replay.get("retries", 0) if baseline_replay else 0, "parse_or_load_failure": baseline_error, "final_conclusion": baseline_validation.get("parsed") if baseline_validation.get("valid") else None, "ground_truth_supplied_to_agent": False})
         write_text(baseline_case_root / "response.txt", baseline_replay.get("response_text", "") if baseline_replay else "")
         write_json(breakfix_case_root / "agent-validation.json", breakfix_validation)
         write_json(breakfix_case_root / "replay-metadata.json", breakfix_replay or {"load_error": breakfix_error})
-        write_json(breakfix_case_root / "trajectory.json", {"lane": "phase2b-direct-provider-breakfix", "provider": breakfix_replay.get("provider") if breakfix_replay else None, "model": breakfix_replay.get("model") if breakfix_replay else None, "instructions": {"prompt_file": "docs/phase2b-prompts.md", "prompt_id": breakfix_replay.get("prompt_id") if breakfix_replay else None, "budget": PHASE2B_MAX_EXPERIMENTS}, "context": breakfix_replay.get("context") if breakfix_replay else None, "structured_agent_result": breakfix_validation, "tool_actions": breakfix_replay.get("tool_actions", []) if breakfix_replay else [], "retries": breakfix_replay.get("retries", 0) if breakfix_replay else 0, "parse_or_load_failure": breakfix_error, "final_conclusion": breakfix_validation.get("parsed") if breakfix_validation.get("valid") else None, "ground_truth_supplied_to_agent": False, "execution_decides_success": True})
+        write_json(breakfix_case_root / "trajectory.json", {"lane": "phase2b-direct-provider-breakfix", "provider": breakfix_replay.get("provider") if breakfix_replay else None, "model": breakfix_replay.get("model") if breakfix_replay else None, "instructions": {"prompt_file": "docs/phase2b-prompts.md", "prompt_id": breakfix_replay.get("prompt_id") if breakfix_replay else None, "budget": PHASE2B_MAX_EXPERIMENTS}, "context": breakfix_replay.get("prompt_context") if breakfix_replay else None, "structured_agent_result": breakfix_validation, "tool_actions": breakfix_replay.get("tool_actions", []) if breakfix_replay else [], "retries": breakfix_replay.get("retries", 0) if breakfix_replay else 0, "parse_or_load_failure": breakfix_error, "final_conclusion": breakfix_validation.get("parsed") if breakfix_validation.get("valid") else None, "ground_truth_supplied_to_agent": False, "execution_decides_success": True})
         write_text(breakfix_case_root / "response.txt", breakfix_replay.get("response_text", "") if breakfix_replay else "")
         write_json(breakfix_case_root / "selection.json", {"selected_supported_ids": selected, "unsupported_assumptions": unsupported, "max_experiments": PHASE2B_MAX_EXPERIMENTS, "supported_catalogue": [experiment.id for experiment in EXPERIMENTS]})
 
@@ -317,6 +322,7 @@ def run_phase2b(root: Path) -> dict[str, Any]:
     eligible = bool(breakfix_metrics["seeded_fault_recall"] == 1.0 and breakfix_metrics["false_confirmed_breaks"] == 0 and breakfix_metrics["tool_runtime_failures"] == 0 and comparison["model"]["telemetry_available"])
     comparison["primary_metric"] = {"name": "total experiments required for complete seeded-fault recall with zero false confirmed breaks", "eligible": eligible, "value": breakfix_metrics["total_experiments"] if eligible else None, "observed_breakfix_experiments": breakfix_metrics["total_experiments"], "fixed_matrix_experiments": fixed_count, "experiment_reduction_percentage": (fixed_count - breakfix_metrics["total_experiments"]) / fixed_count * 100 if fixed_count else None, "frozen_fault_recall_requirement": "8/8", "frozen_false_confirmed_break_requirement": "0/8"}
     comparison["protocol"] = {"path": "docs/phase2b-evaluation-protocol.md", "primary_metric_frozen": True, "budget_per_case": PHASE2B_MAX_EXPERIMENTS, "fixed_matrix_policy": "all 8 supported experiments once per case"}
+    comparison["cases"] = [_public_case_record(case) for case in comparison["cases"]]
     write_json(evidence_root / "comparison.json", comparison)
     write_text(evidence_root / "stdout.log", json.dumps(comparison, indent=2) + "\n")
     return comparison
