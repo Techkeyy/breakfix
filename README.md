@@ -89,7 +89,7 @@ fixed matrix runs all eight supported experiments per case.
 
 The protocol is committed at `73ac4e85f5839890142224eb82679431deb1b20b`; the
 audited pre-run implementation and holdout are committed at
-`832fabf43094d9294c0814f7972913b7c186df82`. The leakage audit is in
+`cec684cda4bcbe0b7adc1d159f615a90e35eea60`. The leakage audit is in
 `docs/phase2b-leakage-audit.md`. Run the telemetry-capable lane only after
 setting an authorized credential and both cost rates in `.env` from
 `.env.example`:

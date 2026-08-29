@@ -165,7 +165,7 @@ executions. The pre-run holdout leakage audit passed.
 
 The benchmark is blocked until an authorized direct-provider credential and
 cost rates are supplied in the local environment. The pre-run commit is
-`832fabf43094d9294c0814f7972913b7c186df82`; protocol commit is
+`cec684cda4bcbe0b7adc1d159f615a90e35eea60`; protocol commit is
 `73ac4e85f5839890142224eb82679431deb1b20b`. Do not use Codex-runtime replays
 as Phase 2B evidence. Do not start UI, GitHub/CI, fixes, reducers,
 multilingual support, or large sandboxing.
