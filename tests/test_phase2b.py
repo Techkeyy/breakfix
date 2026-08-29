@@ -1,9 +1,11 @@
 import json
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from breakfix.agent_contract import validate_phase2b_baseline_response, validate_phase2b_breakfix_response
 from breakfix.phase2b import PHASE2B_CASE_IDS, PHASE2B_MAX_EXPERIMENTS, _evaluate_execution, _select_experiments, _targeted_outcome
+from breakfix.provider import DirectProvider
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,6 +79,32 @@ class Phase2BContractTests(unittest.TestCase):
         self.assertEqual(baseline["recommendation"], "NO_BREAK_FOUND")
         self.assertTrue(breakfix["valid"])
         self.assertEqual(breakfix["assumptions"][0]["proposed_experiment"]["id"], "state_legacy")
+
+    def test_deepseek_pricing_uses_peak_schedule_and_cache_usage(self):
+        peak = datetime(2026, 8, 29, 2, 0, tzinfo=timezone.utc)
+        cost, period, cache_status, input_rate, output_rate = DirectProvider._deepseek_cost(
+            input_tokens=1000,
+            output_tokens=500,
+            cache_hit_tokens=400,
+            cache_miss_tokens=600,
+            timestamp=peak,
+        )
+        self.assertEqual(period, "peak")
+        self.assertEqual(cache_status, "mixed")
+        self.assertEqual(input_rate, 1.32)
+        self.assertEqual(output_rate, 3.96)
+        self.assertAlmostEqual(cost, (400 * 0.044 + 600 * 1.32 + 500 * 3.96) / 1_000_000)
+
+    def test_deepseek_request_uses_thinking_without_temperature(self):
+        provider = object.__new__(DirectProvider)
+        provider.provider = "deepseek"
+        provider.model = "deepseek-v4-pro"
+        provider.reasoning_effort = "high"
+        provider.max_output_tokens = 2000
+        body = provider._request_body("hello")
+        self.assertEqual(body["thinking"], {"type": "enabled"})
+        self.assertEqual(body["reasoning_effort"], "high")
+        self.assertNotIn("temperature", body)
 
 
 if __name__ == "__main__":

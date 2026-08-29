@@ -29,11 +29,10 @@ committed replay inputs let the evaluation run without a provider credential.
 To capture new direct-provider responses, configure `.env` from `.env.example`
 and run `python scripts/run_phase2a_live.py`.
 
-The current deterministic suite has 15 passing tests. All sample projects are
-synthetic and safe to run locally. The direct provider path is implemented, but
-the final Phase 2A run used the same live Codex multi-agent runtime for both
-lanes because this environment had no authorized external provider credential.
-Provider tokens, latency, and cost are therefore reported as `null`.
+The current deterministic suite has 22 passing tests. All sample projects are
+synthetic and safe to run locally. The direct provider path now supports the
+director-selected DeepSeek V4 Pro configuration; no Phase 2B call is treated
+as evidence until the history-free workspace and credential preflight pass.
 
 ## Phase 2A result
 
@@ -88,18 +87,19 @@ recall with zero false confirmed breaks. The fresh holdout is 16 paired cases
 fixed matrix runs all eight supported experiments per case.
 
 The protocol is committed at `73ac4e85f5839890142224eb82679431deb1b20b`; the
+provider amendment is documented in `docs/phase2b-provider-amendment.md`. The
 audited pre-run implementation and holdout are committed at
 `cec684cda4bcbe0b7adc1d159f615a90e35eea60`. The leakage audit is in
 `docs/phase2b-leakage-audit.md`. Run the telemetry-capable lane only after
-setting an authorized credential and both cost rates in `.env` from
-`.env.example`:
+setting the authorized DeepSeek credential in `.env` from `.env.example`:
 
     python scripts/run_phase2b_live.py
     python scripts/run_phase2b.py
 
-The direct runner records model, input/output tokens, latency, retries, API
-errors, and approximate cost. No Phase 2B benchmark result has been claimed
-yet: this environment has no authorized direct-provider credential, and sending
-local source context to an external provider requires explicit authorization.
+The direct runner records model, input/output tokens, cache telemetry when
+available, latency, retries, API errors, peak/off-peak pricing, and approximate
+cost. No Phase 2B benchmark result has been claimed yet: the local environment
+still needs the authorized credential, and sending local source context to an
+external provider requires explicit authorization.
 No UI, GitHub/CI integration, fixer, reducer, regression loop, or new break
 surface is in scope.
