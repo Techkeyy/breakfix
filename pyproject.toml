@@ -12,5 +12,8 @@ dependencies = []
 [project.scripts]
 breakfix = "breakfix.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["breakfix*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
