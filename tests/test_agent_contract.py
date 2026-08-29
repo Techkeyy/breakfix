@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from breakfix.agent_contract import validate_baseline_response, validate_breakfix_response
+from breakfix.agent_contract import validate_baseline_response, validate_breakfix_response, validate_product_planner_response
 
 
 class AgentContractTests(unittest.TestCase):
@@ -45,6 +45,37 @@ class AgentContractTests(unittest.TestCase):
         result = validate_breakfix_response(json.dumps({"change_summary": "change", "assumptions": [assumption, {**assumption, "id": "b"}]}))
         self.assertTrue(result["valid"])
         self.assertEqual(result["selected_experiment_ids"], ["world_dst"])
+
+    def test_product_planner_contract_uses_compact_experiment_schema(self):
+        result = validate_product_planner_response(json.dumps({
+            "change_summary": "average now divides by collection length",
+            "assumptions": [{
+                "id": "A1",
+                "statement": "the collection is non-empty",
+                "surface": "input",
+                "risk": "high",
+                "evidence": [{"file": "app.py", "location": "run", "reason": "division by len"}],
+                "failure_if_false": "the changed path raises",
+                "experiment": {"type": "input_empty", "parameters": {}},
+            }],
+        }))
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["selected_experiment_ids"], ["input_empty"])
+
+    def test_product_planner_rejects_missing_evidence_object_shape(self):
+        result = validate_product_planner_response(json.dumps({
+            "change_summary": "change",
+            "assumptions": [{
+                "id": "A1",
+                "statement": "s",
+                "surface": "input",
+                "risk": "high",
+                "evidence": ["app.py:1"],
+                "failure_if_false": "f",
+                "experiment": {"type": "input_empty", "parameters": {}},
+            }],
+        }))
+        self.assertFalse(result["valid"])
 
 
 if __name__ == "__main__":

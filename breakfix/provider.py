@@ -8,7 +8,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 DEEPSEEK_PRICING_SOURCE = "https://api-docs.deepseek.com/quick_start/pricing/"
@@ -22,6 +22,7 @@ DEEPSEEK_V4_PRO_PRICES_PER_MILLION = {
 @dataclass(frozen=True)
 class ProviderResponse:
     response_text: str
+    reasoning_text: str | None
     provider: str
     model: str
     input_tokens: int | None
@@ -41,6 +42,83 @@ class ProviderResponse:
     pricing_output_rate_per_million: float | None = None
     finish_reason: str | None = None
     reasoning_mode: str | None = None
+    response_format: str | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "response_text": self.response_text,
+            "reasoning_text": self.reasoning_text,
+            "provider": self.provider,
+            "model": self.model,
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "total_tokens": self.total_tokens,
+            "latency_ms": self.latency_ms,
+            "monetary_cost_usd": self.monetary_cost_usd,
+            "retries": self.retries,
+            "input_cache_hit_tokens": self.input_cache_hit_tokens,
+            "input_cache_miss_tokens": self.input_cache_miss_tokens,
+            "request_timestamp_utc": self.request_timestamp_utc,
+            "pricing_period": self.pricing_period,
+            "input_cache_status": self.input_cache_status,
+            "pricing_source": self.pricing_source,
+            "pricing_retrieved_date": self.pricing_retrieved_date,
+            "pricing_input_rate_per_million": self.pricing_input_rate_per_million,
+            "pricing_output_rate_per_million": self.pricing_output_rate_per_million,
+            "finish_reason": self.finish_reason,
+            "reasoning_mode": self.reasoning_mode,
+            "response_format": self.response_format,
+        }
+
+
+@dataclass(frozen=True)
+class ProviderAttempt:
+    """One provider completion and its structured-output assessment."""
+
+    attempt_number: int
+    response: ProviderResponse | None
+    provider_error: str | None
+    output_failure: str | None
+    retry_reason: str | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "attempt_number": self.attempt_number,
+            "provider_error": self.provider_error,
+            "output_failure": self.output_failure,
+            "retry_reason": self.retry_reason,
+            "response": self.response.as_dict() if self.response else None,
+        }
+
+
+@dataclass(frozen=True)
+class StructuredProviderResult:
+    """Bounded structured-output recovery result.
+
+    Provider failures and output-contract failures remain explicit. Callers
+    must not turn either into a product verdict.
+    """
+
+    success: bool
+    parsed: dict[str, Any] | None
+    final_response: ProviderResponse | None
+    failure_code: str | None
+    attempts: tuple[ProviderAttempt, ...]
+
+    @property
+    def output_contract_status(self) -> str:
+        if self.success:
+            return "OK"
+        return self.failure_code or "PROVIDER_ERROR"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "success": self.success,
+            "parsed": self.parsed,
+            "failure_code": self.failure_code,
+            "output_contract_status": self.output_contract_status,
+            "attempts": [attempt.as_dict() for attempt in self.attempts],
+        }
 
 
 class ProviderError(RuntimeError):
@@ -84,7 +162,10 @@ class DirectProvider:
             self.reasoning_effort = os.environ.get("BREAKFIX_REASONING_EFFORT", "xhigh")
             self.temperature = float(os.environ.get("BREAKFIX_TEMPERATURE", "0"))
             self.reasoning_mode = None
-        self.max_output_tokens = int(os.environ.get("BREAKFIX_MAX_OUTPUT_TOKENS", "2000"))
+        # Thinking models can consume the whole completion budget before
+        # emitting their compact JSON. Keep this bounded but large enough for
+        # reasoning plus a structured planner result.
+        self.max_output_tokens = int(os.environ.get("BREAKFIX_MAX_OUTPUT_TOKENS", "12000"))
         self.input_rate = self._optional_float("BREAKFIX_COST_INPUT_PER_1K")
         self.output_rate = self._optional_float("BREAKFIX_COST_OUTPUT_PER_1K")
         self.last_request_timestamp_utc: str | None = None
@@ -162,12 +243,14 @@ class DirectProvider:
         cost = (input_cost + output_tokens * prices["output"]) / 1_000_000
         return cost, period, cache_status, prices["cache_miss"], prices["output"]
 
-    def _request_body(self, prompt: str) -> dict[str, Any]:
+    def _request_body(self, prompt: str, response_format: dict[str, Any] | None = None) -> dict[str, Any]:
         body: dict[str, Any] = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": self.max_output_tokens,
         }
+        if response_format is not None:
+            body["response_format"] = response_format
         if self.provider == "deepseek":
             body["thinking"] = {"type": "enabled"}
             body["reasoning_effort"] = self.reasoning_effort
@@ -177,13 +260,13 @@ class DirectProvider:
                 body["reasoning_effort"] = self.reasoning_effort
         return body
 
-    def complete(self, prompt: str) -> ProviderResponse:
+    def complete(self, prompt: str, *, response_format: dict[str, Any] | None = None) -> ProviderResponse:
         if not self.api_key:
             raise ProviderError(f"No direct provider credential: set {self.api_key_env}")
         request_timestamp = datetime.now(timezone.utc)
         request_timestamp_text = request_timestamp.isoformat().replace("+00:00", "Z")
         self.last_request_timestamp_utc = request_timestamp_text
-        body = self._request_body(prompt)
+        body = self._request_body(prompt, response_format)
         request = urllib.request.Request(
             f"{self.base_url}/chat/completions",
             data=json.dumps(body).encode("utf-8"),
@@ -248,16 +331,28 @@ class DirectProvider:
             pricing_source = None
             pricing_retrieved_date = None
         choices = payload.get("choices") or []
-        if not choices or not isinstance(choices[0].get("message", {}).get("content"), str):
+        if not choices or not isinstance(choices[0], dict) or not isinstance(choices[0].get("message"), dict):
             raise ProviderError(
-                "direct provider response did not contain choices[0].message.content",
+                "direct provider response did not contain choices[0].message",
                 retries=attempt,
                 latency_ms=latency_ms,
                 request_timestamp_utc=request_timestamp_text,
             )
+        message = choices[0]["message"]
+        content = message.get("content")
+        reasoning_content = message.get("reasoning_content")
+        # A valid provider response may have empty final content when the
+        # thinking stream exhausts max_tokens. Return it as an explicit output
+        # contract failure so the bounded recovery layer can decide whether to
+        # retry; do not hide it as a transport/API error.
+        if not isinstance(content, str):
+            content = ""
+        if not isinstance(reasoning_content, str):
+            reasoning_content = None
         return ProviderResponse(
-            response_text=choices[0]["message"]["content"],
-            provider="openai-compatible",
+            response_text=content,
+            reasoning_text=reasoning_content,
+            provider=self.provider,
             model=payload.get("model", self.model),
             input_tokens=input_tokens if isinstance(input_tokens, int) else None,
             output_tokens=output_tokens if isinstance(output_tokens, int) else None,
@@ -276,7 +371,75 @@ class DirectProvider:
             pricing_output_rate_per_million=output_rate,
             finish_reason=choices[0].get("finish_reason"),
             reasoning_mode=self.reasoning_mode,
+            response_format=(response_format or {}).get("type") if response_format else None,
         )
+
+    def complete_structured(
+        self,
+        prompt: str,
+        *,
+        validator: Callable[[str], dict[str, Any]] | None = None,
+        max_recovery_attempts: int = 1,
+    ) -> StructuredProviderResult:
+        """Complete compact JSON with one deterministic output-contract recovery."""
+        return bounded_structured_recovery(
+            lambda request_prompt: self.complete(request_prompt, response_format={"type": "json_object"}),
+            prompt,
+            validator=validator,
+            max_recovery_attempts=max_recovery_attempts,
+        )
+
+
+def bounded_structured_recovery(
+    complete: Callable[[str], ProviderResponse],
+    prompt: str,
+    *,
+    validator: Callable[[str], dict[str, Any]] | None = None,
+    max_recovery_attempts: int = 1,
+) -> StructuredProviderResult:
+    """Provider-neutral recovery helper for tests and alternate adapters."""
+    if max_recovery_attempts < 0:
+        raise ValueError("max_recovery_attempts must be non-negative")
+
+    def assess(response: ProviderResponse) -> tuple[dict[str, Any] | None, str | None]:
+        if response.finish_reason == "length":
+            return None, "finish_reason=length"
+        if not response.response_text.strip():
+            return None, "final content is empty"
+        if validator is not None:
+            validation = validator(response.response_text)
+            if not validation.get("valid"):
+                parse_error = validation.get("parse_error")
+                if parse_error:
+                    return None, f"malformed JSON: {parse_error}"
+                failures = validation.get("validation_failures") or ["schema validation failed"]
+                return None, "schema validation failed: " + "; ".join(str(item) for item in failures)
+            parsed = validation.get("parsed")
+            return parsed if isinstance(parsed, dict) else None, None
+        try:
+            parsed = json.loads(response.response_text)
+        except json.JSONDecodeError as exc:
+            return None, f"malformed JSON: {exc.msg} at character {exc.pos}"
+        if not isinstance(parsed, dict):
+            return None, "structured response must be a JSON object"
+        return parsed, None
+
+    attempts: list[ProviderAttempt] = []
+    for index in range(max_recovery_attempts + 1):
+        try:
+            response = complete(prompt if index == 0 else prompt + "\n\nRECOVERY INSTRUCTION: return only a complete compact JSON object.")
+        except ProviderError as exc:
+            attempts.append(ProviderAttempt(index + 1, None, str(exc), None))
+            return StructuredProviderResult(False, None, None, "PROVIDER_ERROR", tuple(attempts))
+        parsed, output_failure = assess(response)
+        if output_failure is None:
+            attempts.append(ProviderAttempt(index + 1, response, None, None))
+            return StructuredProviderResult(True, parsed, response, None, tuple(attempts))
+        retry_reason = output_failure if index < max_recovery_attempts else None
+        attempts.append(ProviderAttempt(index + 1, response, None, output_failure, retry_reason))
+        if retry_reason is None:
+            return StructuredProviderResult(False, None, response, "PROVIDER_OUTPUT_ERROR", tuple(attempts))
+    raise AssertionError("bounded recovery loop exhausted unexpectedly")
 
 
 # Compatibility alias for callers written against the pre-amendment name.

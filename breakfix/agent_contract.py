@@ -359,3 +359,97 @@ def validate_phase2b_breakfix_response(text: str) -> dict[str, Any]:
         "unsupported_assumptions": unsupported if not failures else [],
         "supported_catalogue": [experiment.id for experiment in EXPERIMENTS],
     }
+
+
+def validate_product_planner_response(text: str) -> dict[str, Any]:
+    """Validate the compact planner contract used by the shipped product.
+
+    The model may suggest probes, but it never decides whether a break exists.
+    Only deterministic execution in the engine can produce a product verdict.
+    """
+    parsed, parse_error = _json_object(text)
+    if parse_error:
+        return {
+            "valid": False,
+            "parse_error": parse_error,
+            "raw_response": text,
+            "assumptions": [],
+            "selected_experiment_ids": [],
+            "unsupported_assumptions": [],
+        }
+    assert parsed is not None
+    failures: list[str] = []
+    if not isinstance(parsed.get("change_summary"), str):
+        failures.append("change_summary must be a string")
+    assumptions = parsed.get("assumptions")
+    if not isinstance(assumptions, list):
+        failures.append("assumptions must be a list")
+        assumptions = []
+
+    valid_assumptions: list[dict[str, Any]] = []
+    selected: list[str] = []
+    unsupported: list[dict[str, Any]] = []
+    for index, assumption in enumerate(assumptions):
+        if not isinstance(assumption, dict):
+            failures.append(f"assumption {index} must be an object")
+            continue
+        required = ("id", "statement", "surface", "risk", "evidence", "failure_if_false", "experiment")
+        missing = [field for field in required if field not in assumption]
+        if missing:
+            failures.append(f"assumption {index} missing fields: {', '.join(missing)}")
+            continue
+        if not isinstance(assumption["id"], str) or not isinstance(assumption["statement"], str):
+            failures.append(f"assumption {index} id and statement must be strings")
+        if assumption["surface"] not in SUPPORTED_SURFACES:
+            failures.append(f"assumption {index} has unsupported surface {assumption['surface']!r}")
+        if assumption["risk"] not in SUPPORTED_RISKS:
+            failures.append(f"assumption {index} has unsupported risk {assumption['risk']!r}")
+        evidence = assumption["evidence"]
+        if not isinstance(evidence, list) or not all(isinstance(item, dict) for item in evidence):
+            failures.append(f"assumption {index} evidence must be a list of objects")
+        experiment = assumption["experiment"]
+        if not isinstance(experiment, dict) or not isinstance(experiment.get("type"), str):
+            failures.append(f"assumption {index} experiment must contain a string type")
+            continue
+        experiment_id = experiment["type"]
+        record = {**assumption, "supported_experiment": experiment_id in SUPPORTED_EXPERIMENTS}
+        if experiment_id not in SUPPORTED_EXPERIMENTS:
+            record["unsupported_reason"] = "experiment type is outside the supported perturbation catalogue"
+            unsupported.append(record)
+        elif experiment_id not in selected:
+            selected.append(experiment_id)
+        valid_assumptions.append(record)
+
+    return {
+        "valid": not failures,
+        "validation_failures": failures,
+        "parsed": parsed if not failures else None,
+        "raw_response": text,
+        "change_summary": parsed.get("change_summary"),
+        "assumptions": valid_assumptions if not failures else [],
+        "selected_experiment_ids": selected if not failures else [],
+        "unsupported_assumptions": unsupported if not failures else [],
+        "supported_catalogue": [experiment.id for experiment in EXPERIMENTS],
+    }
+
+
+def validate_fix_response(text: str) -> dict[str, Any]:
+    """Validate a proposed patch without applying or trusting model claims."""
+    parsed, parse_error = _json_object(text)
+    if parse_error:
+        return {"valid": False, "parse_error": parse_error, "raw_response": text}
+    assert parsed is not None
+    failures: list[str] = []
+    for field in ("summary", "patch"):
+        if not isinstance(parsed.get(field), str) or not parsed[field].strip():
+            failures.append(f"{field} must be a non-empty string")
+    if not isinstance(parsed.get("files_changed"), list) or not all(isinstance(item, str) for item in parsed["files_changed"]):
+        failures.append("files_changed must be a list of strings")
+    if not isinstance(parsed.get("tests_to_run"), list) or not all(isinstance(item, str) for item in parsed["tests_to_run"]):
+        failures.append("tests_to_run must be a list of strings")
+    return {
+        "valid": not failures,
+        "validation_failures": failures,
+        "parsed": parsed if not failures else None,
+        "raw_response": text,
+    }

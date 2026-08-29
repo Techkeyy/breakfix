@@ -15,6 +15,8 @@ under evidence/ and are not reconstructed from memory.
 | 7 | Phase 2A evidence-quality lock | Test the narrowed evidence-backed thesis on an independent paired holdout | Fourteen numeric cases, 7 faulty and 7 safe | Baseline 13/14 with 100% safe specificity; matrix 14/14 at 112 experiments; BreakFix 11/14 with 7/7 executable fault confirmations at 19 experiments, but 57.1% safe specificity; direct provider telemetry unavailable | FAIL: executable confirmation and raw efficiency are promising, but safe-case verdict precision is worse than the live baseline |
 | 8 | Phase 2B final thesis gate preparation | Test whether targeted evidence remains efficient against the fixed matrix with honest no-break outcomes | Fresh 16-case paired holdout, 8 faulty and 8 clean | Frozen primary metric, deterministic three-experiment budget, direct telemetry runner, external evaluator-only oracle, and conditional pre-run leakage audit committed; benchmark awaits an authorized direct-provider credential | Prepared; do not claim results before the direct-provider run |
 | 9 | Phase 2B provider amendment | Use the director-authorized provider without changing the frozen benchmark | Same fresh 16-case holdout | DeepSeek V4 Pro adapter, frozen thinking configuration, official peak/off-peak pricing, cache-aware telemetry, and pre-call amendment | Committed before any DeepSeek call; benchmark still awaits local credential configuration |
+| 10 | Phase 2B Attempt 1 | Fresh 16-case paired holdout | All 32 DeepSeek calls were preserved. Baseline 16/16 valid; BreakFix 16/16 provider-output errors at the 2,000-token ceiling; fixed matrix 128 executions; no BreakFix experiments | Frozen **FAIL / ineligible**. Preserve permanently; do not interpret the apparent 100% reduction as product improvement |
+| 11 | Provider-contract recovery | Two old development cases: one faulty and one safe control | Raised the bounded thinking output budget to 12,000, added JSON mode, reasoning/content separation, one deterministic structured-output recovery, explicit provider-output errors, isolated execution, telemetry, and generated regression evidence | Engineering smoke **PASS**: faulty case confirmed a break after one probe; control completed without a confirmed break |
 
 ## Current conclusion
 
@@ -27,9 +29,7 @@ under the frozen gate. Keep BreakFix narrow and limit Phase 2B to direct
 provider telemetry, budget-aware selection, and a fresh paired rerun before any
 UI work.
 
-Phase 2B is authorized but not yet evaluated. The protocol is frozen in
-`docs/phase2b-evaluation-protocol.md`, the fresh holdout and telemetry runner
-are committed, and `docs/phase2b-leakage-audit.md` passes. The direct provider
-preflight cannot proceed in this environment because no authorized credential
-or cost-rate configuration is present; no synthetic or Codex-runtime replay is
-being substituted for the required telemetry-capable run.
+Phase 2B Attempt 1 is a preserved provider/output-contract failure, not a
+thesis failure. The bounded recovery smoke passed, authorizing the full product
+build. The next final benchmark must be newly generated and independent from
+the exposed Phase 2B development cases.

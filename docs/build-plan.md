@@ -266,7 +266,13 @@ Do not build yet:
 
 ## Current decision
 
-The Phase 2A comparison is FAIL under the frozen gate. Retain the narrow
-evidence-backed break-confirmation mechanism as a prototype, but do not
-promote it to a product build. Phase 2B is prepared and awaits the authorized
-direct-provider credential required for the final benchmark run.
+Phase 2B Attempt 1 remains a frozen FAIL caused by the old provider output
+contract. A bounded DeepSeek recovery smoke passed on one faulty and one safe
+development case, so full build mode is authorized. The shipped MVP now covers
+Git change ingestion, compact structured planning, bounded targeted selection,
+sanitized subprocess execution, evidence capture, reproduction, bounded
+reduction, regression generation, approval-gated patch application, and
+verification, with a focused local evidence UI.
+
+The exposed Phase 2B cases are development material only. Final headline
+claims require a new independent holdout after hardening.
