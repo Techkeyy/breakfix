@@ -22,6 +22,16 @@ class WebEvidenceTests(unittest.TestCase):
             self.assertEqual(runs[0]["outcome"], "PASS")
             self.assertEqual(runs[0]["purpose"], "Final independent evaluation")
 
+            demo = root / "canonical-demo-test"
+            demo.mkdir(parents=True)
+            (demo / "canonical-demo-result.json").write_text(
+                json.dumps({"verification": {"status": "VERIFIED"}}), encoding="utf-8"
+            )
+            runs = _load_runs(root)
+            self.assertEqual(runs[0]["run_id"], "final-eval-test")
+            self.assertEqual(runs[1]["outcome"], "VERIFIED")
+            self.assertEqual(runs[1]["purpose"], "Canonical end-to-end demo")
+
 
 if __name__ == "__main__":
     unittest.main()
