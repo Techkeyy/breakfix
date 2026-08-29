@@ -28,17 +28,17 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | One registration and one final submission | Challenge page, Eligibility | No submission automation built | Submission work remains | Confirmed |
 | Coding-agent use is required | Challenge page, Overview and FAQ | Phase 1.5 uses the same real `gpt-5.6-luna` Codex runtime for baseline and BreakFix reasoning, with captured replay traces | evidence/phase1.5-20260829T120133Z; integrity.real_model_responses_used=true | Confirmed requirement, captured run complete |
 | Disclose tools used | Challenge page, Overview and FAQ | README and docs name the local prototype and limitations | README; docs | Confirmed |
-| Submit representative trajectories for every agent used | Challenge page, Submission Package and FAQ | Baseline and BreakFix trajectories capture instructions by prompt reference, context, tool actions, outputs, retries, validation, and the no-ground-truth boundary | trajectories/phase1.5/*/case_*/replay.json; trajectories/phase2a/*/h*/replay.json; evidence/phase2a-20260829T154132Z/*/trajectory.json | Confirmed requirement, Phase 2A captured |
+| Submit representative trajectories for every agent used | Challenge page, Submission Package and FAQ | Baseline and BreakFix trajectories capture prompt hashes, context, tool actions, outputs, retries, validation, telemetry, and the no-ground-truth boundary | evidence/final-eval-20260829T212423Z/trajectories/; docs/trajectory-index.md | Confirmed requirement, final captured |
 | Complete solution code | Challenge page, Submission Package | Source, benchmark, tests, and runner are present | canonical project directory | Confirmed for Phase 1 |
 | Improvement changelog with evidence-linked iterations | Challenge page, Submission Package | Changelog records the baseline, matrix, planner miss, timeout fix, and final rerun | docs/improvement-changelog.md | Confirmed for this checkpoint |
-| Clean-environment reproduction guide | Challenge page, Submission Package | README gives local commands; clean-machine validation is not complete | README; build plan | Inferred implementation, not submission-complete |
-| Exact commands for solution, baseline, and evaluation | Challenge page, Submission Package | `python scripts/run_phase15.py` and `python scripts/run_phase2a.py` replay the captured baseline, fixed matrix, and BreakFix evaluations; `python scripts/run_phase2a_live.py` is the direct-provider capture path | README; scripts/run_phase15.py; scripts/run_phase2a.py; docs/phase2a-prompts.md | Confirmed for replay path, direct live path unverified |
-| Versions, approximate runtime, and cost | Challenge page, Submission Package | Python version, provider, model, reasoning setting, model-call count, subprocess durations, and Phase 2A experiment counts are recorded; direct-provider token, latency, and cost telemetry was unavailable | evidence/phase2a-20260829T154132Z/comparison.json; Phase 2A exit report | Partially confirmed |
+| Clean-environment reproduction guide | Challenge page, Submission Package | Python setup, offline acceptance, CLI, UI, replay, and authorized final-evaluation commands are documented | REPRODUCE.md | Confirmed for the supported local MVP |
+| Exact commands for solution, baseline, and evaluation | Challenge page, Submission Package | README and REPRODUCE.md document offline product checks, local UI, final fixed matrix, and the authorized live provider runner | README; REPRODUCE.md; scripts/run_final_evaluation.py | Confirmed for the supported path |
+| Versions, approximate runtime, and cost | Challenge page, Submission Package | Python version, provider, model, reasoning setting, model-call count, token totals, retries, latency, subprocess durations, and approximate cost are recorded | evidence/final-eval-20260829T212423Z/final-summary.json | Confirmed for final run |
 | Solution video up to 5 minutes | Challenge page, Submission Package | No video produced in Phase 1 | Video remains future work | Confirmed requirement, not started |
 | Video begins with problem and simple baseline | Challenge page, Submission Package | Not started | Video remains future work | Confirmed requirement, not started |
 | Video shows realistic execution, comparison, changelog, strongest change, and removed experiment | Challenge page, Submission Package | Evidence and changelog exist for a future recording | docs/improvement-changelog.md; evidence | Confirmed requirement, not started |
 | Correct, reproducible, testable, clearly explained solution | Challenge page, Overview | Standard-library runner, unit tests, five controlled cases, evidence, and docs | test run; evidence bundle | Confirmed objective, provisional evidence |
-| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Phase 2A compares a same-model live baseline, fixed matrix, and BreakFix targeted reasoning; BreakFix confirms faults efficiently but loses safe-case specificity and fails the frozen gate | evidence/phase2a-20260829T154132Z/comparison.json; docs/phase2a-exit-report.md | Confirmed comparison, FAIL result |
+| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Final same-model generic baseline, fixed matrix, and BreakFix targeted lanes show 7/8, 8/8, and 8/8 fault recall respectively; BreakFix uses 38 versus 128 experiments with 0 safe false confirmations | evidence/final-eval-20260829T212423Z/final-summary.json; docs/final-evaluation-report.md | Confirmed final comparison, PASS gate |
 | Allowed languages include Python, TypeScript, Java, C++, Go, Rust | Challenge page, Theme and FAQ | Python 3.14 prototype | pyproject.toml; environment check | Confirmed |
 | Final problem PDF may prescribe runtime, dependency, API, and acceptance-test constraints | Challenge page, Theme | No PDF constraints could be read in this environment | blocked PDF URL | Unknown |
 | Valid submission must be timely, complete, original, policy compliant, reproducible, and include repository/archive, tests, README, agent evidence, and video | Challenge page, FAQ | Repository, tests, README, evidence, and traces exist; archive, final form, and video do not | current tree | Partially confirmed |
@@ -51,18 +51,17 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | Scoring criteria and weights | Director-verified official instruction PDF | Rubric recorded below and used for prioritization | This document, director review | Confirmed |
 | Tie-break order: Agent Solution and Engineering, Reproducibility, Measured Improvement, End to End Quality, final evidence review | Challenge page, Evaluation Criteria | Build plan prioritizes these gates | docs/build-plan.md | Confirmed |
 | Prize amounts by award | Challenge page, Prizes & Awards | Total cash pool is recorded; individual award split is not encoded | page content inspected on 2026-08-29 | Unknown |
-| API keys or model credits supplied by organizer | Challenge page, FAQ | Prototype uses no external model; future live baseline must use participant-owned setup | README | Confirmed: organizer says no |
+| API keys or model credits supplied by organizer | Challenge page, FAQ | Final live lanes use an explicitly authorized participant-configured DeepSeek credential; no organizer credential is assumed | README; final run metadata records presence only | Confirmed: organizer says no |
 | Registration/submission intake fields, archive format, exact acceptance tests, and final PDF constraints | Official instruction PDF link | Not implemented until the PDF can be read and the final form is rechecked | blocked URL and open verification queue | Unknown |
 
-## Phase 2B pre-run status
+## Final evaluation status
 
-The Phase 2B protocol is frozen in `docs/phase2b-evaluation-protocol.md` and
-committed before evaluation. A fresh 16-case paired holdout, evaluator-only
-oracle, direct-provider telemetry runner, deterministic three-experiment budget,
-and pre-run leakage audit are committed. The final three-lane benchmark is
-still open because this environment has no authorized direct-provider
-credential or cost-rate configuration. Phase 2A Codex-runtime replays remain
-historical evidence and are not substituted for Phase 2B telemetry.
+The final protocol is frozen in `docs/final-evaluation-protocol.md`, with the
+public holdout committed separately from the external evaluator truth. The
+final run `final-eval-20260829T212423Z` used 32 live DeepSeek calls, complete
+provider telemetry, 128 fixed executions, and 38 targeted executions. The
+primary gate passed. Phase 2B Attempt 1 remains a separate historical FAIL and
+is not overwritten by this result.
 
 ## Official scoring rubric
 
@@ -106,7 +105,5 @@ acceptance tests, archive format, and intake fields.
 1. Obtain and read the official instruction PDF, including starter materials,
    constraints, and acceptance tests.
 2. Recheck the final submission form fields and archive limits.
-3. Run the added direct provider path with an authorized credential and verify
-   token, latency, and cost telemetry outside the Codex runtime.
-4. Verify whether any policy requires a public repository, and record the exact
-   archive format.
+3. Record the final video file and any required public repository or archive
+   format after the submission form is rechecked.

@@ -16,6 +16,7 @@ def _load_runs(evidence_root: Path) -> list[dict]:
             continue
         summary = path / "analysis.json"
         smoke = path / "smoke-summary.json"
+        final = path / "final-summary.json"
         if summary.is_file():
             payload = json.loads(summary.read_text(encoding="utf-8"))
             payload["run_id"] = path.name
@@ -23,6 +24,12 @@ def _load_runs(evidence_root: Path) -> list[dict]:
         elif smoke.is_file():
             payload = json.loads(smoke.read_text(encoding="utf-8"))
             payload["run_id"] = path.name
+            runs.append(payload)
+        elif final.is_file():
+            payload = json.loads(final.read_text(encoding="utf-8"))
+            payload["run_id"] = path.name
+            payload["outcome"] = payload.get("primary_gate")
+            payload["purpose"] = "Final independent evaluation"
             runs.append(payload)
     return sorted(runs, key=lambda item: item.get("run_id", ""), reverse=True)
 

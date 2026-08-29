@@ -210,7 +210,7 @@ def _diff_for_case(case_root: Path) -> str:
 def _copy_public_product_evidence(source: Path, target: Path) -> None:
     if target.exists():
         shutil.rmtree(target)
-    shutil.copytree(source, target)
+    shutil.copytree(source, target, ignore=shutil.ignore_patterns("evaluation.json"))
 
 
 def _baseline_telemetry(result: Any, case_id: str) -> dict[str, Any]:

@@ -17,19 +17,19 @@ under evidence/ and are not reconstructed from memory.
 | 9 | Phase 2B provider amendment | Use the director-authorized provider without changing the frozen benchmark | Same fresh 16-case holdout | DeepSeek V4 Pro adapter, frozen thinking configuration, official peak/off-peak pricing, cache-aware telemetry, and pre-call amendment | Committed before any DeepSeek call; benchmark still awaits local credential configuration |
 | 10 | Phase 2B Attempt 1 | Fresh 16-case paired holdout | All 32 DeepSeek calls were preserved. Baseline 16/16 valid; BreakFix 16/16 provider-output errors at the 2,000-token ceiling; fixed matrix 128 executions; no BreakFix experiments | Frozen **FAIL / ineligible**. Preserve permanently; do not interpret the apparent 100% reduction as product improvement |
 | 11 | Provider-contract recovery | Two old development cases: one faulty and one safe control | Raised the bounded thinking output budget to 12,000, added JSON mode, reasoning/content separation, one deterministic structured-output recovery, explicit provider-output errors, isolated execution, telemetry, and generated regression evidence | Engineering smoke **PASS**: faulty case confirmed a break after one probe; control completed without a confirmed break |
+| 12 | Final independent evaluation | Fresh opaque 16-case holdout, 8 faulty and 8 safe | Generic comparator 7/8 fault recall; fixed matrix 8/8 at 128 executions; BreakFix 8/8 with 0 safe false confirmations at 38 targeted executions; 32 live DeepSeek calls and complete telemetry | Primary gate **PASS**; BreakFix used 70.3125% fewer experiments than the fixed matrix |
+| 13 | Submission hardening | Final evidence and local review surface | Removed evaluator-only files from the published trajectory copy, patched the publisher exclusion, added final-summary UI indexing, added web regression coverage, and completed security, failure, UI, and reproducibility audits | Keep the final evidence boundary and disclose the browser-renderer limitation |
 
 ## Current conclusion
 
-The Phase 2A run confirms that deterministic execution can turn targeted
-assumptions into seven executable fault proofs using 19 probes instead of the
-matrix's 112. It does not confirm a precision advantage: the live baseline
-scored 13/14 with all safe cases accepted, while BreakFix scored 11/14 because
-three safe cases became inconclusive after extra probes. The decision is FAIL
-under the frozen gate. Keep BreakFix narrow and limit Phase 2B to direct
-provider telemetry, budget-aware selection, and a fresh paired rerun before any
-UI work.
+The final independent evaluation supports the narrow BreakFix claim. On a
+fresh opaque 16-case holdout, BreakFix confirmed all eight seeded faults with
+zero false confirmed breaks on eight safe controls using 38 targeted
+experiments. The fixed matrix reached the same gate with 128 experiments. The
+generic comparator reached 7/8 fault recall with zero safe false confirmations.
 
-Phase 2B Attempt 1 is a preserved provider/output-contract failure, not a
-thesis failure. The bounded recovery smoke passed, authorizing the full product
-build. The next final benchmark must be newly generated and independent from
-the exposed Phase 2B development cases.
+The final result is a PASS for this frozen protocol, not a claim of universal
+defect-detection accuracy. The supported product remains a Python
+`app.run(payload)` prototype across four experiment surfaces. Phase 2B Attempt
+1 remains preserved as a separate ineligible provider-output FAIL, and the
+final result does not overwrite or reinterpret it.

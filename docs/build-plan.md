@@ -24,8 +24,9 @@ User journey:
       -> reproduce -> generate regression test -> review fix
       -> approve -> verify -> decide whether to merge
 
-The Phase 1 and Phase 1.5 artifacts implement the technical flow and comparison
-gate. They do not implement the final interface journey.
+The Phase 1 through Phase 2B artifacts implement the technical flow and
+comparison gate. The core interface, reproducibility path, and submission
+evidence are now complete for the supported MVP scope.
 
 ## Six pre-build answers
 
@@ -156,21 +157,23 @@ tokens, latency, and cost were unavailable, so they remain null.
 
 ### Phase 2B: narrow recovery scope
 
-Authorized on 2026-08-29. The frozen protocol chooses total experiments needed
+Authorized on 2026-08-29. The frozen protocol chose total experiments needed
 for complete seeded-fault recall with zero false confirmed breaks as the single
-primary metric. The pre-run implementation adds a fresh 16-case paired
+primary metric. The implementation added a fresh opaque 16-case paired
 holdout, direct-provider telemetry, a deterministic three-experiment budget,
 immediate stop after a confirmed break, and a fixed exhaustive matrix of 128
-executions. The pre-run holdout leakage audit passes for the current
-agent-visible context, with a documented caveat that an earlier local Git object
-retains the removed pre-remediation oracle.
+executions.
 
-The benchmark is blocked until an authorized direct-provider credential and
-cost rates are supplied in the local environment. The pre-run commit is
-`cec684cda4bcbe0b7adc1d159f615a90e35eea60`; protocol commit is
-`73ac4e85f5839890142224eb82679431deb1b20b`. Do not use Codex-runtime replays
-as Phase 2B evidence. Do not start UI, GitHub/CI, fixes, reducers,
-multilingual support, or large sandboxing.
+Result: PASS on `final-eval-20260829T212423Z`. The fixed matrix and BreakFix
+were both eligible at 100% seeded-fault recall and 0 safe false confirmed
+breaks. BreakFix used 38 targeted experiments versus 128 fixed experiments, a
+70.3125% reduction. The generic comparator scored 7/8 fault recall with no
+safe false confirmations. The failed Attempt 1 remains preserved as historical
+provider-output evidence and is not overwritten.
+
+The provider amendment, final protocol, public holdout, final runner, and
+post-evaluation evidence audit are preserved under the paths listed in
+`docs/trajectory-index.md` and `docs/final-evaluation-report.md`.
 
 ### Phase 3: reduction and regression proof
 
@@ -221,6 +224,11 @@ PASS gate:
 - rendered desktop and mobile views are visually inspected;
 - UI claims match evidence.
 
+Result: Core local evidence review UI is complete. Static text audit, endpoint
+checks, and web regression coverage pass. Interactive browser rendering could
+not initialize on this host, so that visual check is disclosed as an
+environment limitation.
+
 ### Phase 6: reproducibility and submission readiness
 
 Scope:
@@ -239,6 +247,12 @@ PASS gate:
 - every claim maps to evidence;
 - no credentials are present;
 - public repository/archive and submission form requirements are rechecked.
+
+Result: The repository contains a clean-environment guide, final runner,
+claims ledger, trajectory index, security and failure audits, UI audit, video
+script, and evidence-linked changelog. The final local test suite reports 38
+passing tests. Public evidence excludes evaluator truth; the external truth
+workspace is retained separately for authorized reruns.
 
 ## Spending order
 
