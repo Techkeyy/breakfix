@@ -1,0 +1,1 @@
+{"id":"h25","title":"Configuration loader update","surface":"state","task":"Update the configuration loader while preserving the documented output.","test_command":"python -m unittest discover -s tests -v"}

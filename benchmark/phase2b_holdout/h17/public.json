@@ -1,0 +1,1 @@
+{"id":"h17","title":"Summary update","surface":"input","task":"Update the summary routine while retaining the established result shape.","test_command":"python -m unittest discover -s tests -v"}

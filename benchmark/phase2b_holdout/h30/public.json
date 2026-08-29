@@ -1,0 +1,1 @@
+{"id":"h30","title":"Metric display update","surface":"input","task":"Update the metric display while retaining the established output for numeric collections.","test_command":"python -m unittest discover -s tests -v"}

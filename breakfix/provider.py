@@ -18,6 +18,14 @@ class ProviderResponse:
     output_tokens: int | None
     latency_ms: int
     monetary_cost_usd: float | None
+    retries: int = 0
+
+
+class ProviderError(RuntimeError):
+    def __init__(self, message: str, *, retries: int = 0, latency_ms: int | None = None) -> None:
+        super().__init__(message)
+        self.retries = retries
+        self.latency_ms = latency_ms
 
 
 class OpenAICompatibleProvider:
@@ -55,13 +63,23 @@ class OpenAICompatibleProvider:
             headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
             method="POST",
         )
+        max_retries = max(0, int(os.environ.get("BREAKFIX_MAX_RETRIES", "2")))
         started = time.perf_counter()
-        try:
-            with urllib.request.urlopen(request, timeout=180) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")[:500]
-            raise RuntimeError(f"direct provider HTTP {exc.code}: {detail}") from exc
+        last_error: str | None = None
+        for attempt in range(max_retries + 1):
+            try:
+                with urllib.request.urlopen(request, timeout=180) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                break
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace")[:500]
+                last_error = f"direct provider HTTP {exc.code}: {detail}"
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                last_error = f"direct provider transport error: {exc}"
+            if attempt < max_retries:
+                time.sleep(min(2 ** attempt, 4))
+        else:
+            raise ProviderError(last_error or "direct provider request failed", retries=max_retries, latency_ms=round((time.perf_counter() - started) * 1000))
         latency_ms = round((time.perf_counter() - started) * 1000)
         usage = payload.get("usage") or {}
         input_tokens = usage.get("prompt_tokens")
@@ -80,4 +98,5 @@ class OpenAICompatibleProvider:
             output_tokens=output_tokens if isinstance(output_tokens, int) else None,
             latency_ms=latency_ms,
             monetary_cost_usd=cost,
+            retries=attempt,
         )
