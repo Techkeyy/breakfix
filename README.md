@@ -78,3 +78,28 @@ module with `run(payload)`.
 No GitHub integration, regression-test generation, reducer, fix application,
 approval flow, production sandbox, multi-language support, or UI is shipped in
 this checkpoint.
+
+## Phase 2B authorized gate
+
+Phase 2B is authorized narrowly as the last thesis-validation gate. The frozen
+primary metric is total targeted experiments required for complete seeded-fault
+recall with zero false confirmed breaks. The fresh holdout is 16 paired cases
+(8 faulty, 8 clean), the BreakFix budget is three experiments per case, and the
+fixed matrix runs all eight supported experiments per case.
+
+The protocol is committed at `73ac4e85f5839890142224eb82679431deb1b20b`; the
+audited pre-run implementation and holdout are committed at
+`832fabf43094d9294c0814f7972913b7c186df82`. The leakage audit is in
+`docs/phase2b-leakage-audit.md`. Run the telemetry-capable lane only after
+setting an authorized credential and both cost rates in `.env` from
+`.env.example`:
+
+    python scripts/run_phase2b_live.py
+    python scripts/run_phase2b.py
+
+The direct runner records model, input/output tokens, latency, retries, API
+errors, and approximate cost. No Phase 2B benchmark result has been claimed
+yet: this environment has no authorized direct-provider credential, and sending
+local source context to an external provider requires explicit authorization.
+No UI, GitHub/CI integration, fixer, reducer, regression loop, or new break
+surface is in scope.

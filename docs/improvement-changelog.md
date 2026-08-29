@@ -13,6 +13,7 @@ under evidence/ and are not reconstructed from memory.
 | 5 | Final targeted run | Re-run after corrections with evaluator-only ground truth | Five frozen cases | BreakFix 4/4 at 6 executions; matrix 4/4 at 30; baseline surrogate 2/4 | Provisional support for the targeted mechanism; do not build UI yet |
 | 6 | Phase 1.5 real-agent validation | Replace the surrogate reasoning lanes with the same real model and preserve captured trajectories | Five sanitized frozen cases | Live baseline 4/4 faults with 1 safe-case false positive and 0 experiments; live BreakFix 4/4 with 7 targeted executions and no safe-case false positive; matrix 4/4 with 30 executions | MIXED: the efficiency result survived, but BreakFix did not improve fault discovery over the live baseline |
 | 7 | Phase 2A evidence-quality lock | Test the narrowed evidence-backed thesis on an independent paired holdout | Fourteen numeric cases, 7 faulty and 7 safe | Baseline 13/14 with 100% safe specificity; matrix 14/14 at 112 experiments; BreakFix 11/14 with 7/7 executable fault confirmations at 19 experiments, but 57.1% safe specificity; direct provider telemetry unavailable | FAIL: executable confirmation and raw efficiency are promising, but safe-case verdict precision is worse than the live baseline |
+| 8 | Phase 2B final thesis gate preparation | Test whether targeted evidence remains efficient against the fixed matrix with honest no-break outcomes | Fresh 16-case paired holdout, 8 faulty and 8 clean | Frozen primary metric, deterministic three-experiment budget, direct telemetry runner, evaluator-only oracle, and pre-run leakage audit committed; benchmark awaits an authorized direct-provider credential | Prepared; do not claim results before the direct-provider run |
 
 ## Current conclusion
 
@@ -24,3 +25,10 @@ three safe cases became inconclusive after extra probes. The decision is FAIL
 under the frozen gate. Keep BreakFix narrow and limit Phase 2B to direct
 provider telemetry, budget-aware selection, and a fresh paired rerun before any
 UI work.
+
+Phase 2B is authorized but not yet evaluated. The protocol is frozen in
+`docs/phase2b-evaluation-protocol.md`, the fresh holdout and telemetry runner
+are committed, and `docs/phase2b-leakage-audit.md` passes. The direct provider
+preflight cannot proceed in this environment because no authorized credential
+or cost-rate configuration is present; no synthetic or Codex-runtime replay is
+being substituted for the required telemetry-capable run.

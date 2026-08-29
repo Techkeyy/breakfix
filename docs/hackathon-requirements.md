@@ -54,6 +54,16 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | API keys or model credits supplied by organizer | Challenge page, FAQ | Prototype uses no external model; future live baseline must use participant-owned setup | README | Confirmed: organizer says no |
 | Registration/submission intake fields, archive format, exact acceptance tests, and final PDF constraints | Official instruction PDF link | Not implemented until the PDF can be read and the final form is rechecked | blocked URL and open verification queue | Unknown |
 
+## Phase 2B pre-run status
+
+The Phase 2B protocol is frozen in `docs/phase2b-evaluation-protocol.md` and
+committed before evaluation. A fresh 16-case paired holdout, evaluator-only
+oracle, direct-provider telemetry runner, deterministic three-experiment budget,
+and pre-run leakage audit are committed. The final three-lane benchmark is
+still open because this environment has no authorized direct-provider
+credential or cost-rate configuration. Phase 2A Codex-runtime replays remain
+historical evidence and are not substituted for Phase 2B telemetry.
+
 ## Official scoring rubric
 
 The official rubric is scored out of 100 points:

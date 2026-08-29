@@ -163,5 +163,8 @@ Stop scaling the product if:
 
 Phase 2A is FAIL under its frozen gate. Keep the project narrow and do not start
 the polished UI, GitHub integration, fix application, or broad product surface.
-Any Phase 2B work must be limited to direct provider telemetry, budget-aware
-relevant-assumption selection, and a newly reviewed paired holdout.
+Phase 2B is authorized only within the frozen protocol. The pre-run holdout,
+deterministic budget, telemetry runner, and leakage audit are complete. The
+final benchmark remains blocked until an authorized direct-provider credential
+and cost rates are available; no Phase 2A replay is being relabeled as Phase
+2B evidence.

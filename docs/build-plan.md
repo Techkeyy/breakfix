@@ -156,10 +156,19 @@ tokens, latency, and cost were unavailable, so they remain null.
 
 ### Phase 2B: narrow recovery scope
 
-Only if authorized after the Phase 2A FAIL, address direct provider telemetry,
-budget-aware relevant-assumption selection, and a newly reviewed paired holdout.
-Do not start UI, GitHub/CI, fixes, reducers, multilingual support, or large
-sandboxing.
+Authorized on 2026-08-29. The frozen protocol chooses total experiments needed
+for complete seeded-fault recall with zero false confirmed breaks as the single
+primary metric. The pre-run implementation adds a fresh 16-case paired
+holdout, direct-provider telemetry, a deterministic three-experiment budget,
+immediate stop after a confirmed break, and a fixed exhaustive matrix of 128
+executions. The pre-run holdout leakage audit passed.
+
+The benchmark is blocked until an authorized direct-provider credential and
+cost rates are supplied in the local environment. The pre-run commit is
+`832fabf43094d9294c0814f7972913b7c186df82`; protocol commit is
+`73ac4e85f5839890142224eb82679431deb1b20b`. Do not use Codex-runtime replays
+as Phase 2B evidence. Do not start UI, GitHub/CI, fixes, reducers,
+multilingual support, or large sandboxing.
 
 ### Phase 3: reduction and regression proof
 
@@ -234,7 +243,7 @@ PASS gate:
 1. Prove the assumption-to-experiment mapping.
 2. Complete the real execution loop.
 3. Harden benchmark independence and safe-case precision.
-4. Add a reproducible direct model provider.
+4. Run the reproducible direct model provider with telemetry.
 5. Add reduction, regression, approval, and verification.
 6. Build the one focused interface.
 7. Polish only after the proof is stable.
@@ -256,6 +265,6 @@ Do not build yet:
 ## Current decision
 
 The Phase 2A comparison is FAIL under the frozen gate. Retain the narrow
-evidence-backed falsification mechanism as a prototype, but do not promote it
-to a product build. The next authorized work is only the Phase 2B recovery scope
-in `docs/phase2a-exit-report.md`.
+evidence-backed break-confirmation mechanism as a prototype, but do not
+promote it to a product build. Phase 2B is prepared and awaits the authorized
+direct-provider credential required for the final benchmark run.
