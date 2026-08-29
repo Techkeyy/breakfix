@@ -1,0 +1,46 @@
+{
+  "provider": "Codex multi-agent runtime",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "xhigh",
+  "temperature": null,
+  "max_output_tokens": null,
+  "prompt_id": "phase2a-breakfix-v1",
+  "prompt_file": "docs/phase2a-prompts.md",
+  "prompt_workspace": "C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\phase2a_holdout\\h07",
+  "model_calls": 1,
+  "runtime_ms": null,
+  "latency_ms": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null,
+  "monetary_cost_usd": null,
+  "retries": 0,
+  "context": {
+    "public": {
+      "id": "h07",
+      "title": "Workflow event refactor",
+      "surface": "timing",
+      "task": "Refactor workflow event handling while preserving the final state of a valid delivery.",
+      "test_command": "python -m unittest discover -s tests -v"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "tool_access": "Codex subagent repository inspection and visible-test execution under prompt restrictions",
+  "tool_actions": [
+    {
+      "action": "Inspected only the permitted case files",
+      "result": "Loaded the task, before/after change, and visible tests."
+    },
+    {
+      "action": "Ran python -m unittest discover -s tests -v from the after workspace",
+      "result": "One visible test passed; no hidden experiment was executed."
+    }
+  ],
+  "capture_source": "normalized from completed live Codex subagent response; no ground truth supplied",
+  "response_text": "{\"change_summary\":\"Changed event handling to an order-sensitive state machine.\",\"assumptions\":[{\"id\":\"event_order_preserved\",\"statement\":\"A valid delivery may arrive with events reordered.\",\"surface\":\"timing\",\"evidence\":[\"after/app.py\",\"public.json task\"],\"failure_if_false\":\"Reordered events can produce the wrong final state.\",\"risk\":\"high\",\"proposed_experiment\":{\"id\":\"events_reordered\",\"parameters\":{},\"rationale\":\"Deliver the same valid events in reverse order.\"}},{\"id\":\"duplicate_delivery_harmless\",\"statement\":\"A repeated valid delivery is harmless.\",\"surface\":\"timing\",\"evidence\":[\"after/app.py\",\"public.json task\"],\"failure_if_false\":\"Duplicate delivery could repeat a transition.\",\"risk\":\"medium\",\"proposed_experiment\":{\"id\":\"retry_duplicate\",\"parameters\":{},\"rationale\":\"Replay the valid delivery.\"}},{\"id\":\"empty_events_handled\",\"statement\":\"An empty event collection is handled as pending.\",\"surface\":\"input\",\"evidence\":[\"after/app.py\",\"public.json task\"],\"failure_if_false\":\"An empty collection could raise or confirm incorrectly.\",\"risk\":\"low\",\"proposed_experiment\":{\"id\":\"input_empty\",\"parameters\":{},\"rationale\":\"Send an empty collection.\"}}],\"tests_run\":[\"python -m unittest discover -s tests -v; 1 visible test passed; exit code 0\"],\"tool_actions\":[{\"action\":\"Inspected only the permitted case files\",\"result\":\"Loaded the task, before/after change, and visible tests.\"},{\"action\":\"Ran python -m unittest discover -s tests -v from the after workspace\",\"result\":\"One visible test passed; no hidden experiment was executed.\"}],\"retries\":0,\"final_conclusion\":\"The visible happy path passes; the executor should resolve the proposed assumptions.\"}"
+}

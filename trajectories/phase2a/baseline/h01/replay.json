@@ -1,0 +1,46 @@
+{
+  "provider": "Codex multi-agent runtime",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "xhigh",
+  "temperature": null,
+  "max_output_tokens": null,
+  "prompt_id": "phase2a-baseline-v1",
+  "prompt_file": "docs/phase2a-prompts.md",
+  "prompt_workspace": "C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\phase2a_holdout\\h01",
+  "model_calls": 1,
+  "runtime_ms": null,
+  "latency_ms": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null,
+  "monetary_cost_usd": null,
+  "retries": 0,
+  "context": {
+    "public": {
+      "id": "h01",
+      "title": "Webhook delivery refactor",
+      "surface": "timing",
+      "task": "Refactor webhook delivery so a retried notification preserves the original effect.",
+      "test_command": "python -m unittest discover -s tests -v"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "tool_access": "Codex subagent repository inspection and visible-test execution under prompt restrictions",
+  "tool_actions": [
+    {
+      "action": "Inspected public.json, before/app.py, after/app.py, and after/tests/test_app.py",
+      "result": "Observed the task, change, and visible happy-path coverage."
+    },
+    {
+      "action": "Ran python -m unittest discover -s tests -v from the after workspace",
+      "result": "One visible test passed; no hidden experiment was executed."
+    }
+  ],
+  "capture_source": "normalized from completed live Codex subagent response; no ground truth supplied",
+  "response_text": "{\"change_summary\":\"Removed duplicate suppression from webhook delivery.\",\"verdict\":\"DEFECT\",\"findings\":[{\"summary\":\"Repeated delivery records and charges the same request again.\",\"severity\":\"high\",\"evidence\":[\"before/app.py\",\"after/app.py\"],\"confidence\":\"high\"}],\"tests_run\":[\"python -m unittest discover -s tests -v; 1 visible test passed; exit code 0\"],\"tool_actions\":[{\"action\":\"Inspected public.json, before/app.py, after/app.py, and after/tests/test_app.py\",\"result\":\"Observed the task, change, and visible happy-path coverage.\"},{\"action\":\"Ran python -m unittest discover -s tests -v from the after workspace\",\"result\":\"One visible test passed; no hidden experiment was executed.\"}],\"retries\":0,\"final_conclusion\":\"DEFECT: retries can apply the amount repeatedly; this is inferred from source and not hidden execution.\"}"
+}

@@ -1,0 +1,46 @@
+{
+  "provider": "Codex multi-agent runtime",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "xhigh",
+  "temperature": null,
+  "max_output_tokens": null,
+  "prompt_id": "phase2a-breakfix-v1",
+  "prompt_file": "docs/phase2a-prompts.md",
+  "prompt_workspace": "C:\\Users\\HomePC\\Desktop\\BreakFix\\benchmark\\phase2a_holdout\\h10",
+  "model_calls": 1,
+  "runtime_ms": null,
+  "latency_ms": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null,
+  "monetary_cost_usd": null,
+  "retries": 0,
+  "context": {
+    "public": {
+      "id": "h10",
+      "title": "Regional-hours calculation refactor",
+      "surface": "world",
+      "task": "Refactor regional-hours calculation without changing the meaning of an absolute timestamp.",
+      "test_command": "python -m unittest discover -s tests -v"
+    },
+    "workspace_files": [
+      "public.json",
+      "before/app.py",
+      "after/app.py",
+      "after/tests"
+    ]
+  },
+  "tool_access": "Codex subagent repository inspection and visible-test execution under prompt restrictions",
+  "tool_actions": [
+    {
+      "action": "Inspected only the permitted case files",
+      "result": "Loaded the task, before/after change, and visible tests."
+    },
+    {
+      "action": "Ran python -m unittest discover -s tests -v from the after workspace",
+      "result": "One visible test passed; no hidden experiment was executed."
+    }
+  ],
+  "capture_source": "normalized from completed live Codex subagent response; no ground truth supplied",
+  "response_text": "{\"change_summary\":\"The regional-hours implementation is unchanged.\",\"assumptions\":[{\"id\":\"regional_dst_rules\",\"statement\":\"ZoneInfo converts absolute timestamps with the correct regional rules.\",\"surface\":\"world\",\"evidence\":[\"after/app.py\",\"public.json task\"],\"failure_if_false\":\"A stale or incorrect offset could shift the open result around DST.\",\"risk\":\"high\",\"proposed_experiment\":{\"id\":\"world_dst\",\"parameters\":{},\"rationale\":\"Evaluate a timestamp across a DST boundary.\"}}],\"tests_run\":[\"python -m unittest discover -s tests -v; 1 visible test passed; exit code 0\"],\"tool_actions\":[{\"action\":\"Inspected only the permitted case files\",\"result\":\"Loaded the task, before/after change, and visible tests.\"},{\"action\":\"Ran python -m unittest discover -s tests -v from the after workspace\",\"result\":\"One visible test passed; no hidden experiment was executed.\"}],\"retries\":0,\"final_conclusion\":\"Visible evidence is limited to ordinary time; execute world_dst before deciding.\"}"
+}
