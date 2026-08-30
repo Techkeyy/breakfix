@@ -22,6 +22,72 @@ const formatEvidenceValue = (value) => {
   if (typeof visible === "string") return visible;
   try { return JSON.stringify(visible, null, 2); } catch { return String(visible); }
 };
+
+let scrollRevealCleanup = () => {};
+
+function initScrollReveal() {
+  scrollRevealCleanup();
+  const targets = [...document.querySelectorAll("[data-scroll-reveal]")];
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (!targets.length || motionQuery.matches || !window.gsap || !window.ScrollTrigger) return;
+
+  window.gsap.registerPlugin(window.ScrollTrigger);
+  const tweens = [];
+
+  targets.forEach((target) => {
+    const parts = target.textContent.match(/\S+|\s+/g) || [];
+    const words = [];
+    target.replaceChildren();
+    parts.forEach((part) => {
+      if (/^\s+$/.test(part)) {
+        target.appendChild(document.createTextNode(part));
+        return;
+      }
+      const word = document.createElement("span");
+      word.className = "scroll-reveal-word";
+      word.textContent = part;
+      target.appendChild(word);
+      words.push(word);
+    });
+
+    const tween = window.gsap.fromTo(words,
+      { opacity: 0.2, filter: "blur(3px)", rotation: 1.4, transformOrigin: "0 50%" },
+      {
+        opacity: 1,
+        filter: "blur(0px)",
+        rotation: 0,
+        ease: "none",
+        stagger: 0.055,
+        scrollTrigger: {
+          trigger: target,
+          start: "top 82%",
+          end: "bottom 44%",
+          scrub: 0.45,
+          invalidateOnRefresh: true,
+        },
+      },
+    );
+    tweens.push(tween);
+  });
+
+  scrollRevealCleanup = () => {
+    tweens.forEach((tween) => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    });
+    targets.forEach((target) => target.querySelectorAll(".scroll-reveal-word").forEach((word) => {
+      word.style.opacity = "";
+      word.style.filter = "";
+      word.style.transform = "";
+    }));
+  };
+  window.ScrollTrigger.refresh();
+}
+
+window.addEventListener("load", initScrollReveal, { once: true });
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+motionPreference.addEventListener?.("change", initScrollReveal);
+
 const api = async (path, options = {}) => {
   const response = await fetch(`${API}${path}`, { headers: { "Content-Type": "application/json" }, ...options });
   const data = await response.json().catch(() => ({ error: "The API returned an invalid response." }));
