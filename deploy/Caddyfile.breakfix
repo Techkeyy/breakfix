@@ -1,4 +1,4 @@
-breakfix.103-195-188-198.sslip.io {
+breakfix-engine-techkeyy.duckdns.org {
 	encode gzip
 	reverse_proxy 127.0.0.1:8788
 	header {
