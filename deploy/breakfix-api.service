@@ -14,6 +14,7 @@ EnvironmentFile=-/etc/breakfix/breakfix.env
 Environment=BREAKFIX_DATA_DIR=/var/lib/breakfix
 Environment=BREAKFIX_PROVIDER_ENV_FILE=/etc/breakfix/breakfix.env
 Environment=BREAKFIX_ENGINE_IMAGE=breakfix-engine:latest
+Environment=BREAKFIX_ALLOWED_ORIGINS=https://breakfix.vercel.app,http://localhost:3000
 ExecStartPre=/usr/bin/docker image inspect breakfix-engine:latest
 ExecStart=/opt/breakfix/.venv/bin/python -m breakfix.remote_api
 Restart=on-failure

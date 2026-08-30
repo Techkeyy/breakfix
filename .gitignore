@@ -12,3 +12,6 @@ __pycache__/
 # Generated evidence and scratch output
 evidence/
 .tmp/
+
+# Vercel local project link
+.vercel/

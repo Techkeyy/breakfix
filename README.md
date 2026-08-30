@@ -111,6 +111,19 @@ not a chatbot or an observability dashboard.
 The clean-environment and final-evaluation instructions are in
 [`REPRODUCE.md`](REPRODUCE.md).
 
+## Hosted deployment
+
+- Live app: [breakfix.vercel.app](https://breakfix.vercel.app)
+- Public API health: [breakfix API](https://breakfix.103-195-188-198.sslip.io/health)
+- Canonical repository: [github.com/Techkeyy/breakfix](https://github.com/Techkeyy/breakfix)
+
+The hosted surface is a thin static Vercel frontend over the existing Python
+engine on the `canned-vps` host. Jobs accept public HTTPS Git repositories,
+clone them without credentials, and run in bounded Docker containers. The API
+does not expose raw logs, server paths, evaluator truth, or provider secrets;
+the final evaluation oracle remains external. Reproduce the core product and
+evaluation locally with the commands in [`REPRODUCE.md`](REPRODUCE.md).
+
 ## Scope
 
 The compatible MVP expects a Python project exposing `app.run(payload)` and a
@@ -173,9 +186,11 @@ summary.
 - The planner can select unsupported or low-value probes; the engine reports
   this honestly and caps execution.
 - A reduced reproduction is not called minimal unless a reducer attempted it.
-- The local UI has no hosted deployment or multi-user authentication.
+- The hosted UI is public and has no multi-user authentication; it accepts
+  public repositories only, runs one active job at a time, and applies the
+  documented resource and time limits.
 - The in-app browser renderer was unavailable during the final UI audit on this
-  host; static, endpoint, and regression checks passed.
+  host; static, endpoint, and remote engine checks passed.
 
 ## Submission material
 
