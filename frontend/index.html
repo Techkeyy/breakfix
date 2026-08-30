@@ -23,30 +23,21 @@
     </header>
 
     <main id="top">
-      <section class="hero page-width" aria-labelledby="hero-title">
-        <div class="eyebrow">EVIDENCE-FIRST CODE VERIFICATION</div>
-        <h1 id="hero-title">Stop guessing what might break. <em>Prove what actually does.</em></h1>
-        <p class="hero-copy">BreakFix reads a change, finds the assumptions behind it, and runs targeted experiments that turn a hunch into reproducible evidence.</p>
-        <div class="hero-actions">
-          <a class="button button-dark" href="#analyze">Analyze a change <span aria-hidden="true">↗</span></a>
-          <a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-backdrop" aria-hidden="true">
+          <img src="/assets/breakfix-hero.jpg" alt="" width="1200" height="800" fetchpriority="high" decoding="async">
+          <div class="hero-scrim"></div>
         </div>
-        <p class="hero-mode-note">Public Git repo or local codebase.</p>
-        <p class="hero-note"><span class="status-dot" aria-hidden="true"></span> Deterministic execution. Human approval before any fix.</p>
-        <div class="hero-visual" aria-label="BreakFix evidence specimen">
-          <figure class="hero-image-card">
-            <div class="visual-label">LOCAL SPECIMEN</div>
-            <img src="/assets/hero-specification.jpg" alt="A photographed software and hardware specification page." width="720" height="1280" loading="eager" decoding="async">
-            <figcaption>One artifact. Many assumptions.</figcaption>
-          </figure>
-          <div class="liquid-ascii-card">
-            <div class="liquid-ascii-header">
-              <span class="visual-label">REACTIVE ASSUMPTION MAP</span>
-              <span class="live-indicator">LIVE</span>
-            </div>
-            <canvas id="liquid-canvas" aria-hidden="true"></canvas>
-            <p class="liquid-ascii-caption"><span class="sr-only">Reactive monochrome visualization.</span>Surface the boundary. Attack the assumption.</p>
+        <div class="hero-content page-width">
+          <div class="eyebrow">EVIDENCE-FIRST CODE VERIFICATION</div>
+          <h1 id="hero-title">Stop guessing what might break. <em>Prove what actually does.</em></h1>
+          <p class="hero-copy">BreakFix analyzes a code change, finds the assumptions worth attacking, and executes targeted experiments to prove which failures are real.</p>
+          <div class="hero-actions">
+            <a class="button button-dark" href="#analyze">Analyze a change <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
           </div>
+          <p class="hero-mode-note">Public Git repo or local codebase.</p>
+          <p class="hero-note"><span class="status-dot" aria-hidden="true"></span> Deterministic execution. Human approval before any fix.</p>
         </div>
       </section>
 
