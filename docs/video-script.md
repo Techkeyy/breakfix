@@ -1,69 +1,126 @@
-# Solution video script, target 4:50
+# BreakFix solution video script
 
-## 0:00 to 0:25: problem
+Target length: 4:45
 
-Show an ordinary coding-agent-generated change while its visible tests pass.
-Say: “AI can already suggest many things that might be wrong. The expensive
-part is proving which suspicions are real.” Then say: “Your tests check what you
-expected. BreakFix tests what you forgot to expect.”
+Hard maximum: 5:00
 
-## 0:25 to 0:45: simple baseline
+## Recording surface
 
-Show the generic comparator prompt and its JSON recommendation for the same
-change. Say that this lane receives only the public change and visible tests. It
-can identify a plausible risk, but it does not receive hidden probes and does
-not execute them. Say: “BreakFix does not stop at a warning.”
+Use the live application for the main demo:
 
-## 0:45 to 1:15: visible tests and selected change
+https://breakfix.vercel.app
 
-Run the canonical demo from the terminal and show the visible test pass, the
-selected change, and the selected sample project. Then open the local evidence
-page, where the saved run is indexed. Do not invent a UI state: use the actual
-terminal output and the saved canonical evidence.
+Use a clean browser window with bookmarks, personal tabs, credentials,
+notifications, and developer tools hidden. Keep the local canonical demo ready
+as a fallback only. Do not type or display a result that the product did not
+produce.
 
-## 1:15 to 1:45: assumptions and targeted execution
+## 0:00 to 0:20, problem
 
-Show the ranked assumption `input_empty`, the supported perturbation, and the
-isolated command. Narrate: “The planner proposes what to attack. The execution
-engine decides.” Show the payload, stdout, stderr, exit status, and timing.
+Show the live BreakFix homepage.
 
-## 1:45 to 2:30: confirmed break to regression proof
+Say: “AI coding agents are already good at imagining what might go wrong. But a
+warning is still only a hypothesis.”
 
-Show `CONFIRMED BREAK`, expected versus actual behavior, the replay command, the
-generated regression test, and the bounded reduced reproduction. State that the
-evidence is reproducible and that the reducer does not call a result minimal
-unless it attempted reduction.
+## 0:20 to 0:42, product
 
-## 2:30 to 3:25: approval-gated fix and verification
+Keep the hero and frozen evaluation strip visible.
 
-Show the proposed fix, the required human approval, the approved application,
-the after-fix replay, and the original visible tests. End the section on
-`VERIFIED`. Say: “BreakFix does not silently write back, merge, or push. A
-candidate fix crosses an explicit approval boundary.”
+Say: “BreakFix reads the actual change, finds the assumptions worth attacking,
+and executes targeted experiments against them.”
 
-## 3:25 to 4:10: measured final evaluation
+Click **Analyze a change**.
 
-Show the final summary and trajectory index. Say: “On a fresh opaque holdout,
-BreakFix confirmed 8 of 8 seeded faults and 0 of 8 safe controls. It used 38
-targeted experiments versus 128 in the fixed matrix, a 70.3% reduction. The
-generic comparator recalled 7 of 8 faults with 0 safe false confirmations.”
-Show the 32 live DeepSeek calls, 32 structured responses, two transport
-retries, and approximate recorded cost of `$0.138005824`.
+## 0:42 to 1:20, start a real run
 
-## 4:10 to 4:35: what changed
+Use the canonical demo option and submit the public BreakFix repository. Show
+the real job transition from `QUEUED` to `RUNNING`.
 
-Show the changelog entries for the Phase 2B Attempt 1 failure caused by the
-2,000-token truncation, the provider recovery, and the final independent
-evaluation. Say: “The failed run stays in the record. The recovery changed the
-provider contract and evidence handling; it did not change the frozen cases,
-prompts, thresholds, oracle, budget, or gate.”
+Say: “The model proposes probes. Deterministic execution decides what actually
+happened.”
 
-## 4:35 to 4:50: close
+## 1:20 to 1:55, assumptions and experiment
 
-Say: “As coding agents become better at imagining possible failures, generating
-more suspicions stops being the hard part. The bottleneck becomes deciding
-which suspicions are worth executing and proving which failures are real.” Then
-say: “Stop guessing what might break. Prove what actually does.” Show
-`REPRODUCE.md` and the scope: Python `app.run(payload)`, four supported
-surfaces, sanitized local execution, no automatic merge or push. End on the
-oracle-free final evidence and the clean-environment reproduction commands.
+When the real result loads, show the ranked `input_empty` assumption and the
+targeted experiment. Point out the expected behavior, actual process result,
+evidence state, and returned output.
+
+Say: “This is not a generic warning. It is a specific assumption tied to a
+specific execution.”
+
+## 1:55 to 2:35, confirmed break
+
+Show `CONFIRMED BREAK`, the provider status, experiment count, regression status,
+and the expected versus actual evidence. Show the real reproduction and
+regression evidence available in the result.
+
+Say: “When an assumption fails, BreakFix does not just tell you something might
+break. It gives you the reproduction, regression test, and evidence.”
+
+## 2:35 to 3:25, fix and approval
+
+Select **Propose fix** in the live result. Wait for the real proposal to load.
+Show the patch, changed files, tests to run, and the human approval notice.
+
+Say: “It proposes a fix, but waits for human approval before applying it.”
+
+Select **Approve & verify** only at the explicit recording checkpoint. Show the
+job's approved state. Then select **Run verification** and show the real
+verification result.
+
+Say: “Then it replays the exact failure and original tests before marking the
+fix verified.”
+
+## 3:25 to 3:48, evaluation shot
+
+Switch to a clean, uncluttered evaluation visual titled `FINAL FROZEN HOLDOUT`.
+Show only:
+
+```text
+8/8       faults confirmed
+0/8       safe false confirmations
+38        BreakFix experiments
+128       fixed-matrix experiments
+70.3%     fewer experiments
+Approx. final-evaluation provider cost: $0.138
+```
+
+Say: “On our frozen final holdout, BreakFix found all eight seeded faults with
+zero false confirmed breaks using 38 experiments versus 128 for the fixed
+matrix, 70.3% fewer.”
+
+## 3:48 to 4:12, measured iteration
+
+Show the improvement changelog briefly.
+
+Say: “The strong coding agent already found the raw faults. A broad
+safety-certification framing failed. The first Phase 2B run failed because our
+2,000-token adapter truncated every advanced planner output. We preserved those
+failures. The final thesis became targeted, evidence-efficient falsification,
+and the final independent holdout passed.”
+
+Do not open private evaluator truth, API keys, or raw credentials.
+
+## 4:12 to 4:45, close
+
+Show `REPRODUCE.md` and the public repository link.
+
+Say: “As coding agents get better at imagining failures, generating more
+suspicions stops being the hard part. The bottleneck becomes deciding which
+suspicions are worth executing and proving which failures are real.”
+
+End on the live URL and say: “Stop guessing what might break. Prove what
+actually does.”
+
+## Rehearsal record
+
+Before recording, run this exact sequence once against the live app and record
+the approximate times in `docs/video-shot-list.md`. The rehearsal must use the
+real API and real evidence. The local canonical demo is the deterministic
+fallback when a live provider or network failure makes the hosted run
+unavailable.
+
+The final rehearsal reached `CONFIRMED BREAK` at about 0:53, showed the real
+proposal at about 1:41, reached `APPROVED` at about 1:59, and reached `VERIFIED`
+at about 2:06. The final recording should use cuts and narration to stay within
+4:30 to 4:50.

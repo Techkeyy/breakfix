@@ -28,6 +28,10 @@ responses, and preserved provider telemetry. The full claim ledger is in
 [`docs/claims.md`](docs/claims.md), and the complete final report is in
 [`docs/final-evaluation-report.md`](docs/final-evaluation-report.md).
 
+> On the frozen final holdout, BreakFix found all 8 seeded faults with zero
+> false confirmed breaks while executing 38 targeted experiments instead of
+> the fixed matrix's 128, a 70.3% reduction.
+
 ## The problem
 
 Visible tests often cover the normal path while a code change introduces an
@@ -93,7 +97,7 @@ From the project directory:
     python -m breakfix.cli doctor
     python scripts/run_external_acceptance.py
 
-The suite currently reports 38 passing tests. The independent acceptance uses
+The suite currently reports 44 passing tests. The independent acceptance uses
 `examples/independent_sample`, not a benchmark fixture, and exercises analysis,
 replay, regression generation, and reduction.
 
@@ -111,19 +115,26 @@ not a chatbot or an observability dashboard.
 The clean-environment and final-evaluation instructions are in
 [`REPRODUCE.md`](REPRODUCE.md).
 
-## Hosted deployment
+## Live links
 
-- Live app: [breakfix.vercel.app](https://breakfix.vercel.app)
-- Public API health: [breakfix API](https://breakfix-engine-techkeyy.duckdns.org/health)
-- Canonical repository: [github.com/Techkeyy/breakfix](https://github.com/Techkeyy/breakfix)
+### LIVE DEMO
 
-The hosted surface is a thin static Vercel frontend over the existing Python
-engine on the `canned-vps` host at
-`https://breakfix-engine-techkeyy.duckdns.org`. Jobs accept public HTTPS Git repositories,
-clone them without credentials, and run in bounded Docker containers. The API
-does not expose raw logs, server paths, evaluator truth, or provider secrets;
-the final evaluation oracle remains external. Reproduce the core product and
-evaluation locally with the commands in [`REPRODUCE.md`](REPRODUCE.md).
+[https://breakfix.vercel.app](https://breakfix.vercel.app)
+
+### SOURCE
+
+[https://github.com/Techkeyy/breakfix](https://github.com/Techkeyy/breakfix)
+
+### LOCAL REPRODUCTION
+
+[`REPRODUCE.md`](REPRODUCE.md)
+
+The hosted surface is a thin static frontend over the BreakFix API. Jobs accept
+public HTTPS Git repositories, clone them without credentials, and run within
+bounded resource and time limits. The API does not expose raw logs, server
+paths, evaluator truth, or provider secrets; the final evaluation oracle remains
+external. The supported hosted scope is the same MVP contract described below:
+a Python project exposing `app.run(payload)` with a runnable unittest command.
 
 ## Scope
 
@@ -190,8 +201,6 @@ summary.
 - The hosted UI is public and has no multi-user authentication; it accepts
   public repositories only, runs one active job at a time, and applies the
   documented resource and time limits.
-- The in-app browser renderer was unavailable during the final UI audit on this
-  host; static, endpoint, and remote engine checks passed.
 
 ## Submission material
 

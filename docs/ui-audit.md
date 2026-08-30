@@ -1,9 +1,9 @@
 # UI audit
 
-Audit date: 2026-08-29
+Audit date: 2026-08-30
 
-The local interface is a focused evidence review page served by the Python
-standard library.
+The hosted interface is a thin static Vercel frontend over the public BreakFix
+API. The local Python evidence page remains available for saved runs.
 
 ## Checks
 
@@ -15,8 +15,9 @@ standard library.
 - The page has explicit empty-state, card, heading, body, and chip styles and
   a responsive grid with a viewport meta tag.
 
-The in-app browser renderer could not initialize on this Windows host because
-its browser runtime could not create its kernel assets. Static source review,
-the design-skill audit, endpoint checks, and the web regression test passed;
-interactive screenshot inspection remains an environment limitation rather
-than an unreported PASS claim.
+- The deployed frontend was rendered and checked at 1440, 1024, 768, and 390px.
+- The public browser flow reached `QUEUED`, `RUNNING`, and `COMPLETED` against
+  the live API with real `CONFIRMED BREAK` evidence, assumptions, a targeted
+  experiment, valid regression status, and the approval-gated fix entry point.
+- Desktop and mobile screenshots were captured during the final review. The
+  page remained free of horizontal overflow at all four widths.

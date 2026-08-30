@@ -142,8 +142,8 @@ function renderFix(evidence, job) {
   if (!fix) { target.innerHTML = ""; return; }
   const decision = evidence.fix_decision && evidence.fix_decision.status;
   let buttons = "";
-  if (fix.status === "PROPOSED" && !decision) buttons = `<div class="action-row"><button class="action" id="reject" type="button">Reject</button><button class="action approve" id="approve" type="button">Approve &amp; verify</button></div><p class="evidence-note">Approval applies the candidate in an isolated snapshot. Verification remains a separate, explicit step.</p>`;
-  else if (job.status === "APPROVED") buttons = `<div class="action-row"><button class="action approve" id="verify" type="button">Run verification</button></div>`;
+  if (job.status === "APPROVED") buttons = `<div class="action-row"><button class="action approve" id="verify" type="button">Run verification</button></div>`;
+  else if (fix.status === "PROPOSED" && !decision) buttons = `<div class="action-row"><button class="action" id="reject" type="button">Reject</button><button class="action approve" id="approve" type="button">Approve &amp; verify</button></div><p class="evidence-note">Approval applies the candidate in an isolated snapshot. Verification remains a separate, explicit step.</p>`;
   else if (decision) buttons = `<p class="evidence-note">Human decision: ${esc(decision)}.</p>`;
   target.innerHTML = `<h3>Fix proposal</h3><article class="card"><h4>${esc(display(fix.summary, fix.status))}</h4><p>${esc(Array.isArray(fix.files_changed) ? fix.files_changed.join(", ") : display(fix.files_changed, "No files listed"))}</p>${Array.isArray(fix.tests_to_run) && fix.tests_to_run.length ? `<p>Tests: ${esc(fix.tests_to_run.join(", "))}</p>` : ""}${fix.patch ? `<pre>${esc(fix.patch)}</pre>` : ""}${buttons}</article>`;
   if (document.querySelector("#approve")) document.querySelector("#approve").onclick = () => operation("approve-fix");

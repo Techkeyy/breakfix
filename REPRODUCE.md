@@ -34,7 +34,7 @@ From `C:\Users\HomePC\Desktop\BreakFix`:
     python -m breakfix.cli doctor
     python scripts/run_external_acceptance.py
 
-The test suite should report 38 passing tests. The independent acceptance
+The test suite should report 44 passing tests. The independent acceptance
 script uses `examples/independent_sample` and records a confirmed process
 failure, a generated regression, and a bounded reduction without benchmark
 fixture mappings.
@@ -95,7 +95,7 @@ repository and published evidence.
 
 ## Expected runtime and cost
 
-- Offline test suite: about 10 seconds, 38 tests.
+- Offline test suite: about 10 seconds, 44 tests.
 - Canonical demo: under one minute.
 - Final live evaluation: about 25 minutes on the recorded host, depending on
   provider latency.
