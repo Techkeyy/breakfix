@@ -35,18 +35,43 @@ function renderProgress(status) {
   const finished = !ACTIVE_STATUSES.has(status);
   document.querySelector("#analysis-progress").innerHTML = stages.map(([number, label], index) => {
     const state = finished || index < current ? "complete" : index === current ? "current" : "";
-    return `<div class="progress-step ${state}" aria-current="${state === "current" ? "step" : "false"}"><span class="progress-index">${number}</span><span class="progress-label">${label}</span></div>`;
+    const stateLabel = state === "current" ? "active" : state === "complete" ? "complete" : "waiting";
+    return `<div class="progress-step ${state}" aria-current="${state === "current" ? "step" : "false"}"><span class="progress-index">${number}</span><span class="progress-label">${label}</span><span class="progress-state">${stateLabel}</span></div>`;
   }).join("");
 }
 
 function statusMessage(status) {
   return {
-    QUEUED: "The job is queued for the bounded engine run.",
-    RUNNING: "The remote engine is reading the change and executing selected probes.",
-    PROPOSAL_RUNNING: "The existing fix proposal flow is preparing a candidate for review.",
-    APPLYING: "The approved candidate is being applied in the isolated verification flow.",
-    VERIFYING: "The approved change is being rerun through verification.",
+    QUEUED: "Queued: waiting for the bounded worker to start.",
+    RUNNING: "Running: the remote engine is reading the change and executing selected probes.",
+    PROPOSAL_RUNNING: "Preparing fix: the existing proposal flow is preparing a candidate for review.",
+    APPLYING: "Applying approved fix: the candidate is being applied in the isolated verification flow.",
+    VERIFYING: "Verifying: the approved change is being rerun through verification.",
   }[status] || "Evidence is ready. The result below is from the remote job.";
+}
+
+function runState(status, evidence, job) {
+  if (status === "QUEUED") return { tone: "active", label: "QUEUED", title: "WAITING FOR THE BOUNDED WORKER", detail: "No percentage estimate · actual job status", copy: statusMessage(status) };
+  if (status === "RUNNING") return { tone: "active", label: "RUNNING", title: "RUNNING THE BOUNDED ENGINE", detail: "Reading change · selecting probes · building evidence", copy: statusMessage(status) };
+  if (status === "PROPOSAL_RUNNING") return { tone: "active", label: "PROPOSAL RUNNING", title: "PREPARING FIX", detail: "Existing approval-gated proposal flow", copy: statusMessage(status) };
+  if (status === "APPLYING") return { tone: "active", label: "APPLYING", title: "APPLYING APPROVED FIX", detail: "Isolated snapshot", copy: statusMessage(status) };
+  if (status === "VERIFYING") return { tone: "active", label: "VERIFYING", title: "VERIFYING APPROVED CHANGE", detail: "Existing verification flow", copy: statusMessage(status) };
+  if (job?.error) return { tone: "error", label: status || "ERROR", title: "ANALYSIS STOPPED", detail: "Backend returned an error", copy: job.error };
+  if (evidence?.verification?.status === "VERIFIED") return { tone: "terminal", label: "VERIFIED", title: "VERIFIED", detail: "Approval and verification complete", copy: "The approved change was rerun through the existing verification flow." };
+  if (status === "APPROVED") return { tone: "waiting", label: "APPROVED", title: "READY FOR VERIFICATION", detail: "Execution is stopped until you start verification", copy: "The approved candidate is ready for the existing verification step." };
+  if (evidence?.fix?.status === "PROPOSED" && !evidence?.fix_decision) return { tone: "waiting", label: "WAITING", title: "WAITING FOR YOUR APPROVAL", detail: "Execution is stopped until you choose an action", copy: "Review the proposal below. Approval applies the candidate in an isolated snapshot." };
+  if (evidence?.outcome === "CONFIRMED BREAK") return { tone: "terminal", label: "CONFIRMED BREAK", title: "CONFIRMED BREAK", detail: "Evidence is ready for the approval-gated fix loop", copy: "A targeted experiment reproduced the expected failure." };
+  if (evidence?.outcome === "NO BREAK CONFIRMED") return { tone: "terminal", label: "NO BREAK CONFIRMED", title: "NO BREAK CONFIRMED", detail: "Evidence is ready", copy: "The bounded run did not reproduce a failure." };
+  return { tone: "terminal", label: status || "COMPLETED", title: "EVIDENCE READY", detail: "Bounded run complete", copy: statusMessage(status) };
+}
+
+function renderRunState(job, evidence) {
+  const target = document.querySelector("#run-state");
+  const state = runState(job.status, evidence, job);
+  const active = ACTIVE_STATUSES.has(job.status);
+  result.setAttribute("aria-busy", String(active));
+  target.className = `run-state ${state.tone}`;
+  target.innerHTML = `<div class="run-state-head"><span class="run-state-indicator" aria-hidden="true"></span><span>${esc(state.label)}</span></div><strong class="run-state-title">${esc(state.title)}</strong><p class="run-state-copy">${esc(state.copy)}</p><div class="run-state-detail">${esc(state.detail)}</div>`;
 }
 
 function setAnalysisMode(mode, { focus = false } = {}) {
@@ -146,7 +171,8 @@ function renderJob(job, evidence) {
   document.querySelector("#result-title").textContent = `Job ${job.job_id ? job.job_id.slice(0, 8) : ""}`;
   const pill = document.querySelector("#status-pill");
   pill.textContent = job.status || "QUEUED";
-  pill.className = `status-pill ${["COMPLETED", "APPROVED", "REJECTED"].includes(job.status) ? "good" : job.status === "FAILED" ? "bad" : ""}`;
+  const pillTone = job.status === "FAILED" ? "error" : job.status === "VERIFYING" || ACTIVE_STATUSES.has(job.status) ? "active" : evidence.verification?.status === "VERIFIED" ? "verified" : evidence.fix?.status === "PROPOSED" && !evidence.fix_decision ? "waiting" : evidence.outcome === "CONFIRMED BREAK" ? "break" : ["COMPLETED", "APPROVED", "REJECTED"].includes(job.status) ? "good" : "";
+  pill.className = `status-pill ${pillTone}`;
   renderProgress(job.status);
   const outcome = evidence.outcome || job.outcome || "Waiting";
   const regression = evidence.regression;
@@ -156,6 +182,7 @@ function renderJob(job, evidence) {
     ["Experiments", evidence.experiments_run ?? job.experiments_run ?? "Waiting"],
     ["Regression", regression ? (regression.valid ? "Valid" : "Failed") : "Waiting"],
   ].map(([label, value]) => `<div class="stat"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join("");
+  renderRunState(job, evidence);
   renderAssumptions(evidence);
   renderExperiments(evidence);
   renderFix(evidence, job);
@@ -164,7 +191,7 @@ function renderJob(job, evidence) {
 function renderAssumptions(evidence) {
   const target = document.querySelector("#assumptions");
   const assumptions = Array.isArray(evidence.assumptions) ? evidence.assumptions : [];
-  target.innerHTML = `<h3>Assumptions</h3>${assumptions.length ? `<div class="cards">${assumptions.map((item) => `<article class="card"><h4>${esc(display(item.id, "Assumption"))}</h4><p>${esc(display(item.statement))}</p>${item.surface ? `<span class="tag">${esc(item.surface)}</span>` : ""}${item.risk ? `<span class="tag">${esc(item.risk)}</span>` : ""}</article>`).join("")}</div>` : `<p class="evidence-note">The planner has not returned an assumption yet.</p>`}`;
+  target.innerHTML = `<h3>Assumptions</h3>${assumptions.length ? `<div class="cards">${assumptions.map((item, index) => { const risk = String(item.risk || "").toLowerCase(); const riskTone = risk.includes("high") ? "risk-high" : risk.includes("medium") ? "risk-medium" : ""; const selected = item.selected === true || item.status === "SELECTED" ? "selected" : ""; return `<article class="card assumption-card ${riskTone} ${selected}"><h4><span class="assumption-marker">A${String(index + 1).padStart(2, "0")}</span>${esc(display(item.id, "Assumption"))}</h4><p>${esc(display(item.statement))}</p>${item.surface ? `<span class="tag">${esc(item.surface)}</span>` : ""}${item.risk ? `<span class="tag">${esc(item.risk)}</span>` : ""}${item.experiment_id ? `<span class="tag">${esc(item.experiment_id)}</span>` : ""}</article>`; }).join("")}</div>` : `<p class="evidence-note">The planner has not returned an assumption yet.</p>`}`;
 }
 
 function renderExperiments(evidence) {
@@ -218,6 +245,10 @@ function renderError(text) {
   document.querySelector("#status-pill").textContent = "ERROR";
   document.querySelector("#status-pill").className = "status-pill bad";
   document.querySelector("#analysis-progress").innerHTML = "";
+  result.setAttribute("aria-busy", "false");
+  const runStateTarget = document.querySelector("#run-state");
+  runStateTarget.className = "run-state error";
+  runStateTarget.innerHTML = `<div class="run-state-head"><span class="run-state-indicator" aria-hidden="true"></span><span>ERROR</span></div><strong class="run-state-title">ANALYSIS STOPPED</strong><p class="run-state-copy">${esc(text)}</p><div class="run-state-detail">No active job remains</div>`;
   document.querySelector("#summary").innerHTML = `<article class="notice-card"><h4>Hosted request failed</h4><p>${esc(text)}</p><p>Nothing was changed. Check the repository URL and try the bounded run again.</p></article>`;
   document.querySelector("#assumptions").innerHTML = "";
   document.querySelector("#experiments").innerHTML = "";
