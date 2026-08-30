@@ -133,7 +133,7 @@ written to `evidence/<run-id>/` locally.
 | Candidate fix | Not applied without `--approved` |
 | Repository state | No merge, push, OAuth, or automatic write-back |
 | Credentials | Kept outside submitted source and stripped from target subprocesses |
-| Evaluator truth | Loaded externally for the final benchmark and omitted from published evidence |
+| Evaluator truth | Loaded only from explicit external paths for historical/final evaluators and omitted from the public release |
 
 ## Evidence and history
 
@@ -143,6 +143,9 @@ The final run is `evidence/final-eval-20260829T212423Z/`.
   opaque case IDs.
 - The final protocol is frozen in
   [`docs/final-evaluation-protocol.md`](docs/final-evaluation-protocol.md).
+- Historical Phase 1/2A evaluators remain reproducible when their private truth
+  files are supplied through the documented environment variables; those files
+  are not part of the public repository.
 - The trajectory and evidence map is in
   [`docs/trajectory-index.md`](docs/trajectory-index.md).
 - The historical Phase 2B Attempt 1 output remains preserved as an ineligible

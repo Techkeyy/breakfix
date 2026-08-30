@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -26,7 +27,15 @@ def _relative(root: Path, path: Path) -> str:
 
 
 def _load_truth(root: Path) -> dict[str, Any]:
-    return json.loads((root / "benchmark" / "phase2a_ground_truth.json").read_text(encoding="utf-8"))
+    configured = os.environ.get("BREAKFIX_PHASE2A_TRUTH_PATH")
+    if not configured:
+        raise RuntimeError(
+            "Phase 2A evaluator truth is external; set BREAKFIX_PHASE2A_TRUTH_PATH explicitly"
+        )
+    path = Path(configured).expanduser().resolve()
+    if not path.is_file():
+        raise RuntimeError(f"Phase 2A evaluator truth file not found: {path}")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _load_replay(root: Path, lane: str, case_id: str) -> tuple[dict[str, Any] | None, str | None]:

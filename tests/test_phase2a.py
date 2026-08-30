@@ -10,14 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Phase2AContractTests(unittest.TestCase):
-    def test_holdout_is_balanced_and_numeric(self):
-        truth = json.loads((ROOT / "benchmark" / "phase2a_ground_truth.json").read_text(encoding="utf-8"))
+    def test_holdout_is_public_and_opaque(self):
         self.assertEqual(len(PHASE2A_CASE_IDS), 14)
-        self.assertEqual(sum(bool(truth[case_id]["fault"]) for case_id in PHASE2A_CASE_IDS), 7)
-        self.assertEqual(sum(not truth[case_id]["fault"] for case_id in PHASE2A_CASE_IDS), 7)
         for case_id in PHASE2A_CASE_IDS:
             public = json.loads((ROOT / "benchmark" / "phase2a_holdout" / case_id / "public.json").read_text(encoding="utf-8"))
             self.assertEqual(public["id"], case_id)
+            self.assertNotIn("fault", public)
+            self.assertNotIn("expected_outputs", public)
 
     def test_execution_states_require_oracle_and_evidence(self):
         truth = {"fault": True, "fault_experiments": ["retry_duplicate"], "expected_outputs": {"retry_duplicate": {"total_charged": 25}}}

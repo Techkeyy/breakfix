@@ -33,10 +33,10 @@ telemetry, two transport retries, and approximate cost of `$0.138005824`.
 ## Evidence boundary
 
 The copied final and historical Phase 2B evidence is oracle-free. Evaluator-only
-expected outputs remain outside this repository in the Temp run workspace. The
-frozen Phase 1 and Phase 2A development fixtures remain in the benchmark history
-because they are required by those earlier replay contracts; they were not used
-as the final holdout or included in this curated evidence bundle.
+expected outputs remain outside this repository in the pre-public backup and
+private evaluator workspaces. Historical Phase 1/2A replay remains available
+when the private files are supplied through `BREAKFIX_GROUND_TRUTH_PATH` and
+`BREAKFIX_PHASE2A_TRUTH_PATH`; those files are not part of this public package.
 
 No provider credential is included. The final video is still a manual submission
 action; `../docs/video-script.md` and `../docs/video-shot-list.md` are the

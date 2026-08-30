@@ -87,6 +87,12 @@ The live baseline is the generic comparator lane inside the same frozen runner.
 It receives the same public case context, has no hidden probes, and is scored
 against the external evaluator truth only after its output is recorded.
 
+Historical Phase 1 and Phase 2A research replays are optional and are not part
+of the public benchmark path. If authorized private evaluator files are
+available, set `BREAKFIX_GROUND_TRUTH_PATH` for Phase 1/1.5 and
+`BREAKFIX_PHASE2A_TRUTH_PATH` for Phase 2A. The files must remain outside the
+repository and published evidence.
+
 ## Expected runtime and cost
 
 - Offline test suite: about 10 seconds, 38 tests.
