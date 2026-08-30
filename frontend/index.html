@@ -51,7 +51,7 @@
           <div><dt>0/8</dt><dd>safe false confirmations</dd></div>
           <div><dt>38</dt><dd>targeted experiments</dd></div>
           <div><dt>128</dt><dd>matrix runs</dd></div>
-          <div><dt>70.3%</dt><dd>fewer model calls</dd></div>
+          <div><dt>70.3%</dt><dd>fewer experiments</dd></div>
         </dl>
       </section>
 
@@ -84,7 +84,7 @@
           <article class="process-step">
             <span class="step-number">02</span>
             <h3>Find assumptions</h3>
-            <p>The planner returns ranked assumptions and selects one supported probe for each.</p>
+            <p>BreakFix ranks the assumptions introduced by the change, then selects a bounded set of supported experiments worth executing.</p>
           </article>
           <article class="process-step">
             <span class="step-number">03</span>
@@ -102,10 +102,10 @@
             <p class="section-lede">A clean result is not called safe by implication. BreakFix reports exactly what the bounded run supports.</p>
           </div>
           <dl class="verdict-list">
-            <div><dt>CONFIRMED BREAK</dt><dd>An experiment reproduced the expected failure.</dd></div>
-            <div><dt>NO BREAK CONFIRMED</dt><dd>The selected experiments found no break in scope.</dd></div>
-            <div><dt>UNSUPPORTED</dt><dd>The change could not be evaluated by the supported path.</dd></div>
-            <div><dt>ERROR</dt><dd>The run failed before a trustworthy verdict was available.</dd></div>
+            <div><dt>CONFIRMED BREAK</dt><dd>A targeted experiment caused the code to fail in the predicted way.</dd></div>
+            <div><dt>NO BREAK CONFIRMED</dt><dd>The selected supported experiments did not reproduce a break.</dd></div>
+            <div><dt>UNSUPPORTED</dt><dd>BreakFix could not map this change to a supported experiment surface.</dd></div>
+            <div><dt>ERROR</dt><dd>The run ended before BreakFix could produce a trustworthy verdict.</dd></div>
           </dl>
         </div>
       </section>
@@ -142,8 +142,22 @@
                 </label>
                 <div id="change-fields" class="change-fields hidden">
                   <div class="field-group">
-                    <label for="reference">Git commit, branch, or range</label>
-                    <input id="reference" name="reference" placeholder="abc123 or feature..master" autocomplete="off" />
+                    <label for="change-kind">Change type</label>
+                    <select id="change-kind" name="change_kind">
+                      <option value="commit">Commit</option>
+                      <option value="branch">Branch comparison</option>
+                      <option value="range">Commit range</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label for="reference">Change to analyze</label>
+                    <p id="reference-help" class="field-help">Enter a commit, branch, or range.</p>
+                    <input id="reference" name="reference" placeholder="e174e8b" autocomplete="off" />
+                    <div class="change-examples" aria-label="Change reference examples">
+                      <div><code>e174e8b</code><span>Analyze this commit against its parent.</span></div>
+                      <div><code>master</code><span>Compare the current checkout with master.</span></div>
+                      <div><code>cee9003..e174e8b</code><span>Analyze everything changed between these commits.</span></div>
+                    </div>
                   </div>
                   <div class="field-group">
                     <label for="task">Review task <span class="label-note">Optional</span></label>
@@ -208,6 +222,7 @@ python -m pip install -e .</code></pre>
         </div>
         <div id="analysis-progress" class="analysis-progress" aria-label="Analysis progress"></div>
         <div id="run-state" class="run-state" role="status" aria-live="polite"></div>
+        <div id="change-context" class="change-context" aria-live="polite"></div>
         <div id="summary" class="summary-grid"></div>
         <div id="assumptions" class="evidence-section"></div>
         <div id="experiments" class="evidence-section"></div>
