@@ -72,6 +72,106 @@ modeTabs.forEach((tab, index) => {
   });
 });
 
+function initLiquidAscii() {
+  const canvas = document.querySelector("#liquid-canvas");
+  const context = canvas?.getContext("2d");
+  if (!canvas || !context) return;
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const glyphs = ".:+*#@";
+  const pointer = { x: 0.52, y: 0.48 };
+  let width = 0;
+  let height = 0;
+  let frame = 0;
+  let inView = true;
+
+  function resize() {
+    const bounds = canvas.getBoundingClientRect();
+    const density = Math.min(window.devicePixelRatio || 1, 2);
+    width = Math.max(1, bounds.width);
+    height = Math.max(1, bounds.height);
+    canvas.width = Math.round(width * density);
+    canvas.height = Math.round(height * density);
+    context.setTransform(density, 0, 0, density, 0, 0);
+    draw(0);
+  }
+
+  function draw(time) {
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#050505";
+    context.fillRect(0, 0, width, height);
+    context.font = "12px Consolas, monospace";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+
+    const columns = Math.max(24, Math.floor(width / 13));
+    const rows = Math.max(12, Math.floor(height / 14));
+    const cellWidth = width / columns;
+    const cellHeight = height / rows;
+    const seconds = time / 1000;
+    for (let row = 0; row < rows; row += 1) {
+      for (let column = 0; column < columns; column += 1) {
+        const x = (column + 0.5) / columns;
+        const y = (row + 0.5) / rows;
+        const dx = x - pointer.x;
+        const dy = y - pointer.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const wave = Math.sin(distance * 29 - seconds * 1.6 + x * 3.2 - y * 1.4);
+        const structure = Math.cos((x - y) * 18 + seconds * 0.3);
+        const energy = Math.max(0, 0.2 + wave * 0.27 + structure * 0.17 + (1 - Math.min(distance * 1.7, 1)) * 0.28);
+        if (energy < 0.15) continue;
+        const glyph = glyphs[Math.min(glyphs.length - 1, Math.floor(energy * glyphs.length))];
+        context.fillStyle = `rgba(244, 244, 244, ${Math.min(0.92, energy)})`;
+        context.fillText(glyph, column * cellWidth + cellWidth / 2, row * cellHeight + cellHeight / 2);
+      }
+    }
+  }
+
+  function animate(time) {
+    frame = 0;
+    if (!inView || reduceMotion.matches) return;
+    draw(time);
+    frame = window.requestAnimationFrame(animate);
+  }
+
+  function start() {
+    if (!frame && !reduceMotion.matches && inView) frame = window.requestAnimationFrame(animate);
+  }
+
+  function stop() {
+    if (frame) window.cancelAnimationFrame(frame);
+    frame = 0;
+  }
+
+  canvas.addEventListener("pointermove", (event) => {
+    const bounds = canvas.getBoundingClientRect();
+    pointer.x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+    pointer.y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height));
+  }, { passive: true });
+  canvas.addEventListener("pointerleave", () => {
+    pointer.x = 0.52;
+    pointer.y = 0.48;
+  }, { passive: true });
+  window.addEventListener("resize", resize, { passive: true });
+  reduceMotion.addEventListener?.("change", () => {
+    stop();
+    draw(0);
+    start();
+  });
+  document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      inView ? start() : stop();
+    });
+    observer.observe(canvas);
+  }
+  resize();
+  start();
+}
+
+initLiquidAscii();
+
 document.querySelectorAll("[data-copy-target]").forEach((button) => {
   button.addEventListener("click", async () => {
     const target = document.querySelector(`#${button.dataset.copyTarget}`);
