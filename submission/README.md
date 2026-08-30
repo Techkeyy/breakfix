@@ -25,7 +25,7 @@ review the final result without the evaluator-only truth file.
 
 The primary gate is PASS. BreakFix confirmed 8 of 8 seeded faults and 0 of 8
 safe false confirmations using 38 targeted experiments versus 128 in the fixed
-matrix, a 70.3% reduction in ordinary prose. The exact 70.3125% value is in
+matrix, a 70.3% reduction in targeted experiments. The exact 70.3125% value is in
 the detailed final summary. The generic comparator recorded 7 of 8 fault
 recall, and the final provider run recorded 32 live DeepSeek calls, complete
 telemetry, two transport retries, and approximate cost of `$0.138005824`.
