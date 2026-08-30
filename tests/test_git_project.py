@@ -71,6 +71,7 @@ class HostedHistoryResolutionTests(unittest.TestCase):
         snapshot = load_change(self.shallow, change_kind="branch", reference="legacy", ensure_history=True)
         self.assertEqual(snapshot.resolved_head, self.commits[7])
         self.assertEqual(snapshot.resolved_base, self.commits[2])
+        self.assertEqual(snapshot.resolved_reference, self.commits[2])
         self.assertIn("VERSION = 7", snapshot.diff)
 
     def test_invalid_commit_and_range_are_translated_without_raw_git_error(self):

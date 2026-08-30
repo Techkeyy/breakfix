@@ -163,6 +163,7 @@ def analyze_change(
             "requested_reference": snapshot.reference,
             "resolved_base": snapshot.resolved_base,
             "resolved_head": snapshot.resolved_head,
+            "resolved_reference": snapshot.resolved_reference,
         },
     }
     write_json(evidence_dir / "change.json", {

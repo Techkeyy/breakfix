@@ -71,6 +71,7 @@ def _snapshot(project: Path, request: dict) -> ChangeSnapshot:
             reference=reference,
             resolved_base=resolved_base,
             resolved_head=resolved_head,
+            resolved_reference=resolved.get("resolved_reference"),
         )
     return load_change(
         project,

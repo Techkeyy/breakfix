@@ -162,10 +162,13 @@ function renderChangeContext(evidence) {
   const files = Array.isArray(evidence.changed_files) ? evidence.changed_files : [];
   const resolution = evidence.change_resolution || {};
   const kindLabel = change.kind === "range" ? "Commit range" : change.kind === "branch" ? "Branch comparison" : "Commit";
+  const baseLabel = change.kind === "commit" ? "Compare base (parent)" : "Resolved base used";
+  const headLabel = change.kind === "commit" ? "Resolved commit" : "Resolved head";
   target.className = "change-context visible";
   const resolvedBase = resolution.resolved_base || "Not resolved yet";
   const resolvedHead = resolution.resolved_head || "Not resolved yet";
-  target.innerHTML = `<div class="change-context-heading">CHANGE RESOLVED</div><dl><div><dt>Requested comparison</dt><dd>${esc(kindLabel)} · ${esc(change.reference)}</dd></div><div><dt>Resolved base</dt><dd><code>${esc(resolvedBase)}</code></dd></div><div><dt>Resolved head</dt><dd><code>${esc(resolvedHead)}</code></dd></div><div><dt>Changed files returned</dt><dd>${esc(files.length ? files.join(", ") : "Not returned yet")}</dd></div></dl>`;
+  const branchHead = change.kind === "branch" && resolution.resolved_reference ? `<div><dt>Resolved branch head</dt><dd><code>${esc(resolution.resolved_reference)}</code></dd></div>` : "";
+  target.innerHTML = `<div class="change-context-heading">CHANGE RESOLVED</div><dl><div><dt>Requested comparison</dt><dd>${esc(kindLabel)} · ${esc(change.reference)}</dd></div><div><dt>${esc(baseLabel)}</dt><dd><code>${esc(resolvedBase)}</code></dd></div><div><dt>${esc(headLabel)}</dt><dd><code>${esc(resolvedHead)}</code></dd></div>${branchHead}<div><dt>Changed files returned</dt><dd>${esc(files.length ? files.join(", ") : "Not returned yet")}</dd></div></dl>`;
 }
 
 function setAnalysisMode(mode, { focus = false } = {}) {

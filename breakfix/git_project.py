@@ -19,6 +19,7 @@ class ChangeSnapshot:
     test_command: str
     resolved_base: str | None = None
     resolved_head: str | None = None
+    resolved_reference: str | None = None
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,7 @@ class ChangeResolution:
     reference: str | None
     resolved_base: str | None
     resolved_head: str | None
+    resolved_reference: str | None = None
 
     def as_dict(self) -> dict[str, str | None]:
         return {
@@ -36,6 +38,7 @@ class ChangeResolution:
             "requested_reference": self.reference,
             "resolved_base": self.resolved_base,
             "resolved_head": self.resolved_head,
+            "resolved_reference": self.resolved_reference,
         }
 
 
@@ -153,7 +156,7 @@ def _resolve_change(
                 raise ValueError("a commit reference is required")
             head = _revision(project_root, reference, aliases, timeout=timeout)
             base = _git(project_root, "rev-parse", "--verify", f"{head}^", timeout=timeout).strip()
-            return ChangeResolution(change_kind, reference, base, head)
+            return ChangeResolution(change_kind, reference, base, head, head)
         if change_kind == "range":
             if not reference:
                 raise ValueError("a commit range such as BASE..HEAD is required")
@@ -170,7 +173,7 @@ def _resolve_change(
             head = _revision(project_root, "HEAD", aliases, timeout=timeout)
             branch = _revision(project_root, reference, aliases, timeout=timeout)
             base = _git(project_root, "merge-base", branch, head, timeout=timeout).strip()
-            return ChangeResolution(change_kind, reference, base, head)
+            return ChangeResolution(change_kind, reference, base, head, branch)
         raise ValueError("change_kind must be working-tree, commit, range, or branch")
     except ValueError:
         raise
@@ -332,4 +335,5 @@ def load_change(
         test_command=test_command or detect_test_command(root),
         resolved_base=resolution.resolved_base,
         resolved_head=resolution.resolved_head,
+        resolved_reference=resolution.resolved_reference,
     )

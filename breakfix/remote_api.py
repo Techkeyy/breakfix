@@ -430,6 +430,7 @@ class JobManager:
                     "requested_reference": snapshot.reference,
                     "resolved_base": snapshot.resolved_base,
                     "resolved_head": snapshot.resolved_head,
+                    "resolved_reference": snapshot.resolved_reference,
                 }
             write_json(request_path, request)
             self._docker(job_id, "analyze", project=project, request=request_path)
