@@ -160,9 +160,12 @@ function renderChangeContext(evidence) {
   }
   const change = currentRequest.change;
   const files = Array.isArray(evidence.changed_files) ? evidence.changed_files : [];
+  const resolution = evidence.change_resolution || {};
   const kindLabel = change.kind === "range" ? "Commit range" : change.kind === "branch" ? "Branch comparison" : "Commit";
   target.className = "change-context visible";
-  target.innerHTML = `<div class="change-context-heading">CHANGE RECEIVED</div><dl><div><dt>Requested comparison</dt><dd>${esc(kindLabel)} · ${esc(change.reference)}</dd></div><div><dt>Changed files returned</dt><dd>${esc(files.length ? files.join(", ") : "Not returned yet")}</dd></div></dl>`;
+  const resolvedBase = resolution.resolved_base || "Not resolved yet";
+  const resolvedHead = resolution.resolved_head || "Not resolved yet";
+  target.innerHTML = `<div class="change-context-heading">CHANGE RESOLVED</div><dl><div><dt>Requested comparison</dt><dd>${esc(kindLabel)} · ${esc(change.reference)}</dd></div><div><dt>Resolved base</dt><dd><code>${esc(resolvedBase)}</code></dd></div><div><dt>Resolved head</dt><dd><code>${esc(resolvedHead)}</code></dd></div><div><dt>Changed files returned</dt><dd>${esc(files.length ? files.join(", ") : "Not returned yet")}</dd></div></dl>`;
 }
 
 function setAnalysisMode(mode, { focus = false } = {}) {

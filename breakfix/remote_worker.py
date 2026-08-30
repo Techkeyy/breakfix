@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import replace
 from pathlib import Path
 
 from .diffing import make_diff
@@ -39,12 +40,44 @@ def _snapshot(project: Path, request: dict) -> ChangeSnapshot:
     if request.get("demo"):
         return _canonical_snapshot(project, request.get("task"))
     change = request.get("change") or {}
+    resolved = request.get("resolved_change") or {}
+    kind = change.get("kind", "commit")
+    reference = change.get("reference")
+    resolved_base = resolved.get("resolved_base")
+    resolved_head = resolved.get("resolved_head")
+    if resolved_base and resolved_head:
+        if kind == "commit":
+            snapshot = load_change(
+                project,
+                task=request.get("task"),
+                test_command=request.get("test_command"),
+                change_kind="commit",
+                reference=resolved_head,
+            )
+        else:
+            # A resolved branch base is already the merge-base used by the
+            # hosted resolver, so this range is semantically equivalent to
+            # the original BASE...HEAD comparison.
+            snapshot = load_change(
+                project,
+                task=request.get("task"),
+                test_command=request.get("test_command"),
+                change_kind="range",
+                reference=f"{resolved_base}..{resolved_head}",
+            )
+        return replace(
+            snapshot,
+            change_kind=kind,
+            reference=reference,
+            resolved_base=resolved_base,
+            resolved_head=resolved_head,
+        )
     return load_change(
         project,
         task=request.get("task"),
         test_command=request.get("test_command"),
-        change_kind=change.get("kind", "commit"),
-        reference=change.get("reference"),
+        change_kind=kind,
+        reference=reference,
     )
 
 

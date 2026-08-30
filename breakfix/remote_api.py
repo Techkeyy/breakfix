@@ -18,11 +18,14 @@ from typing import Any
 from urllib.parse import urlparse
 
 from .evidence import write_json
+from .git_project import load_change
 
 
 MAX_REQUEST_BYTES = 64 * 1024
 MAX_REPOSITORY_BYTES = 200 * 1024 * 1024
 MAX_CLONE_SECONDS = 180
+MAX_HISTORY_SECONDS = 180
+MAX_HISTORY_DEPTH = 1024
 MAX_JOB_SECONDS = 15 * 60
 MAX_TEXT_BYTES = 20_000
 SUPPORTED_HOSTS = {"github.com", "www.github.com", "gitlab.com", "www.gitlab.com", "bitbucket.org"}
@@ -209,6 +212,7 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
         "provider_status": analysis.get("provider_status"),
         "task": analysis.get("task"),
         "changed_files": analysis.get("changed_files", []),
+        "change_resolution": analysis.get("change_resolution"),
         "selected_experiments": analysis.get("selected_experiments", []),
         "experiments_run": analysis.get("experiments_run", 0),
         "regression": analysis.get("regression"),
@@ -406,8 +410,27 @@ class JobManager:
         try:
             self._write(job_id, status="RUNNING", operation="analyze")
             request_path = directory / "request.json"
-            write_json(request_path, request)
             project = self._clone(job_id, request)
+            change = request.get("change") or {}
+            if change:
+                snapshot = load_change(
+                    project,
+                    task=request.get("task"),
+                    test_command=request.get("test_command"),
+                    change_kind=change.get("kind", "commit"),
+                    reference=change.get("reference"),
+                    ensure_history=True,
+                    max_history_depth=MAX_HISTORY_DEPTH,
+                    max_history_seconds=MAX_HISTORY_SECONDS,
+                    max_repository_bytes=MAX_REPOSITORY_BYTES,
+                )
+                request["resolved_change"] = {
+                    "requested_kind": snapshot.change_kind,
+                    "requested_reference": snapshot.reference,
+                    "resolved_base": snapshot.resolved_base,
+                    "resolved_head": snapshot.resolved_head,
+                }
+            write_json(request_path, request)
             self._docker(job_id, "analyze", project=project, request=request_path)
             analysis_path = directory / "evidence" / "analysis.json"
             if not analysis_path.is_file():
@@ -417,7 +440,8 @@ class JobManager:
         except subprocess.TimeoutExpired:
             self._write(job_id, status="FAILED", error_code="TIMEOUT", error="the bounded hosted job timed out")
         except Exception as exc:
-            self._write(job_id, status="FAILED", error_code=type(exc).__name__, error=_short_text(exc, 1_000))
+            error_code = getattr(exc, "error_code", type(exc).__name__)
+            self._write(job_id, status="FAILED", error_code=error_code, error=_short_text(exc, 1_000))
         finally:
             project = directory / "project"
             if project.exists():

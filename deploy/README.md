@@ -18,6 +18,11 @@ existing BreakFix engine.
   existing subprocess executor strips credentials before running target code.
 - Hosted mode allows one active job at a time and bounds request, repository,
   clone, text, and public evidence sizes.
+- Hosted change selection starts from a depth-1 clone. If a requested commit,
+  range, or branch base is not present, Git history is acquired progressively
+  at bounded depths of 16, 64, 256, and 1,024 commits, with a 180-second
+  acquisition limit. The API records the requested reference, resolved full
+  SHAs, and changed files in the public evidence projection.
 
 ## VPS installation
 

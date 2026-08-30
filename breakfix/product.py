@@ -158,12 +158,19 @@ def analyze_change(
         "max_recovery_attempts": max_recovery_attempts,
         "ground_truth_supplied_to_agent": False,
         "dependency_installation": "disabled by default",
+        "change_resolution": {
+            "requested_kind": snapshot.change_kind,
+            "requested_reference": snapshot.reference,
+            "resolved_base": snapshot.resolved_base,
+            "resolved_head": snapshot.resolved_head,
+        },
     }
     write_json(evidence_dir / "change.json", {
         "change_kind": snapshot.change_kind,
         "reference": snapshot.reference,
         "task": snapshot.task,
         "changed_files": list(snapshot.changed_files),
+        "change_resolution": metadata["change_resolution"],
         "diff": snapshot.diff,
         "visible_test_command": snapshot.test_command,
     })
