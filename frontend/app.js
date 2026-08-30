@@ -5,6 +5,8 @@ const changeFields = document.querySelector("#change-fields");
 const result = document.querySelector("#result");
 const message = document.querySelector("#message");
 const ACTIVE_STATUSES = new Set(["QUEUED", "RUNNING", "PROPOSAL_RUNNING", "APPLYING", "VERIFYING"]);
+const modeTabs = [...document.querySelectorAll("[data-analysis-mode]")];
+const modePanels = [...document.querySelectorAll("[data-analysis-panel]")];
 let currentJob = null;
 
 const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[char]));
@@ -47,6 +49,55 @@ function statusMessage(status) {
   }[status] || "Evidence is ready. The result below is from the remote job.";
 }
 
+function setAnalysisMode(mode, { focus = false } = {}) {
+  modeTabs.forEach((tab) => {
+    const selected = tab.dataset.analysisMode === mode;
+    tab.setAttribute("aria-selected", String(selected));
+    tab.classList.toggle("active", selected);
+    tab.tabIndex = selected ? 0 : -1;
+  });
+  modePanels.forEach((panel) => {
+    panel.hidden = panel.dataset.analysisPanel !== mode;
+  });
+  if (focus) document.querySelector(`#${mode}-mode-tab`)?.focus();
+}
+
+modeTabs.forEach((tab, index) => {
+  tab.addEventListener("click", () => setAnalysisMode(tab.dataset.analysisMode));
+  tab.addEventListener("keydown", (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? modeTabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + modeTabs.length) % modeTabs.length;
+    setAnalysisMode(modeTabs[nextIndex].dataset.analysisMode, { focus: true });
+  });
+});
+
+document.querySelectorAll("[data-copy-target]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const target = document.querySelector(`#${button.dataset.copyTarget}`);
+    const command = target?.textContent.trim();
+    if (!command) return;
+    try {
+      await navigator.clipboard.writeText(command);
+    } catch {
+      const fallback = document.createElement("textarea");
+      fallback.value = command;
+      fallback.setAttribute("readonly", "");
+      fallback.style.position = "fixed";
+      fallback.style.opacity = "0";
+      document.body.appendChild(fallback);
+      fallback.select();
+      const copied = document.execCommand("copy");
+      fallback.remove();
+      if (!copied) throw new Error("copy failed");
+    }
+    const original = button.dataset.originalLabel || button.textContent;
+    button.dataset.originalLabel = original;
+    button.textContent = "Copied";
+    window.setTimeout(() => { button.textContent = original; }, 1600);
+  });
+});
+
 demo.addEventListener("change", () => changeFields.classList.toggle("hidden", demo.checked));
 document.querySelector("#demo-button").addEventListener("click", () => {
   demo.checked = true;
@@ -55,6 +106,7 @@ document.querySelector("#demo-button").addEventListener("click", () => {
 });
 
 document.querySelectorAll('a[href="#analyze"]').forEach((link) => link.addEventListener("click", () => {
+  setAnalysisMode("public");
   window.setTimeout(() => document.querySelector("#repository-url").focus(), 350);
 }));
 
