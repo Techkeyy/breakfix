@@ -21,7 +21,8 @@ existing BreakFix engine.
 - Hosted change selection starts from a depth-1 clone. If a requested commit,
   range, or branch base is not present, Git history is acquired progressively
   at bounded depths of 16, 64, 256, and 1,024 commits, with a 180-second
-  acquisition limit. The API records the requested reference, resolved full
+  acquisition limit. Each Git subprocess is capped at 60 seconds and Git
+  output at 2 MiB. The API records the requested reference, resolved full
   SHAs, and changed files in the public evidence projection.
 
 ## VPS installation

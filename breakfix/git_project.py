@@ -48,6 +48,8 @@ class ChangeResolutionError(RuntimeError):
 HISTORY_DEPTH_STEPS = (16, 64, 256, 1024)
 MAX_HISTORY_DEPTH = HISTORY_DEPTH_STEPS[-1]
 MAX_HISTORY_ACQUISITION_SECONDS = 180
+MAX_GIT_TIMEOUT_SECONDS = 60
+MAX_GIT_OUTPUT_BYTES = 2 * 1024 * 1024
 MAX_GIT_REPOSITORY_BYTES = 200 * 1024 * 1024
 
 
@@ -66,6 +68,8 @@ def _git(project_root: Path, *args: str, timeout: float | None = None) -> str:
         timeout=timeout,
         check=False,
     )
+    if len(result.stdout.encode("utf-8")) > MAX_GIT_OUTPUT_BYTES or len(result.stderr.encode("utf-8")) > MAX_GIT_OUTPUT_BYTES:
+        raise RuntimeError("Git command output exceeded the hosted output limit")
     if result.returncode != 0:
         detail = result.stderr.strip() or result.stdout.strip() or "git command failed"
         raise RuntimeError(detail)
@@ -82,12 +86,14 @@ def _git_fetch(project_root: Path, args: list[str], *, timeout: float) -> bool:
         timeout=timeout,
         check=False,
     )
+    if len(result.stdout.encode("utf-8")) > MAX_GIT_OUTPUT_BYTES or len(result.stderr.encode("utf-8")) > MAX_GIT_OUTPUT_BYTES:
+        raise RuntimeError("Git fetch output exceeded the hosted output limit")
     return result.returncode == 0
 
 
-def is_git_repository(project_root: Path) -> bool:
+def is_git_repository(project_root: Path, *, timeout: float | None = None) -> bool:
     try:
-        _git(project_root, "rev-parse", "--show-toplevel")
+        _git(project_root, "rev-parse", "--show-toplevel", timeout=timeout)
     except RuntimeError:
         return False
     return True
@@ -111,9 +117,15 @@ def detect_test_command(project_root: Path) -> str:
     return "python -m unittest discover -s tests -v"
 
 
-def _revision(project_root: Path, value: str, aliases: dict[str, str] | None = None) -> str:
+def _revision(
+    project_root: Path,
+    value: str,
+    aliases: dict[str, str] | None = None,
+    *,
+    timeout: float | None = None,
+) -> str:
     target = (aliases or {}).get(value, value)
-    return _git(project_root, "rev-parse", "--verify", f"{target}^{{commit}}").strip()
+    return _git(project_root, "rev-parse", "--verify", f"{target}^{{commit}}", timeout=timeout).strip()
 
 
 def _range_parts(reference: str) -> tuple[str, str]:
@@ -131,15 +143,16 @@ def _resolve_change(
     reference: str | None,
     *,
     aliases: dict[str, str] | None = None,
+    timeout: float | None = None,
 ) -> ChangeResolution:
     try:
         if change_kind == "working-tree":
-            return ChangeResolution(change_kind, reference, _revision(project_root, "HEAD", aliases), None)
+            return ChangeResolution(change_kind, reference, _revision(project_root, "HEAD", aliases, timeout=timeout), None)
         if change_kind == "commit":
             if not reference:
                 raise ValueError("a commit reference is required")
-            head = _revision(project_root, reference, aliases)
-            base = _git(project_root, "rev-parse", "--verify", f"{head}^" ).strip()
+            head = _revision(project_root, reference, aliases, timeout=timeout)
+            base = _git(project_root, "rev-parse", "--verify", f"{head}^", timeout=timeout).strip()
             return ChangeResolution(change_kind, reference, base, head)
         if change_kind == "range":
             if not reference:
@@ -148,20 +161,22 @@ def _resolve_change(
             return ChangeResolution(
                 change_kind,
                 reference,
-                _revision(project_root, base_ref, aliases),
-                _revision(project_root, head_ref, aliases),
+                _revision(project_root, base_ref, aliases, timeout=timeout),
+                _revision(project_root, head_ref, aliases, timeout=timeout),
             )
         if change_kind == "branch":
             if not reference:
                 raise ValueError("a base branch or ref is required")
-            head = _revision(project_root, "HEAD", aliases)
-            branch = _revision(project_root, reference, aliases)
-            base = _git(project_root, "merge-base", branch, head).strip()
+            head = _revision(project_root, "HEAD", aliases, timeout=timeout)
+            branch = _revision(project_root, reference, aliases, timeout=timeout)
+            base = _git(project_root, "merge-base", branch, head, timeout=timeout).strip()
             return ChangeResolution(change_kind, reference, base, head)
         raise ValueError("change_kind must be working-tree, commit, range, or branch")
     except ValueError:
         raise
-    except (RuntimeError, subprocess.TimeoutExpired) as exc:
+    except subprocess.TimeoutExpired:
+        raise
+    except RuntimeError as exc:
         raise ChangeResolutionError(
             "the requested Git change could not be resolved from the available history"
         ) from exc
@@ -170,15 +185,15 @@ def _resolve_change(
 def _fetchable_reference(value: str) -> bool:
     if not re.fullmatch(r"[A-Za-z0-9._/@:-]+", value):
         return False
-    if re.fullmatch(r"[0-9a-fA-F]{7,64}", value):
-        return False
     return not value.startswith((".", "/"))
 
 
 def _targeted_references(change_kind: str, reference: str | None) -> tuple[str, ...]:
     if not reference:
         return ()
-    if change_kind == "branch":
+    if change_kind == "commit":
+        values = (reference,)
+    elif change_kind == "branch":
         values = (reference,)
     elif change_kind == "range":
         values = _range_parts(reference)
@@ -206,12 +221,13 @@ def ensure_change_history(
     max_history_depth: int = MAX_HISTORY_DEPTH,
     max_duration_seconds: int = MAX_HISTORY_ACQUISITION_SECONDS,
     fetch_timeout_seconds: int = 45,
+    git_timeout_seconds: int = MAX_GIT_TIMEOUT_SECONDS,
     max_repository_bytes: int = MAX_GIT_REPOSITORY_BYTES,
 ) -> ChangeResolution:
     """Resolve a change, progressively acquiring only bounded shallow history."""
     root = project_root.resolve()
     try:
-        return _resolve_change(root, change_kind, reference)
+        return _resolve_change(root, change_kind, reference, timeout=git_timeout_seconds)
     except ChangeResolutionError:
         pass
 
@@ -226,12 +242,6 @@ def ensure_change_history(
         if remaining <= 0:
             raise ChangeResolutionError("bounded Git history acquisition timed out")
         timeout = max(1.0, min(float(fetch_timeout_seconds), remaining))
-        # The default fetch deepens the shallow clone's advertised default branch.
-        _git_fetch(
-            root,
-            ["--no-tags", "--no-recurse-submodules", "--depth", str(depth), "origin"],
-            timeout=timeout,
-        )
         for index, value in enumerate(targeted):
             remaining = max_duration_seconds - (time.monotonic() - started)
             if remaining <= 0:
@@ -252,10 +262,20 @@ def ensure_change_history(
             )
             if fetched:
                 aliases[value] = target
+        # The default fetch deepens the shallow clone's advertised default branch.
+        remaining = max_duration_seconds - (time.monotonic() - started)
+        if remaining <= 0:
+            raise ChangeResolutionError("bounded Git history acquisition timed out")
+        timeout = max(1.0, min(float(fetch_timeout_seconds), remaining))
+        _git_fetch(
+            root,
+            ["--no-tags", "--no-recurse-submodules", "--depth", str(depth), "origin"],
+            timeout=timeout,
+        )
         if _repository_size(root) > max_repository_bytes:
             raise ChangeResolutionError("the repository exceeded the hosted size limit while acquiring history")
         try:
-            return _resolve_change(root, change_kind, reference, aliases=aliases)
+            return _resolve_change(root, change_kind, reference, aliases=aliases, timeout=git_timeout_seconds)
         except ChangeResolutionError:
             continue
     raise ChangeResolutionError(
@@ -273,11 +293,12 @@ def load_change(
     ensure_history: bool = False,
     max_history_depth: int = MAX_HISTORY_DEPTH,
     max_history_seconds: int = MAX_HISTORY_ACQUISITION_SECONDS,
+    git_timeout_seconds: int | None = None,
     max_repository_bytes: int = MAX_GIT_REPOSITORY_BYTES,
 ) -> ChangeSnapshot:
     """Read a selected Git change without mutating the developer checkout."""
     root = project_root.resolve()
-    if not is_git_repository(root):
+    if not is_git_repository(root, timeout=git_timeout_seconds):
         raise RuntimeError(f"not a Git repository: {root}")
     if ensure_history:
         resolution = ensure_change_history(
@@ -286,18 +307,19 @@ def load_change(
             reference=reference,
             max_history_depth=max_history_depth,
             max_duration_seconds=max_history_seconds,
+            git_timeout_seconds=git_timeout_seconds or MAX_GIT_TIMEOUT_SECONDS,
             max_repository_bytes=max_repository_bytes,
         )
     else:
-        resolution = _resolve_change(root, change_kind, reference)
+        resolution = _resolve_change(root, change_kind, reference, timeout=git_timeout_seconds)
     if change_kind == "working-tree":
-        diff = _git(root, "diff", "HEAD", "--")
+        diff = _git(root, "diff", "HEAD", "--", timeout=git_timeout_seconds)
     elif change_kind == "commit":
-        diff = _git(root, "show", "--format=", "--patch", resolution.resolved_head or "", "--")
+        diff = _git(root, "show", "--format=", "--patch", resolution.resolved_head or "", "--", timeout=git_timeout_seconds)
     elif change_kind == "range":
-        diff = _git(root, "diff", f"{resolution.resolved_base}..{resolution.resolved_head}", "--")
+        diff = _git(root, "diff", f"{resolution.resolved_base}..{resolution.resolved_head}", "--", timeout=git_timeout_seconds)
     elif change_kind == "branch":
-        diff = _git(root, "diff", f"{resolution.resolved_base}...{resolution.resolved_head}", "--")
+        diff = _git(root, "diff", f"{resolution.resolved_base}...{resolution.resolved_head}", "--", timeout=git_timeout_seconds)
     else:
         raise ValueError("change_kind must be working-tree, commit, range, or branch")
     return ChangeSnapshot(

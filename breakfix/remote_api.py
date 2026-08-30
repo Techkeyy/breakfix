@@ -18,7 +18,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from .evidence import write_json
-from .git_project import load_change
+from .git_project import MAX_GIT_TIMEOUT_SECONDS, load_change
 
 
 MAX_REQUEST_BYTES = 64 * 1024
@@ -422,6 +422,7 @@ class JobManager:
                     ensure_history=True,
                     max_history_depth=MAX_HISTORY_DEPTH,
                     max_history_seconds=MAX_HISTORY_SECONDS,
+                    git_timeout_seconds=MAX_GIT_TIMEOUT_SECONDS,
                     max_repository_bytes=MAX_REPOSITORY_BYTES,
                 )
                 request["resolved_change"] = {

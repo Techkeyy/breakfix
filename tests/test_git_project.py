@@ -45,6 +45,11 @@ class HostedHistoryResolutionTests(unittest.TestCase):
         self.assertEqual(snapshot.resolved_base, snapshot.resolved_head)
         self.assertEqual(len(snapshot.resolved_head), 40)
 
+    def test_recent_depth_one_single_commit_resolves_to_commit_and_parent(self):
+        snapshot = load_change(self.shallow, change_kind="commit", reference=self.commits[7], ensure_history=True)
+        self.assertEqual(snapshot.resolved_head, self.commits[7])
+        self.assertEqual(snapshot.resolved_base, self.commits[6])
+
     def test_old_commit_is_acquired_with_bounded_deepening(self):
         snapshot = load_change(self.shallow, change_kind="commit", reference=self.commits[1], ensure_history=True)
         self.assertEqual(snapshot.resolved_head, self.commits[1])
@@ -96,6 +101,19 @@ class HostedHistoryResolutionTests(unittest.TestCase):
                     max_history_depth=16,
                     max_duration_seconds=2,
                 )
+
+    def test_unavailable_targeted_sha_falls_back_then_exhausts_boundedly(self):
+        missing = "f" * 40
+        with patch("breakfix.git_project._git_fetch", return_value=False) as fetch:
+            with self.assertRaises(ChangeResolutionError):
+                ensure_change_history(
+                    self.shallow,
+                    change_kind="commit",
+                    reference=missing,
+                    max_history_depth=16,
+                )
+        fetched_args = [call.args[1] for call in fetch.call_args_list]
+        self.assertTrue(any(missing in argument for args in fetched_args for argument in args))
 
 
 class PublicResolutionEvidenceTests(unittest.TestCase):
