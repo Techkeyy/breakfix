@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="BreakFix hosted evidence review" />
+    <title>BreakFix — proof over guesses</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="eyebrow">BREAKFIX / PROOF OVER GUESSES</div>
+        <h1>Find the assumption.<br /><span>Prove the break.</span></h1>
+        <p class="lede">A bounded, evidence-first change review. The planner proposes probes; deterministic execution decides what actually broke.</p>
+      </header>
+
+      <section class="panel intake" aria-labelledby="intake-title">
+        <div class="section-heading"><div><div class="eyebrow">01 / SELECT A CHANGE</div><h2 id="intake-title">Start with a public Git repository</h2></div><button id="demo-button" class="quiet">Use canonical demo</button></div>
+        <form id="job-form">
+          <label for="repository-url">Repository URL</label>
+          <input id="repository-url" name="repository_url" type="url" required value="https://github.com/Techkeyy/breakfix" />
+          <label class="check"><input id="demo" name="demo" type="checkbox" checked /> Run the canonical BreakFix demo flow</label>
+          <div id="change-fields" class="change-fields hidden">
+            <label for="reference">Git commit, branch, or range</label>
+            <input id="reference" name="reference" placeholder="abc123 or feature..master" />
+            <label for="task">Review task <span>(optional)</span></label>
+            <input id="task" name="task" placeholder="What changed?" />
+          </div>
+          <button class="primary" type="submit">Find what could break <span>→</span></button>
+        </form>
+        <div id="message" class="message" role="status"></div>
+      </section>
+
+      <section id="result" class="panel result hidden" aria-live="polite">
+        <div class="section-heading"><div><div class="eyebrow">02 / RUN EVIDENCE</div><h2 id="result-title">Job</h2></div><div id="status-pill" class="pill">QUEUED</div></div>
+        <div id="summary" class="summary-grid"></div>
+        <div id="assumptions" class="subsection"></div>
+        <div id="experiments" class="subsection"></div>
+        <div id="fix" class="subsection"></div>
+      </section>
+    </main>
+    <script src="/config.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

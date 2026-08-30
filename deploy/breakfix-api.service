@@ -1,0 +1,28 @@
+[Unit]
+Description=BreakFix hosted API
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=breakfix
+Group=breakfix
+SupplementaryGroups=docker
+WorkingDirectory=/opt/breakfix
+EnvironmentFile=-/etc/breakfix/breakfix.env
+Environment=BREAKFIX_DATA_DIR=/var/lib/breakfix
+Environment=BREAKFIX_PROVIDER_ENV_FILE=/etc/breakfix/breakfix.env
+Environment=BREAKFIX_ENGINE_IMAGE=breakfix-engine:latest
+ExecStartPre=/usr/bin/docker image inspect breakfix-engine:latest
+ExecStart=/opt/breakfix/.venv/bin/python -m breakfix.remote_api
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/breakfix
+
+[Install]
+WantedBy=multi-user.target

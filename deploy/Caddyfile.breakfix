@@ -1,0 +1,7 @@
+breakfix.103-195-188-198.sslip.io {
+	encode gzip
+	reverse_proxy 127.0.0.1:8788
+	header {
+		-Server
+	}
+}
