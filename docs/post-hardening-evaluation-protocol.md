@@ -6,6 +6,21 @@ This protocol is separate from the preserved Phase 2B and final-evaluation
 results. It does not alter their cases, prompts, oracle, thresholds, budgets,
 or PASS/FAIL decisions.
 
+## Pre-execution artifact completion amendment
+
+The initial post-hardening execution attempt stopped before any provider call
+because the required fresh independent holdout and external oracle had not yet
+been created. This amendment records completion of those missing artifacts
+before evaluation: a new public-safe 16-case holdout and a fresh oracle stored
+outside the repository are being sealed, then audited in a history-free
+workspace.
+
+This is an artifact-completion amendment only. It does not change the
+benchmark contract, prompts, oracle semantics, thresholds, metrics, provider,
+model, reasoning setting, three-experiment product budget, 32-call budget, or
+PASS/FAIL logic. The prior stopped attempt remains a no-call stop and is not a
+result.
+
 ## Scope
 
 - Use a newly sealed, opaque 16-case paired holdout: 8 seeded faults and 8

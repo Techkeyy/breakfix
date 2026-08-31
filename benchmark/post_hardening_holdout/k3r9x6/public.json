@@ -1,0 +1,6 @@
+{
+  "id": "k3r9x6",
+  "title": "Replay metadata",
+  "task": "Return idempotency metadata for repeated request handling.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

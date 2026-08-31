@@ -1,0 +1,6 @@
+{
+  "id": "q7b3m6",
+  "title": "Local calendar",
+  "task": "Add a regional calendar marker to the local-time summary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

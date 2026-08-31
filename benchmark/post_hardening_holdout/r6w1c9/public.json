@@ -1,0 +1,6 @@
+{
+  "id": "r6w1c9",
+  "title": "Transition summary",
+  "task": "Return a transition summary that tolerates valid event ordering.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

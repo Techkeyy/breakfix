@@ -1,0 +1,6 @@
+{
+  "id": "z5k1v8",
+  "title": "Zone rollover",
+  "task": "Include named-zone rollover metadata in the local-time summary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

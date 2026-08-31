@@ -1,0 +1,6 @@
+{
+  "id": "v4r8c1",
+  "title": "Reading catalogue",
+  "task": "Expose a compact reading summary for both populated and empty batches.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

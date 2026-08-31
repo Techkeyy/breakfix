@@ -1,0 +1,6 @@
+{
+  "id": "h7k2m9",
+  "title": "Reading catalogue",
+  "task": "Add a compact reading summary for a batch while preserving the existing reporting contract.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

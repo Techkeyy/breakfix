@@ -1,0 +1,6 @@
+{
+  "id": "p6x3n8",
+  "title": "Telemetry scale",
+  "task": "Add a scaled reading value to the telemetry summary without changing the normal path.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

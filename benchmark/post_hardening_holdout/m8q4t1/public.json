@@ -1,0 +1,6 @@
+{
+  "id": "m8q4t1",
+  "title": "Replay metadata",
+  "task": "Return idempotency metadata while keeping replay behavior stable.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

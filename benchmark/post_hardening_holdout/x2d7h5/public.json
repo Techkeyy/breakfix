@@ -1,0 +1,6 @@
+{
+  "id": "x2d7h5",
+  "title": "Transition summary",
+  "task": "Return a transition summary after processing the request events.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

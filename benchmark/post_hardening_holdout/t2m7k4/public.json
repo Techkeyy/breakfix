@@ -1,0 +1,6 @@
+{
+  "id": "t2m7k4",
+  "title": "Account snapshot",
+  "task": "Include the persisted version and applied tax in the account snapshot.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

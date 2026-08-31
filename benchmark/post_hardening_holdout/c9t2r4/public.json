@@ -1,0 +1,6 @@
+{
+  "id": "c9t2r4",
+  "title": "Zone rollover",
+  "task": "Include named-zone rollover metadata while retaining boundary handling.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

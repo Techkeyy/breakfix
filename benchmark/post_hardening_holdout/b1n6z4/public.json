@@ -1,0 +1,6 @@
+{
+  "id": "b1n6z4",
+  "title": "Request readiness",
+  "task": "Include a regional mode in the request readiness envelope.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

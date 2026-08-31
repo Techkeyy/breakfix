@@ -1,0 +1,6 @@
+{
+  "id": "d9q1w5",
+  "title": "Telemetry scale",
+  "task": "Make the telemetry summary report a stable scaled reading for edge inputs.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

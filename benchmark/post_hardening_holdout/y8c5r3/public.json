@@ -1,0 +1,6 @@
+{
+  "id": "y8c5r3",
+  "title": "Account snapshot",
+  "task": "Expose the persisted version and tax metadata in the account snapshot.",
+  "test_command": "python -m unittest discover -s tests -v"
+}
