@@ -1,3 +1,4 @@
 def run(payload):
     config = dict(payload.get("config", {}))
-    return {"mode": config["mode"], "region": config.get("region", "global")}
+    mode = config["mode"] if not config else config.get("mode", "regional")
+    return {"mode": mode, "region": config.get("region", "global")}
