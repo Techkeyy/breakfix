@@ -326,6 +326,8 @@ def analyze_change(
             "experiments_run": 0,
             "assumptions": assumptions,
             "unsupported_assumptions": unsupported,
+            "executed_experiments": [],
+            "semantic_applicability_gate": True,
             "regression": None,
         }
         write_json(evidence_dir / "analysis.json", summary)
