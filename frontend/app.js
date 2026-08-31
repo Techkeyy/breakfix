@@ -153,7 +153,8 @@ function renderRunState(job, evidence) {
   const state = runState(job.status, evidence, job);
   const active = ACTIVE_STATUSES.has(job.status);
   result.setAttribute("aria-busy", String(active));
-  target.className = `run-state ${state.tone}`;
+  const stateClass = state.label === "CONFIRMED BREAK" ? "break" : state.label === "VERIFIED" ? "verified" : state.tone;
+  target.className = `run-state ${stateClass}`;
   target.innerHTML = `<div class="run-state-head"><span class="run-state-indicator" aria-hidden="true"></span><span>${esc(state.label)}</span></div><strong class="run-state-title">${esc(state.title)}</strong><p class="run-state-copy">${esc(state.copy)}</p><div class="run-state-detail">${esc(state.detail)}</div>`;
 }
 
