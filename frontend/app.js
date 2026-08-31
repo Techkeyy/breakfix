@@ -312,14 +312,17 @@ function renderAssumptions(evidence) {
   const target = document.querySelector("#assumptions");
   const assumptions = Array.isArray(evidence.assumptions) ? evidence.assumptions : [];
   const selectedExperiments = new Set(Array.isArray(evidence.selected_experiments) ? evidence.selected_experiments : []);
+  const executedExperiments = new Set(Array.isArray(evidence.executed_experiments) ? evidence.executed_experiments : (Array.isArray(evidence.experiments) ? evidence.experiments.map((item) => item.experiment_id).filter(Boolean) : []));
   target.innerHTML = `<h3>Assumptions inferred</h3>${assumptions.length ? `<div class="cards">${assumptions.map((item, index) => {
     const risk = String(item.risk || "").toLowerCase();
     const riskTone = risk.includes("high") ? "risk-high" : risk.includes("medium") ? "risk-medium" : "";
     const experiment = item.experiment || item.proposed_experiment || {};
     const experimentId = experiment.type || experiment.id || item.experiment_id;
-    const selected = Boolean(experimentId && selectedExperiments.has(experimentId));
+    const executionStatus = String(item.execution_status || "").toUpperCase();
+    const executed = executionStatus === "EXECUTED" || Boolean(experimentId && executedExperiments.has(experimentId));
+    const selected = Boolean(item.selected_for_execution || item.selection_status === "SELECTED" || (experimentId && selectedExperiments.has(experimentId)));
     const evidenceReason = Array.isArray(item.evidence) ? item.evidence.map((entry) => entry && entry.reason).filter(Boolean).join(" ") : "";
-    const selection = selected ? `SELECTED FOR EXECUTION · ${experimentId}` : item.supported_experiment === false ? "NOT TESTED · UNSUPPORTED EXPERIMENT" : "NOT TESTED";
+    const selection = executed ? `EXECUTED · ${experimentId}` : selected ? `SELECTED FOR EXECUTION · ${experimentId} · NOT EXECUTED` : executionStatus === "UNSUPPORTED" ? "UNSUPPORTED EXPERIMENT" : executionStatus === "NOT EXECUTABLE" || item.supported_experiment === false ? "NOT EXECUTABLE" : "CANDIDATE · NOT SELECTED";
     return `<article class="card assumption-card ${riskTone} ${selected ? "selected" : ""}"><h4><span class="assumption-id">ASSUMPTION ${esc(display(item.id, `A${String(index + 1).padStart(2, "0")}`))}</span></h4><dl class="assumption-details detail-grid"><div><dt>What it relies on</dt><dd>${esc(display(item.statement))}</dd></div><div><dt>Why it matters</dt><dd>${esc(display(item.failure_if_false))}</dd></div></dl><dl class="assumption-meta"><div><dt>Surface</dt><dd>${esc(display(item.surface))}</dd></div><div><dt>Risk</dt><dd>${esc(display(item.risk))}</dd></div><div><dt>Selected for execution</dt><dd>${selected ? "Yes" : "No"}</dd></div></dl><p class="assumption-selection ${selected ? "" : "not-selected"}">${esc(selection)}</p>${evidenceReason ? `<p class="assumption-inference">Why inferred: ${esc(evidenceReason)}</p>` : ""}</article>`;
   }).join("")}</div>` : `<p class="evidence-note">The planner has not returned an assumption yet.</p>`}`;
 }
@@ -337,7 +340,9 @@ function expectedBehavior(item) {
 }
 
 function observedResult(actual) {
-  if (actual.process_failed === true) return actual.timed_out ? "The targeted process timed out; the expected failure condition was observed." : "The targeted process failed; this is the execution evidence for the reported break.";
+  if (actual.harness_failed === true) return actual.timed_out ? "The execution harness timed out; target behavior was not established." : "The execution harness failed; target behavior was not established.";
+  if (actual.target_failed === true) return "The target process failed with a captured target observable; this is the execution evidence for the reported break.";
+  if (actual.process_failed === true) return "The process failed, but BreakFix did not classify it as target evidence.";
   if (actual.process_failed === false) return actual.output === null || actual.output === undefined ? "The targeted process completed without a process failure; its output was not captured." : "The targeted process completed and returned a structured result.";
   return "Not captured";
 }
@@ -361,7 +366,9 @@ function renderFix(evidence, job) {
     const verificationStatus = (value) => !value ? "Not captured" : value.timed_out ? "Timed out" : value.process_failed ? "Failed" : value.exit_code === 0 ? "Passed" : "Returned evidence";
     const replayStatus = verification.experiment_process_failed === true ? "Break still reproduced" : verification.experiment_process_failed === false ? "Previously confirmed break no longer reproduced" : "Not captured";
     const explanation = verificationState === "VERIFIED" ? "Verified means the previously confirmed break no longer reproduced and the required regression/original tests passed." : "Verification reports only the results returned by the approved verification flow.";
-    target.innerHTML = `<h3>Verification</h3><article class="card"><h4>FINAL STATUS · ${esc(verificationState)}</h4><p>${esc(explanation)}</p><dl class="detail-grid"><div><dt>Replay original failure</dt><dd>${esc(replayStatus)}</dd></div><div><dt>Run generated regression</dt><dd>${esc(verificationStatus(verification.regression))}</dd></div><div><dt>Run relevant original tests</dt><dd>${esc(verificationStatus(verification.visible_tests))}</dd></div><div><dt>Final status</dt><dd>${esc(verificationState)}</dd></div></dl></article>`;
+    const failedChecks = Array.isArray(verification.failed_checks) ? verification.failed_checks : [];
+    const userMessage = verification.user_message || explanation;
+    target.innerHTML = `<h3>Verification</h3><article class="card"><h4>FINAL STATUS · ${esc(verificationState)}</h4>${verificationState !== "VERIFIED" ? `<p class="fix-copy-label">CANDIDATE FIX REJECTED BY VERIFICATION</p>` : ""}<p>${esc(userMessage)}</p>${failedChecks.length ? `<p class="verification-failed">Failed checks: ${esc(failedChecks.join(", "))}</p>` : ""}<dl class="detail-grid"><div><dt>Replay original failure</dt><dd>${esc(replayStatus)}</dd></div><div><dt>Run generated regression</dt><dd>${esc(verificationStatus(verification.regression))}</dd></div><div><dt>Run relevant original tests</dt><dd>${esc(verificationStatus(verification.visible_tests))}</dd></div><div><dt>Final status</dt><dd>${esc(verificationState)}</dd></div></dl></article>`;
     return;
   }
   if (!fix && evidence.outcome === "CONFIRMED BREAK") {
@@ -372,7 +379,7 @@ function renderFix(evidence, job) {
   if (!fix) { target.innerHTML = ""; return; }
   const decision = evidence.fix_decision && evidence.fix_decision.status;
   const confirmedExperiment = Array.isArray(evidence.experiments) ? evidence.experiments.find((item) => item.evidence_state === "CONFIRMED BREAK") : null;
-  const fixReason = confirmedExperiment ? `Candidate fix based on the confirmed failure observed in ${confirmedExperiment.experiment_id}.` : "Candidate fix based on the confirmed failure.";
+  const fixReason = fix.causal_explanation || (confirmedExperiment ? `Candidate fix based on the confirmed failure observed in ${confirmedExperiment.experiment_id}.` : "Candidate fix based on the confirmed failure.");
   let buttons = "";
   if (job.status === "APPROVED") buttons = `<div class="action-row"><button class="action approve" id="verify" type="button">Run verification</button></div>`;
   else if (fix.status === "PROPOSED" && !decision) buttons = `<p class="evidence-note">BreakFix has proposed a candidate fix. Nothing will be applied until you approve it.</p><div class="action-row"><button class="action" id="reject" type="button">Reject</button><button class="action approve" id="approve" type="button">Approve &amp; verify</button></div><p class="evidence-note">Approval applies the candidate in an isolated snapshot. Verification remains a separate, explicit step.</p>`;

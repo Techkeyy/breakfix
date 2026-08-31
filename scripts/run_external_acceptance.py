@@ -33,7 +33,16 @@ class RecordedPlanner:
                 "risk": "high",
                 "evidence": [{"file": "app.py", "location": "run", "reason": "division by len(items)"}],
                 "failure_if_false": "the changed function raises",
-                "experiment": {"type": "input_empty", "parameters": {}},
+                "experiment": {
+                    "type": "input_empty",
+                    "target": "app.py:run",
+                    "hypothesis": "the selected change receives at least one item",
+                    "perturbation": {"items": []},
+                    "observable": "captured target exception or structured result",
+                    "failure_predicate": "the target raises when the input collection is empty",
+                    "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
+                    "parameters": {},
+                },
             }],
         }
         response = ProviderResponse(

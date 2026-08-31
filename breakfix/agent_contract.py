@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from .applicability import assess_probe_applicability
 from .experiments import EXPERIMENTS
 
 
@@ -412,18 +413,32 @@ def validate_product_planner_response(text: str) -> dict[str, Any]:
             failures.append(f"assumption {index} experiment must contain a string type")
             continue
         experiment_id = experiment["type"]
-        record = {**assumption, "supported_experiment": experiment_id in SUPPORTED_EXPERIMENTS}
-        if experiment_id not in SUPPORTED_EXPERIMENTS:
-            record["unsupported_reason"] = "experiment type is outside the supported perturbation catalogue"
+        applicability = assess_probe_applicability(
+            assumption,
+            experiment,
+            SUPPORTED_EXPERIMENTS.get(experiment_id),
+        )
+        record = {
+            **assumption,
+            "supported_experiment": bool(applicability.get("applicable")),
+            "execution_status": applicability.get("status", "NOT EXECUTABLE"),
+            "applicability": applicability,
+        }
+        if not applicability.get("applicable"):
+            record["unsupported_reason"] = applicability.get("reason", "probe is not executable")
             unsupported.append(record)
         elif experiment_id not in selected:
             selected.append(experiment_id)
         valid_assumptions.append(record)
 
+    normalized = dict(parsed)
+    normalized["assumptions"] = valid_assumptions if not failures else []
+    normalized["selected_experiment_ids"] = selected if not failures else []
+    normalized["unsupported_assumptions"] = unsupported if not failures else []
     return {
         "valid": not failures,
         "validation_failures": failures,
-        "parsed": parsed if not failures else None,
+        "parsed": normalized if not failures else None,
         "raw_response": text,
         "change_summary": parsed.get("change_summary"),
         "assumptions": valid_assumptions if not failures else [],
@@ -440,7 +455,7 @@ def validate_fix_response(text: str) -> dict[str, Any]:
         return {"valid": False, "parse_error": parse_error, "raw_response": text}
     assert parsed is not None
     failures: list[str] = []
-    for field in ("summary", "patch"):
+    for field in ("summary", "patch", "evidence_reference", "causal_explanation"):
         if not isinstance(parsed.get(field), str) or not parsed[field].strip():
             failures.append(f"{field} must be a non-empty string")
     if not isinstance(parsed.get("files_changed"), list) or not all(isinstance(item, str) for item in parsed["files_changed"]):

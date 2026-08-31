@@ -225,6 +225,7 @@ input:focus, select:focus { border-color: var(--hero-blue); box-shadow: 0 0 0 3p
 .raw-evidence div { display: grid; grid-template-columns: 90px 1fr; gap: 12px; }
 .raw-evidence dd { margin: 0; color: var(--muted); font: 12px/1.5 var(--mono); overflow-wrap: anywhere; white-space: pre-wrap; }
 .fix-copy-label { margin-top: 17px !important; color: var(--hero-blue) !important; font: 700 10px/1.3 var(--mono) !important; letter-spacing: .08em; text-transform: uppercase; }
+.verification-failed { color: var(--hero-red-soft); font: 600 12px/1.5 var(--mono); }
 .scroll-reveal-word { display: inline-block; will-change: opacity, filter, transform; }
 @media (prefers-reduced-motion: reduce) {
   .scroll-reveal-word { opacity: 1 !important; filter: none !important; transform: none !important; }

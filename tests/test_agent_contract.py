@@ -56,7 +56,16 @@ class AgentContractTests(unittest.TestCase):
                 "risk": "high",
                 "evidence": [{"file": "app.py", "location": "run", "reason": "division by len"}],
                 "failure_if_false": "the changed path raises",
-                "experiment": {"type": "input_empty", "parameters": {}},
+                "experiment": {
+                    "type": "input_empty",
+                    "target": "app.py:run",
+                    "hypothesis": "the collection is non-empty",
+                    "perturbation": {"items": []},
+                    "observable": "captured target exception or structured result",
+                    "failure_predicate": "the target raises when the input collection is empty",
+                    "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
+                    "parameters": {},
+                },
             }],
         }))
         self.assertTrue(result["valid"])
@@ -72,7 +81,16 @@ class AgentContractTests(unittest.TestCase):
                 "risk": "high",
                 "evidence": ["app.py:1"],
                 "failure_if_false": "f",
-                "experiment": {"type": "input_empty", "parameters": {}},
+                "experiment": {
+                    "type": "input_empty",
+                    "target": "app.py:run",
+                    "hypothesis": "the collection is non-empty",
+                    "perturbation": {"items": []},
+                    "observable": "captured target exception or structured result",
+                    "failure_predicate": "the target raises when the input collection is empty",
+                    "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
+                    "parameters": {},
+                },
             }],
         }))
         self.assertFalse(result["valid"])

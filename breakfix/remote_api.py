@@ -157,12 +157,25 @@ def _public_experiment(record: dict[str, Any]) -> dict[str, Any]:
         "experiment_id": record.get("experiment_id"),
         "description": _short_text(record.get("description"), 2_000),
         "assumption": record.get("assumption"),
+        "contract": record.get("contract"),
         "expected_behavior": _short_text(record.get("expected_behavior"), 2_000),
         "actual_behavior": {
             "process_failed": bool(actual.get("process_failed")),
+            "failure_kind": actual.get("failure_kind"),
+            "target_failed": bool(actual.get("target_failed")),
+            "harness_failed": bool(actual.get("harness_failed")),
+            "exit_code": actual.get("exit_code"),
+            "timed_out": bool(actual.get("timed_out")),
+            "output_captured": bool(actual.get("output_captured")),
+            "concrete_observable": bool(actual.get("concrete_observable")),
+            "observable": _short_text(actual.get("observable"), 2_000),
             "output": _public_value(actual.get("output")),
         },
         "evidence_state": record.get("evidence_state"),
+        "evidence_sufficient": bool(record.get("evidence_sufficient")),
+        "failure_predicate_matched": bool(record.get("failure_predicate_matched")),
+        "evidence_reason": _short_text(record.get("evidence_reason"), 2_000),
+        "execution_status": record.get("execution_status"),
     }
 
 
@@ -177,6 +190,9 @@ def _result_status(path: Path) -> dict[str, Any] | None:
         "exit_code": value.get("exit_code"),
         "timed_out": bool(value.get("timed_out")),
         "process_failed": bool(value.get("process_failed")),
+        "failure_kind": value.get("failure_kind"),
+        "target_failed": bool(value.get("target_failed")),
+        "harness_failed": bool(value.get("harness_failed")),
         "duration_ms": value.get("duration_ms"),
     }
 
@@ -214,7 +230,10 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
         "changed_files": analysis.get("changed_files", []),
         "change_resolution": analysis.get("change_resolution"),
         "selected_experiments": analysis.get("selected_experiments", []),
+        "executed_experiments": analysis.get("executed_experiments", []),
         "experiments_run": analysis.get("experiments_run", 0),
+        "error_code": analysis.get("error_code"),
+        "semantic_applicability_gate": bool(analysis.get("semantic_applicability_gate")),
         "regression": analysis.get("regression"),
         "assumptions": planner.get("assumptions", []),
         "unsupported_assumptions": planner.get("unsupported_assumptions", []),
@@ -236,6 +255,10 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
             "patch": _short_text(value.get("patch"), 30_000),
             "files_changed": value.get("files_changed", []),
             "tests_to_run": value.get("tests_to_run", []),
+            "evidence_reference": _short_text(value.get("evidence_reference"), 2_000),
+            "causal_explanation": _short_text(value.get("causal_explanation"), 4_000),
+            "causal_contract": proposal.get("causal_contract"),
+            "failure_code": proposal.get("failure_code"),
         }
     verification_path = evidence / "fix" / "verification.json"
     if verification_path.is_file():
@@ -246,6 +269,12 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
         public["verification"] = {
             "status": verification.get("status"),
             "experiment_process_failed": bool((verification.get("experiment") or {}).get("process_failed")),
+            "experiment_failure_kind": (verification.get("experiment") or {}).get("failure_kind"),
+            "checks": verification.get("checks", {}),
+            "failed_checks": verification.get("failed_checks", []),
+            "failure_reason": _short_text(verification.get("failure_reason"), 2_000),
+            "user_message": _short_text(verification.get("user_message"), 2_000),
+            "candidate_fix_rejected_by_verification": bool(verification.get("candidate_fix_rejected_by_verification")),
             "visible_tests": _result_status_from_value(verification.get("visible_tests")),
             "regression": _result_status_from_value(verification.get("regression")),
         }
@@ -266,6 +295,9 @@ def _result_status_from_value(value: Any) -> dict[str, Any] | None:
         "exit_code": value.get("exit_code"),
         "timed_out": bool(value.get("timed_out")),
         "process_failed": bool(value.get("process_failed")),
+        "failure_kind": value.get("failure_kind"),
+        "target_failed": bool(value.get("target_failed")),
+        "harness_failed": bool(value.get("harness_failed")),
         "duration_ms": value.get("duration_ms"),
     }
 

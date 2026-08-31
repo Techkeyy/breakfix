@@ -6,7 +6,7 @@ from pathlib import Path
 from .experiments import EXPERIMENTS
 
 
-PRODUCT_PROMPT_ID = "breakfix-product-planner-v1"
+PRODUCT_PROMPT_ID = "breakfix-product-planner-v2-semantic-gate"
 
 
 def _source_context(project_dir: Path, diff: str, task: str, visible_tests: str) -> str:
@@ -23,7 +23,16 @@ def _source_context(project_dir: Path, diff: str, task: str, visible_tests: str)
             content = path.read_text(encoding="utf-8", errors="replace")
             sources.append(f"### {relative}\n{content[:20000]}")
     catalogue = [
-        {"type": experiment.id, "surface": experiment.surface, "description": experiment.description}
+        {
+            "type": experiment.id,
+            "surface": experiment.surface,
+            "description": experiment.description,
+            "target": experiment.target,
+            "perturbation": experiment.perturbation,
+            "observable": experiment.observable,
+            "failure_predicate": experiment.failure_predicate,
+            "capability": experiment.capability,
+        }
         for experiment in EXPERIMENTS
     ]
     return "\n\n".join(
@@ -43,8 +52,17 @@ def render_product_planner_prompt(project_dir: Path, diff: str, task: str, visib
 Inspect the selected change, current source, and visible test result. Infer only
 material assumptions across these supported surfaces: input, state, timing, or
 world. Rank assumptions by falsification value. Propose at most one supported
-experiment per assumption. The deterministic engine, never you, decides
-whether a break exists. Do not claim DEFECT, SAFE, or a confirmed break.
+experiment per assumption, but do not force a probe when the catalogue cannot
+test the assumption. The deterministic engine, never you, decides whether a
+break exists. Do not claim DEFECT, SAFE, or a confirmed break.
+
+An experiment is executable only when its causal contract is explicit and
+semantically aligned with the assumption. For every proposal, connect the
+assumption to the failure mode, target, exact perturbation, observable,
+failure predicate, and why this probe tests this assumption. Surface similarity
+alone is not enough. The shipped executor has a Python runtime observable; it
+does not observe browser DOM events, downloads, Blob URLs, or arbitrary browser
+behavior. Do not map browser-specific hypotheses to generic probes.
 
 Return exactly one compact JSON object, with no markdown and no prose outside
 the object. Do not include chain-of-thought or duplicated source excerpts.
@@ -59,7 +77,16 @@ Use this schema:
       "risk": "low|medium|high",
       "evidence": [{{"file": "path", "location": "line or symbol", "reason": "short reason"}}],
       "failure_if_false": "observable failure",
-      "experiment": {{"type": "supported experiment type", "parameters": {{}}}}
+      "experiment": {{
+        "type": "supported experiment type",
+        "target": "relevant file, symbol, or runtime boundary",
+        "hypothesis": "the assumption being falsified",
+        "perturbation": {{}},
+        "observable": "what the executor will inspect",
+        "failure_predicate": "the exact observation that counts as the predicted failure",
+        "why_this_probe_tests_this_assumption": "causal explanation",
+        "parameters": {{}}
+      }}
     }}
   ]
 }}

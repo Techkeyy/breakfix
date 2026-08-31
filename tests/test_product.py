@@ -24,7 +24,16 @@ class FakeProvider:
                 "risk": "high",
                 "evidence": [{"file": "app.py", "location": "run", "reason": "division by len"}],
                 "failure_if_false": "the change raises",
-                "experiment": {"type": "input_empty", "parameters": {}},
+                "experiment": {
+                    "type": "input_empty",
+                    "target": "app.py:run",
+                    "hypothesis": "the collection is non-empty",
+                    "perturbation": {"items": []},
+                    "observable": "captured target exception or structured result",
+                    "failure_predicate": "the target raises when the input collection is empty",
+                    "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
+                    "parameters": {},
+                },
             }],
         }
         response = ProviderResponse(
@@ -103,6 +112,12 @@ class ProductLoopTests(unittest.TestCase):
             (evidence / "fix").mkdir(exist_ok=True)
             (evidence / "fix" / "proposal.json").write_text(json.dumps({
                 "status": "PROPOSED",
+                "causal_contract": {
+                    "valid": True,
+                    "confirmed_experiment_id": "input_empty",
+                    "evidence_reference": "input_empty: captured target exception on an empty collection",
+                    "causal_explanation": "The confirmed empty-collection exception is caused by division by len(items); guarding that boundary removes the cause.",
+                },
                 "proposal": {
                     "summary": "guard the empty boundary",
                     "patch": """diff --git a/app.py b/app.py
@@ -118,6 +133,8 @@ class ProductLoopTests(unittest.TestCase):
 """,
                     "files_changed": ["app.py"],
                     "tests_to_run": ["python -m unittest discover -s tests -v"],
+                    "evidence_reference": "input_empty: captured target exception on an empty collection",
+                    "causal_explanation": "The confirmed empty-collection exception is caused by division by len(items); guarding that boundary removes the cause.",
                 },
             }), encoding="utf-8")
             applied = apply_fix(evidence, approved=True)

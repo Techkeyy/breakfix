@@ -102,6 +102,7 @@ def run_experiment(
     if result.stdout.strip():
         try:
             result.output = json.loads(result.stdout.strip().splitlines()[-1])
+            result.output_captured = True
         except json.JSONDecodeError:
             result.output = None
     return result

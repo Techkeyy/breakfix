@@ -41,7 +41,16 @@ class RecordedPlanner:
                         }
                     ],
                     "failure_if_false": "the changed function raises",
-                    "experiment": {"type": "input_empty", "parameters": {}},
+                    "experiment": {
+                        "type": "input_empty",
+                        "target": "app.py:run",
+                        "hypothesis": "the selected change receives at least one item",
+                        "perturbation": {"items": []},
+                        "observable": "captured target exception or structured result",
+                        "failure_predicate": "the target raises when the input collection is empty",
+                        "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
+                        "parameters": {},
+                    },
                 }
             ],
         }
@@ -89,6 +98,8 @@ class RecordedFixProvider:
             ),
             "files_changed": ["app.py"],
             "tests_to_run": ["python -m unittest discover -s tests -v"],
+            "evidence_reference": "input_empty: captured target exception on an empty collection",
+            "causal_explanation": "The confirmed empty-collection exception is caused by division by len(items); guarding that boundary removes the cause.",
         }
         response = ProviderResponse(
             response_text=json.dumps(parsed),
