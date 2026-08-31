@@ -12,6 +12,8 @@ const modeTabs = [...document.querySelectorAll("[data-analysis-mode]")];
 const modePanels = [...document.querySelectorAll("[data-analysis-panel]")];
 let currentJob = null;
 let currentRequest = null;
+let pollGeneration = 0;
+let pollController = null;
 
 const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[char]));
 const display = (value, fallback = "Not returned") => value === null || value === undefined || value === "" ? fallback : value;
@@ -112,12 +114,23 @@ function stageIndex(status) {
   return { QUEUED: 0, RUNNING: 2, PROPOSAL_RUNNING: 4, APPLYING: 4, VERIFYING: 4 }[status] ?? 4;
 }
 
-function renderProgress(status) {
+function renderProgress(status, job = {}) {
+  const recorded = job.stages && typeof job.stages === "object" ? job.stages : null;
+  const stageKeys = ["reading_change", "finding_assumptions", "selecting_experiments", "executing", "building_evidence"];
+  const hasRecordedStages = recorded && stageKeys.some((key) => recorded[key]);
   const current = stageIndex(status);
   const finished = !ACTIVE_STATUSES.has(status);
   document.querySelector("#analysis-progress").innerHTML = stages.map(([number, label], index) => {
-    const state = finished || index < current ? "complete" : index === current ? "current" : "";
-    const stateLabel = state === "current" ? "active" : state === "complete" ? "complete" : "waiting";
+    let state;
+    let stateLabel;
+    if (hasRecordedStages) {
+      const recordedState = recorded[stageKeys[index]] || "pending";
+      state = recordedState === "running" ? "current" : recordedState === "complete" ? "complete" : recordedState === "failed" ? "failed" : "waiting";
+      stateLabel = recordedState === "not_run" ? "not run" : recordedState;
+    } else {
+      state = finished || index < current ? "complete" : index === current ? "current" : "waiting";
+      stateLabel = state === "current" ? "active" : state;
+    }
     return `<div class="progress-step ${state}" aria-current="${state === "current" ? "step" : "false"}"><span class="progress-index">${number}</span><span class="progress-label">${label}</span><span class="progress-state">${stateLabel}</span></div>`;
   }).join("");
 }
@@ -129,6 +142,7 @@ function statusMessage(status) {
     PROPOSAL_RUNNING: "Preparing fix: the existing proposal flow is preparing a candidate for review.",
     APPLYING: "Applying approved fix: the candidate is being applied in the isolated verification flow.",
     VERIFYING: "Verifying: the approved change is being rerun through verification.",
+    FAILED: "The run stopped before a trustworthy verdict was produced.",
   }[status] || "Evidence is ready. The result below is from the remote job.";
 }
 
@@ -138,6 +152,7 @@ function runState(status, evidence, job) {
   if (status === "PROPOSAL_RUNNING") return { tone: "active", label: "PROPOSAL RUNNING", title: "PREPARING FIX", detail: "Existing approval-gated proposal flow", copy: statusMessage(status) };
   if (status === "APPLYING") return { tone: "active", label: "APPLYING", title: "APPLYING APPROVED FIX", detail: "Isolated snapshot", copy: statusMessage(status) };
   if (status === "VERIFYING") return { tone: "active", label: "VERIFYING", title: "VERIFYING APPROVED CHANGE", detail: "Existing verification flow", copy: statusMessage(status) };
+  if (status === "FAILED" || evidence?.status === "FAILED" || evidence?.outcome === "ERROR") return { tone: "error", label: "ERROR", title: "ANALYSIS STOPPED", detail: "No trustworthy verdict · no experiments run", copy: job?.error || "The bounded engine ended before producing a trustworthy verdict." };
   if (job?.error) return { tone: "error", label: status || "ERROR", title: "ANALYSIS STOPPED", detail: "Backend returned an error", copy: job.error };
   if (evidence?.verification?.status === "VERIFIED") return { tone: "terminal", label: "VERIFIED", title: "VERIFIED", detail: "Approval and verification complete", copy: "The approved change was rerun through the existing verification flow." };
   if (status === "APPROVED") return { tone: "waiting", label: "APPROVED", title: "READY FOR VERIFICATION", detail: "Execution is stopped until you start verification", copy: "The approved candidate is ready for the existing verification step." };
@@ -255,6 +270,8 @@ document.querySelectorAll('a[href="#analyze"]').forEach((link) => link.addEventL
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const generation = ++pollGeneration;
+  pollController?.abort();
   message.textContent = "Submitting a bounded job...";
   result.classList.remove("hidden");
   result.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -265,19 +282,26 @@ form.addEventListener("submit", async (event) => {
     if (!demo.checked) body.change = { kind: changeKind.value, reference: reference.value.trim() };
     currentRequest = body;
     const job = await api("/api/jobs", { method: "POST", body: JSON.stringify(body) });
+    if (generation !== pollGeneration) return;
     currentJob = job.job_id;
     renderJob(job, {});
     message.textContent = statusMessage(job.status);
-    await poll();
+    await poll(job.job_id, generation);
   } catch (error) {
+    if (generation !== pollGeneration || error.name === "AbortError") return;
     message.textContent = error.message;
     renderError(error.message);
   }
 });
 
-async function poll() {
+async function poll(jobId = currentJob, generation = pollGeneration) {
+  const controller = new AbortController();
+  pollController?.abort();
+  pollController = controller;
   for (;;) {
-    const job = await api(`/api/jobs/${currentJob}`);
+    if (generation !== pollGeneration || jobId !== currentJob) return;
+    const job = await api(`/api/jobs/${jobId}`, { signal: controller.signal });
+    if (generation !== pollGeneration || jobId !== currentJob) return;
     const evidence = job.result || {};
     renderJob(job, evidence);
     message.textContent = job.error || statusMessage(job.status);
@@ -292,14 +316,15 @@ function renderJob(job, evidence) {
   pill.textContent = job.status || "QUEUED";
   const pillTone = job.status === "FAILED" ? "error" : job.status === "VERIFYING" || ACTIVE_STATUSES.has(job.status) ? "active" : evidence.verification?.status === "VERIFIED" ? "verified" : evidence.fix?.status === "PROPOSED" && !evidence.fix_decision ? "waiting" : evidence.outcome === "CONFIRMED BREAK" ? "break" : evidence.outcome === "UNSUPPORTED" ? "waiting" : ["COMPLETED", "APPROVED", "REJECTED"].includes(job.status) ? "good" : "";
   pill.className = `status-pill ${pillTone}`;
-  renderProgress(job.status);
-  const outcome = evidence.outcome || job.outcome || "Waiting";
+  renderProgress(job.status, job);
+  const failed = job.status === "FAILED" || evidence.status === "FAILED" || evidence.outcome === "ERROR";
+  const outcome = failed ? "No trustworthy verdict" : evidence.outcome || job.outcome || "Waiting";
   const regression = evidence.regression;
   document.querySelector("#summary").innerHTML = [
     ["Outcome", outcome],
-    ["Provider", evidence.provider_status || job.provider_status || "Waiting"],
-    ["Experiments", evidence.experiments_run ?? job.experiments_run ?? "Waiting"],
-    ["Regression", regression ? (regression.valid ? "Valid" : "Failed") : "Waiting"],
+    ["Provider", evidence.provider_status || job.provider_status || (failed ? "Error" : "Waiting")],
+    ["Experiments", failed ? "0 · not run" : evidence.experiments_run ?? job.experiments_run ?? "Waiting"],
+    ["Regression", failed ? "Not run" : regression ? (regression.valid ? "Valid" : "Failed") : "Waiting"],
   ].map(([label, value]) => `<div class="stat"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join("");
   renderRunState(job, evidence);
   renderChangeContext(evidence);
@@ -394,7 +419,7 @@ async function operation(name) {
   try {
     message.textContent = "Running the approval-gated operation remotely...";
     await api(`/api/jobs/${currentJob}/${name}`, { method: "POST", body: "{}" });
-    await poll();
+    await poll(currentJob, pollGeneration);
   } catch (error) {
     message.textContent = error.message;
   }

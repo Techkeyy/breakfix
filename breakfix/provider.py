@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import time
 import urllib.error
 import urllib.request
@@ -30,6 +31,7 @@ class ProviderResponse:
     latency_ms: int
     monetary_cost_usd: float | None
     retries: int = 0
+    physical_attempts: int = 1
     total_tokens: int | None = None
     input_cache_hit_tokens: int | None = None
     input_cache_miss_tokens: int | None = None
@@ -56,6 +58,7 @@ class ProviderResponse:
             "latency_ms": self.latency_ms,
             "monetary_cost_usd": self.monetary_cost_usd,
             "retries": self.retries,
+            "physical_attempts": self.physical_attempts,
             "input_cache_hit_tokens": self.input_cache_hit_tokens,
             "input_cache_miss_tokens": self.input_cache_miss_tokens,
             "request_timestamp_utc": self.request_timestamp_utc,
@@ -80,6 +83,9 @@ class ProviderAttempt:
     provider_error: str | None
     output_failure: str | None
     retry_reason: str | None = None
+    physical_attempts: int = 0
+    retryable: bool | None = None
+    http_status: int | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -87,6 +93,9 @@ class ProviderAttempt:
             "provider_error": self.provider_error,
             "output_failure": self.output_failure,
             "retry_reason": self.retry_reason,
+            "physical_attempts": self.physical_attempts,
+            "retryable": self.retryable,
+            "http_status": self.http_status,
             "response": self.response.as_dict() if self.response else None,
         }
 
@@ -129,11 +138,17 @@ class ProviderError(RuntimeError):
         retries: int = 0,
         latency_ms: int | None = None,
         request_timestamp_utc: str | None = None,
+        physical_attempts: int = 0,
+        retryable: bool | None = None,
+        http_status: int | None = None,
     ) -> None:
         super().__init__(message)
         self.retries = retries
         self.latency_ms = latency_ms
         self.request_timestamp_utc = request_timestamp_utc
+        self.physical_attempts = physical_attempts
+        self.retryable = retryable
+        self.http_status = http_status
 
 
 class DirectProvider:
@@ -267,16 +282,21 @@ class DirectProvider:
         request_timestamp_text = request_timestamp.isoformat().replace("+00:00", "Z")
         self.last_request_timestamp_utc = request_timestamp_text
         body = self._request_body(prompt, response_format)
-        request = urllib.request.Request(
-            f"{self.base_url}/chat/completions",
-            data=json.dumps(body).encode("utf-8"),
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-            method="POST",
-        )
         max_retries = max(0, int(os.environ.get("BREAKFIX_MAX_RETRIES", "2")))
         started = time.perf_counter()
         last_error: str | None = None
+        payload: dict[str, Any] | None = None
+        physical_attempts = 0
+        retryable_error: bool | None = None
+        http_status: int | None = None
         for attempt in range(max_retries + 1):
+            physical_attempts += 1
+            request = urllib.request.Request(
+                f"{self.base_url}/chat/completions",
+                data=json.dumps(body).encode("utf-8"),
+                headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
+                method="POST",
+            )
             try:
                 with urllib.request.urlopen(request, timeout=180) as response:
                     payload = json.loads(response.read().decode("utf-8"))
@@ -284,18 +304,27 @@ class DirectProvider:
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="replace")[:500]
                 last_error = f"direct provider HTTP {exc.code}: {detail}"
+                http_status = exc.code
+                retryable_error = exc.code in {408, 429} or 500 <= exc.code <= 599
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 last_error = f"direct provider transport error: {exc}"
+                retryable_error = True
             except ValueError as exc:
                 last_error = f"direct provider invalid JSON response: {exc}"
-            if attempt < max_retries:
-                time.sleep(min(2 ** attempt, 4))
-        else:
+                retryable_error = False
+            if retryable_error and attempt < max_retries:
+                time.sleep(min(2 ** attempt, 4) + random.uniform(0, 0.25))
+            elif not retryable_error:
+                break
+        if payload is None:
             raise ProviderError(
                 last_error or "direct provider request failed",
-                retries=max_retries,
+                retries=max(physical_attempts - 1, 0),
                 latency_ms=round((time.perf_counter() - started) * 1000),
                 request_timestamp_utc=request_timestamp_text,
+                physical_attempts=physical_attempts,
+                retryable=retryable_error,
+                http_status=http_status,
             )
         latency_ms = round((time.perf_counter() - started) * 1000)
         usage = payload.get("usage") or {}
@@ -337,6 +366,7 @@ class DirectProvider:
                 retries=attempt,
                 latency_ms=latency_ms,
                 request_timestamp_utc=request_timestamp_text,
+                physical_attempts=physical_attempts,
             )
         message = choices[0]["message"]
         content = message.get("content")
@@ -359,6 +389,7 @@ class DirectProvider:
             latency_ms=latency_ms,
             monetary_cost_usd=cost,
             retries=attempt,
+            physical_attempts=physical_attempts,
             total_tokens=total_tokens,
             input_cache_hit_tokens=cache_hit_tokens,
             input_cache_miss_tokens=cache_miss_tokens,
@@ -429,7 +460,15 @@ def bounded_structured_recovery(
         try:
             response = complete(prompt if index == 0 else prompt + "\n\nRECOVERY INSTRUCTION: return only a complete compact JSON object.")
         except ProviderError as exc:
-            attempts.append(ProviderAttempt(index + 1, None, str(exc), None))
+            attempts.append(ProviderAttempt(
+                index + 1,
+                None,
+                str(exc),
+                None,
+                physical_attempts=exc.physical_attempts,
+                retryable=exc.retryable,
+                http_status=exc.http_status,
+            ))
             return StructuredProviderResult(False, None, None, "PROVIDER_ERROR", tuple(attempts))
         parsed, output_failure = assess(response)
         if output_failure is None:

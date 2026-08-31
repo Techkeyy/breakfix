@@ -35,3 +35,11 @@ Install the service unit as `/etc/systemd/system/breakfix-api.service`, create
 validating it, then reload Caddy and enable the service.
 
 The provider env file is intentionally not stored in this repository.
+
+The API exposes `/health` as a liveness check and `/readiness` as a
+secret-free readiness report. Readiness verifies the data directory, Git,
+Docker, credential presence, and an unauthenticated provider-root network
+request; it never calls a completion endpoint or returns configuration
+values. Direct provider transport retries are reserved for transient network
+failures, HTTP 408/429, and HTTP 5xx responses. Deterministic HTTP 4xx
+responses fail once so an account or request error cannot consume retry budget.

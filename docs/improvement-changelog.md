@@ -20,6 +20,8 @@ under evidence/ and are not reconstructed from memory.
 | 12 | Final independent evaluation | Fresh opaque 16-case holdout, 8 faulty and 8 safe | Generic comparator 7/8 fault recall; fixed matrix 8/8 at 128 executions; BreakFix 8/8 with 0 safe false confirmations at 38 targeted executions; 32 live DeepSeek calls and complete telemetry | Primary gate **PASS**; BreakFix used 70.3% fewer experiments than the fixed matrix |
 | 13 | Submission hardening | Final evidence and local review surface | Removed evaluator-only files from the published trajectory copy, patched the publisher exclusion, added final-summary UI indexing, added web regression coverage, and completed security, failure, UI, and reproducibility audits | Keep the final evidence boundary and disclose the browser-renderer limitation |
 | 14 | Post-hardening artifact completion | Fresh independent holdout and external oracle were missing at the first post-hardening start | No provider calls were made; execution stopped before evaluation | Creating and sealing the required public-safe 16-case holdout and external oracle before the already-authorized run; no protocol logic changed |
+| 15 | Definitive Attempt 1 forensic classification | Fresh opaque 16-case holdout, 8 faulty and 8 safe | A. Launcher/pre-provider aborts: zero provider calls, infrastructure/setup only. B. Definitive Attempt 1: 32 logical requests, 16 successful model responses, 16 HTTP 402 transport/provider failures, two adapter retries per failure, and an ineligible gate | Preserve permanently as **FAIL / ineligible due to provider infrastructure**; do not interpret the partial BreakFix recall as product performance |
+| 16 | Production reliability hardening | Forensic replay of hosted job c0b53830 plus offline transport/state coverage | Deterministic provider 4xx errors no longer retry; physical provider attempts are recorded separately from logical calls; provider/planner errors become FAILED jobs with explicit stage states; secret-free `/readiness`; stale frontend polls cannot overwrite a newer job | Deploy and validate the production boundary before any future live product validation |
 
 ## Current conclusion
 
@@ -33,4 +35,6 @@ The final result is a PASS for this frozen protocol, not a claim of universal
 defect-detection accuracy. The supported product remains a Python
 `app.run(payload)` prototype across four experiment surfaces. Phase 2B Attempt
 1 remains preserved as a separate ineligible provider-output FAIL, and the
-final result does not overwrite or reinterpret it.
+final result does not overwrite or reinterpret it. The definitive Attempt 1
+provider-account failure is likewise preserved separately from product logic
+and is not a valid performance result.

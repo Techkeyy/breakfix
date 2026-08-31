@@ -1,5 +1,7 @@
 import json
+import io
 import os
+import urllib.error
 import unittest
 from unittest.mock import patch
 
@@ -84,6 +86,63 @@ class ProviderContractTests(unittest.TestCase):
         self.assertEqual(result.response_text, '{"ok":true}')
         self.assertEqual(result.reasoning_text, "private reasoning")
         self.assertEqual(result.response_format, "json_object")
+
+    def test_deterministic_http_402_is_not_retried(self):
+        with patch.dict(
+            os.environ,
+            {"BREAKFIX_PROVIDER": "deepseek", "BREAKFIX_DEEPSEEK_API_KEY": "test-only", "BREAKFIX_MAX_RETRIES": "2"},
+            clear=True,
+        ):
+            provider = DirectProvider()
+
+        def fail(_request, timeout):
+            raise urllib.error.HTTPError(
+                "https://api.deepseek.com/chat/completions",
+                402,
+                "payment required",
+                {},
+                io.BytesIO(b'{"error":{"message":"Insufficient Balance"}}'),
+            )
+
+        with patch("urllib.request.urlopen", side_effect=fail), patch("time.sleep") as sleep:
+            with self.assertRaises(ProviderError) as raised:
+                provider.complete("prompt")
+        self.assertEqual(raised.exception.http_status, 402)
+        self.assertFalse(raised.exception.retryable)
+        self.assertEqual(raised.exception.physical_attempts, 1)
+        self.assertEqual(raised.exception.retries, 0)
+        sleep.assert_not_called()
+
+    def test_transient_http_503_keeps_bounded_retry(self):
+        with patch.dict(
+            os.environ,
+            {"BREAKFIX_PROVIDER": "deepseek", "BREAKFIX_DEEPSEEK_API_KEY": "test-only", "BREAKFIX_MAX_RETRIES": "2"},
+            clear=True,
+        ):
+            provider = DirectProvider()
+        calls = []
+
+        def transient_then_success(request, timeout):
+            calls.append(request)
+            if len(calls) == 1:
+                raise urllib.error.HTTPError(
+                    "https://api.deepseek.com/chat/completions",
+                    503,
+                    "unavailable",
+                    {},
+                    io.BytesIO(b"temporary"),
+                )
+            return _FakeHttpResponse({
+                "model": "deepseek-v4-pro",
+                "choices": [{"finish_reason": "stop", "message": {"content": "ok"}}],
+                "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+            })
+
+        with patch("urllib.request.urlopen", side_effect=transient_then_success), patch("time.sleep"), patch("random.uniform", return_value=0):
+            result = provider.complete("prompt")
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(result.retries, 1)
+        self.assertEqual(result.physical_attempts, 2)
 
     def test_valid_structured_response(self):
         result = bounded_structured_recovery(lambda _prompt: response('{"ok": true}'), "prompt")

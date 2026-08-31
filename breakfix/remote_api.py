@@ -6,10 +6,13 @@ import json
 import os
 import re
 import shutil
+import socket
 import subprocess
 import tempfile
 import threading
 import uuid
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -31,6 +34,14 @@ MAX_TEXT_BYTES = 20_000
 SUPPORTED_HOSTS = {"github.com", "www.github.com", "gitlab.com", "www.gitlab.com", "bitbucket.org"}
 CANONICAL_REPOSITORY = "https://github.com/Techkeyy/breakfix"
 REFERENCE_RE = re.compile(r"^[A-Za-z0-9._/@^~:-]+$")
+ANALYSIS_STAGE_NAMES = (
+    "reading_change",
+    "finding_assumptions",
+    "selecting_experiments",
+    "executing",
+    "building_evidence",
+)
+ACTIVE_JOB_STATUSES = {"QUEUED", "RUNNING", "PROPOSAL_RUNNING", "APPLYING", "VERIFYING"}
 
 
 def _now() -> str:
@@ -40,6 +51,53 @@ def _now() -> str:
 def _short_text(value: Any, limit: int = MAX_TEXT_BYTES) -> str:
     text = str(value or "")
     return text[:limit]
+
+
+def _initial_stages() -> dict[str, str]:
+    return {name: "pending" for name in ANALYSIS_STAGE_NAMES}
+
+
+def _env_file_has_value(path: Path, names: set[str]) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        for raw_line in path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            if key.strip() in names and value.strip().strip("\"'"):
+                return True
+    except OSError:
+        return False
+    return False
+
+
+def _provider_credential_present(provider_env_file: Path) -> bool:
+    provider = os.environ.get("BREAKFIX_PROVIDER", "deepseek").strip().lower()
+    if provider == "deepseek":
+        names = {"BREAKFIX_DEEPSEEK_API_KEY", "DEEPSEEK_API_KEY"}
+    else:
+        names = {"BREAKFIX_OPENAI_API_KEY", "OPENAI_API_KEY"}
+    return any(bool(os.environ.get(name)) for name in names) or _env_file_has_value(provider_env_file, names)
+
+
+def _provider_network_reachable() -> bool:
+    provider = os.environ.get("BREAKFIX_PROVIDER", "deepseek").strip().lower()
+    default = "https://api.deepseek.com" if provider == "deepseek" else "https://api.openai.com/v1"
+    base_url = os.environ.get("BREAKFIX_DEEPSEEK_BASE_URL" if provider == "deepseek" else "BREAKFIX_OPENAI_BASE_URL", default).rstrip("/")
+    parsed = urlparse(base_url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        return False
+    try:
+        urllib.request.urlopen(urllib.request.Request(f"{base_url}/", method="GET"), timeout=5).close()
+        return True
+    except urllib.error.HTTPError:
+        # An unauthenticated provider response proves the network path without
+        # creating a paid completion or sending the configured credential.
+        return True
+    except (urllib.error.URLError, TimeoutError, OSError, socket.timeout):
+        return False
 
 
 def _public_value(value: Any, *, depth: int = 0) -> Any:
@@ -222,18 +280,27 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
         except (OSError, json.JSONDecodeError):
             telemetry = {}
     records = analysis.get("experiment_records") or []
+    state = state or {}
+    analysis_outcome = analysis.get("outcome")
+    state_status = state.get("status")
+    status = state_status or ("FAILED" if analysis_outcome == "ERROR" else "COMPLETED")
+    # Evidence is authoritative when an older job record was written by the
+    # pre-hardening state machine. An engine ERROR must never be projected as
+    # a successful terminal job.
+    if analysis_outcome == "ERROR":
+        status = "FAILED"
     public: dict[str, Any] = {
         "job_id": job_id,
-        "status": (state or {}).get("status", "COMPLETED"),
-        "outcome": analysis.get("outcome"),
-        "provider_status": analysis.get("provider_status"),
+        "status": status,
+        "outcome": analysis_outcome,
+        "provider_status": analysis.get("provider_status") or state.get("provider_status"),
         "task": analysis.get("task"),
         "changed_files": analysis.get("changed_files", []),
         "change_resolution": analysis.get("change_resolution"),
         "selected_experiments": analysis.get("selected_experiments", []),
         "executed_experiments": analysis.get("executed_experiments", []),
         "experiments_run": analysis.get("experiments_run", 0),
-        "error_code": analysis.get("error_code"),
+        "error_code": analysis.get("error_code") or state.get("error_code"),
         "semantic_applicability_gate": bool(analysis.get("semantic_applicability_gate")),
         "regression": analysis.get("regression"),
         "assumptions": planner.get("assumptions", []),
@@ -241,6 +308,7 @@ def public_evidence(evidence: Path, job_id: str, state: dict[str, Any] | None = 
         "experiments": [_public_experiment(item) for item in records if isinstance(item, dict)],
         "visible_tests": _result_status(evidence / "visible-tests" / "result.json"),
         "telemetry": telemetry,
+        "stages": state.get("stages") or {},
     }
     proposal_path = evidence / "fix" / "proposal.json"
     if proposal_path.is_file():
@@ -333,6 +401,20 @@ class JobManager:
             write_json(self._directory(job_id) / "job.json", current)
             return current
 
+    def _mark_failed(self, job_id: str, error_code: str, error: str) -> dict[str, Any]:
+        current = self._read(job_id)
+        stages = dict(current.get("stages") or _initial_stages())
+        running = next((name for name in ANALYSIS_STAGE_NAMES if stages.get(name) == "running"), None)
+        if running:
+            stages[running] = "failed"
+        return self._write(
+            job_id,
+            status="FAILED",
+            error_code=error_code,
+            error=_short_text(error, 1_000),
+            stages=stages,
+        )
+
     def create(self, request: dict[str, Any]) -> dict[str, Any]:
         with self.lock:
             if len(self.active) >= 1:
@@ -348,6 +430,9 @@ class JobManager:
                 "updated_at": _now(),
                 "repository_url": request["repository_url"],
                 "demo": request["demo"],
+                "provider_status": "PENDING",
+                "experiments_run": 0,
+                "stages": _initial_stages(),
             }
             write_json(directory / "job.json", record)
             self.active.add(job_id)
@@ -359,7 +444,7 @@ class JobManager:
             if len(self.active) >= 1:
                 raise RuntimeError("job capacity is temporarily full; retry shortly")
             record = self._read(job_id)
-            if record.get("status") in {"QUEUED", "RUNNING", "PROPOSAL_RUNNING", "APPLYING", "VERIFYING"}:
+            if record.get("status") in ACTIVE_JOB_STATUSES:
                 raise RuntimeError("job already has an active operation")
             if operation == "propose-fix" and record.get("outcome") != "CONFIRMED BREAK":
                 raise RuntimeError("a confirmed break is required before proposing a fix")
@@ -382,7 +467,14 @@ class JobManager:
         record = self._read(job_id)
         evidence = self._directory(job_id) / "evidence"
         if (evidence / "analysis.json").is_file() or (evidence / "fix" / "proposal.json").is_file() or (evidence / "fix" / "verification.json").is_file():
-            record["result"] = public_evidence(evidence, job_id, record)
+            result = public_evidence(evidence, job_id, record)
+            if result.get("status") == "FAILED" and record.get("status") in {"COMPLETED", "APPROVED", "REJECTED"}:
+                record.update({
+                    "status": "FAILED",
+                    "error_code": result.get("error_code") or "ANALYSIS_ERROR",
+                    "error": "The bounded engine ended before producing a trustworthy verdict.",
+                })
+            record["result"] = result
         return record
 
     def evidence(self, job_id: str) -> dict[str, Any]:
@@ -441,7 +533,19 @@ class JobManager:
     def _run_analysis(self, job_id: str, request: dict[str, Any]) -> None:
         directory = self._directory(job_id)
         try:
-            self._write(job_id, status="RUNNING", operation="analyze")
+            stages = _initial_stages()
+            stages["reading_change"] = "running"
+            self._write(
+                job_id,
+                status="RUNNING",
+                operation="analyze",
+                outcome=None,
+                provider_status="PENDING",
+                experiments_run=0,
+                error_code=None,
+                error=None,
+                stages=stages,
+            )
             request_path = directory / "request.json"
             project = self._clone(job_id, request)
             change = request.get("change") or {}
@@ -465,18 +569,60 @@ class JobManager:
                     "resolved_head": snapshot.resolved_head,
                     "resolved_reference": snapshot.resolved_reference,
                 }
+            stages["reading_change"] = "complete"
+            stages["finding_assumptions"] = "running"
+            self._write(job_id, stages=stages)
             write_json(request_path, request)
             self._docker(job_id, "analyze", project=project, request=request_path)
             analysis_path = directory / "evidence" / "analysis.json"
             if not analysis_path.is_file():
                 raise RuntimeError("CONTAINER_FAILURE: analysis result is missing")
             analysis = json.loads(analysis_path.read_text(encoding="utf-8"))
-            self._write(job_id, status="COMPLETED", operation="analyze", outcome=analysis.get("outcome"), provider_status=analysis.get("provider_status"), experiments_run=analysis.get("experiments_run", 0))
+            outcome = analysis.get("outcome")
+            provider_status = analysis.get("provider_status")
+            experiments_run = analysis.get("experiments_run", 0)
+            if outcome == "ERROR":
+                stages["finding_assumptions"] = "failed"
+                stages["selecting_experiments"] = "not_run"
+                stages["executing"] = "not_run"
+                stages["building_evidence"] = "complete"
+                error_code = analysis.get("error_code") or provider_status or "ANALYSIS_ERROR"
+                if provider_status == "PROVIDER_ERROR":
+                    error = "The provider did not return a usable planner response; no experiments were run."
+                else:
+                    error = "The bounded engine ended before producing a trustworthy verdict."
+                self._write(
+                    job_id,
+                    status="FAILED",
+                    operation="analyze",
+                    outcome=outcome,
+                    provider_status=provider_status,
+                    experiments_run=experiments_run,
+                    error_code=error_code,
+                    error=error,
+                    stages=stages,
+                )
+            else:
+                stages["finding_assumptions"] = "complete"
+                stages["selecting_experiments"] = "complete"
+                stages["executing"] = "complete" if experiments_run else "not_run"
+                stages["building_evidence"] = "complete"
+                self._write(
+                    job_id,
+                    status="COMPLETED",
+                    operation="analyze",
+                    outcome=outcome,
+                    provider_status=provider_status,
+                    experiments_run=experiments_run,
+                    error_code=None,
+                    error=None,
+                    stages=stages,
+                )
         except subprocess.TimeoutExpired:
-            self._write(job_id, status="FAILED", error_code="TIMEOUT", error="the bounded hosted job timed out")
+            self._mark_failed(job_id, "TIMEOUT", "the bounded hosted job timed out")
         except Exception as exc:
             error_code = getattr(exc, "error_code", type(exc).__name__)
-            self._write(job_id, status="FAILED", error_code=error_code, error=_short_text(exc, 1_000))
+            self._mark_failed(job_id, error_code, _short_text(exc, 1_000))
         finally:
             project = directory / "project"
             if project.exists():
@@ -500,12 +646,37 @@ class JobManager:
                 verification = json.loads((evidence / "fix" / "verification.json").read_text(encoding="utf-8"))
                 self._write(job_id, status="COMPLETED", operation=operation, verification_status=verification.get("status"))
         except subprocess.TimeoutExpired:
-            self._write(job_id, status="FAILED", error_code="TIMEOUT", error="the bounded hosted operation timed out")
+            self._mark_failed(job_id, "TIMEOUT", "the bounded hosted operation timed out")
         except Exception as exc:
-            self._write(job_id, status="FAILED", error_code=type(exc).__name__, error=_short_text(exc, 1_000))
+            self._mark_failed(job_id, type(exc).__name__, _short_text(exc, 1_000))
         finally:
             with self.lock:
                 self.active.discard(job_id)
+
+
+def readiness(manager: JobManager) -> tuple[int, dict[str, Any]]:
+    """Return a secret-free runtime readiness report.
+
+    Provider reachability uses an unauthenticated GET to the provider root;
+    it never calls the completion endpoint and never includes configuration
+    values in the response.
+    """
+    docker_ready = False
+    if shutil.which("docker"):
+        try:
+            docker_result = _bounded_run(["docker", "info", "--format", "{{.ServerVersion}}"], timeout=5)
+            docker_ready = docker_result.returncode == 0
+        except (OSError, subprocess.TimeoutExpired):
+            docker_ready = False
+    checks = {
+        "data_dir_writable": manager.jobs_root.is_dir() and os.access(manager.jobs_root, os.W_OK),
+        "git_available": shutil.which("git") is not None,
+        "docker_ready": docker_ready,
+        "provider_credential_present": _provider_credential_present(manager.provider_env_file),
+        "provider_network_reachable": _provider_network_reachable(),
+    }
+    ready = all(checks.values())
+    return (200 if ready else 503), {"status": "ready" if ready else "degraded", "checks": checks}
 
 
 class APIHandler(BaseHTTPRequestHandler):
@@ -549,6 +720,10 @@ class APIHandler(BaseHTTPRequestHandler):
         try:
             if parsed.path == "/health":
                 self._send(200, {"status": "ok", "service": "breakfix-api"})
+                return
+            if parsed.path == "/readiness":
+                status, payload = readiness(self.manager)
+                self._send(status, payload)
                 return
             match = re.fullmatch(r"/api/jobs/([a-f0-9-]{36})(/evidence)?", parsed.path)
             if not match:

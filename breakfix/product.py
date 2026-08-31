@@ -70,6 +70,15 @@ def _provider_telemetry(result: StructuredProviderResult) -> dict[str, Any]:
         "monetary_cost_usd": total("monetary_cost_usd"),
         "latency_ms": total("latency_ms"),
         "retries": sum(response.retries for response in responses),
+        "physical_attempts": sum(
+            response.physical_attempts if response.physical_attempts > 0 else response.retries + 1
+            for response in responses
+        ) + sum(attempt.physical_attempts for attempt in result.attempts if attempt.response is None),
+        "adapter_retries": sum(
+            max(response.physical_attempts - 1, response.retries) for response in responses
+        ) + sum(max(attempt.physical_attempts - 1, 0) for attempt in result.attempts if attempt.response is None),
+        "provider_http_statuses": [attempt.http_status for attempt in result.attempts if attempt.http_status is not None],
+        "retryable_provider_errors": [attempt.retryable for attempt in result.attempts if attempt.response is None],
         "finish_reasons": [response.finish_reason for response in responses],
         "reasoning_content_present": any(bool(response.reasoning_text) for response in responses),
         "response_formats": sorted({response.response_format for response in responses if response.response_format}),
