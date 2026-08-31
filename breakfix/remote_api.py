@@ -164,6 +164,7 @@ def _public_experiment(record: dict[str, Any]) -> dict[str, Any]:
             "failure_kind": actual.get("failure_kind"),
             "target_failed": bool(actual.get("target_failed")),
             "harness_failed": bool(actual.get("harness_failed")),
+            "failure_classification": actual.get("failure_classification"),
             "exit_code": actual.get("exit_code"),
             "timed_out": bool(actual.get("timed_out")),
             "output_captured": bool(actual.get("output_captured")),

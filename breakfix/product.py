@@ -156,6 +156,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
     if not applicability.get("applicable"):
         return {
             "evidence_state": applicability.get("status", "NOT EXECUTABLE"),
+            "failure_classification": "UNSUPPORTED PROBE",
             "evidence_sufficient": False,
             "failure_predicate_matched": False,
             "observable": None,
@@ -164,6 +165,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
     if execution.harness_failed:
         return {
             "evidence_state": "HARNESS FAILURE",
+            "failure_classification": "HARNESS FAILURE",
             "evidence_sufficient": False,
             "failure_predicate_matched": False,
             "observable": "execution harness failure; target behavior was not established",
@@ -172,6 +174,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
     if execution.target_failed and execution.concrete_observable:
         return {
             "evidence_state": "CONFIRMED BREAK",
+            "failure_classification": "EXPECTED PREDICATE FAILURE",
             "evidence_sufficient": True,
             "failure_predicate_matched": True,
             "observable": f"target process exited {execution.exit_code} with a captured target failure",
@@ -180,6 +183,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
     if execution.target_failed:
         return {
             "evidence_state": "INCONCLUSIVE",
+            "failure_classification": "TARGET PROGRAM FAILURE",
             "evidence_sufficient": False,
             "failure_predicate_matched": False,
             "observable": None,
@@ -188,6 +192,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
     if execution.output_captured:
         return {
             "evidence_state": "NO BREAK CONFIRMED",
+            "failure_classification": "NO PREDICATE FAILURE",
             "evidence_sufficient": True,
             "failure_predicate_matched": False,
             "observable": "structured target output captured",
@@ -195,6 +200,7 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
         }
     return {
         "evidence_state": "INCONCLUSIVE",
+        "failure_classification": "NO CONCRETE OBSERVABLE",
         "evidence_sufficient": False,
         "failure_predicate_matched": False,
         "observable": None,
@@ -364,6 +370,7 @@ def analyze_change(
             "timed_out": execution.timed_out,
             "output_captured": execution.output_captured,
             "concrete_observable": execution.concrete_observable,
+            "failure_classification": evaluation.get("failure_classification"),
             "observable": evaluation.get("observable"),
             "output": execution.output,
         }

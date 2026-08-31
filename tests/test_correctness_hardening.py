@@ -93,6 +93,7 @@ class CorrectnessHardeningTests(unittest.TestCase):
             assess_probe_applicability(_assumption("the collection is non-empty", "input", "input_empty"), _proposal("input_empty"), experiment_by_id("input_empty")),
         )
         self.assertEqual(result["evidence_state"], "CONFIRMED BREAK")
+        self.assertEqual(result["failure_classification"], "EXPECTED PREDICATE FAILURE")
         self.assertTrue(result["failure_predicate_matched"])
 
     def test_budget_selection_marks_only_selected_and_executed_assumptions(self):
