@@ -239,6 +239,39 @@ def _execution_complete(result: dict[str, Any]) -> bool:
     )
 
 
+def _run_current_unit_tests() -> dict[str, Any]:
+    command = [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"]
+    started = time.perf_counter()
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=PROJECT_ROOT,
+            text=True,
+            capture_output=True,
+            timeout=180,
+            env=os.environ.copy(),
+        )
+        return {
+            "command": command,
+            "exit_code": completed.returncode,
+            "timed_out": False,
+            "duration_ms": round((time.perf_counter() - started) * 1000),
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "process_failed": completed.returncode != 0,
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "command": command,
+            "exit_code": None,
+            "timed_out": True,
+            "duration_ms": round((time.perf_counter() - started) * 1000),
+            "stdout": exc.stdout or "",
+            "stderr": exc.stderr or "",
+            "process_failed": True,
+        }
+
+
 def _oracle_outcome(execution: dict[str, Any], expected_outputs: dict[str, Any], experiment_id: str) -> dict[str, Any]:
     if experiment_id not in expected_outputs:
         return {
@@ -463,11 +496,11 @@ def main() -> None:
     if any(item.get("exit_code") != 0 or item.get("process_failed") or item.get("timed_out") for item in visible_results):
         raise SystemExit("one or more fresh holdout visible test suites failed")
 
-    current_tests = run_command(PROJECT_ROOT, [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], label="current_unit_tests", timeout_seconds=180)
-    _write_json(raw_root / "preflight" / "current-unit-tests.json", current_tests.as_dict())
-    _write_text(raw_root / "preflight" / "current-unit-tests.stdout.log", current_tests.stdout)
-    _write_text(raw_root / "preflight" / "current-unit-tests.stderr.log", current_tests.stderr)
-    if current_tests.exit_code != 0 or current_tests.process_failed or current_tests.timed_out:
+    current_tests = _run_current_unit_tests()
+    _write_json(raw_root / "preflight" / "current-unit-tests.json", current_tests)
+    _write_text(raw_root / "preflight" / "current-unit-tests.stdout.log", current_tests["stdout"])
+    _write_text(raw_root / "preflight" / "current-unit-tests.stderr.log", current_tests["stderr"])
+    if current_tests["exit_code"] != 0 or current_tests["process_failed"] or current_tests["timed_out"]:
         raise SystemExit("current BreakFix unit tests failed before provider calls")
 
     provider = DirectProvider()
@@ -716,7 +749,7 @@ def main() -> None:
         "leakage_audit": leakage,
         "history_free_workspace_audit": workspace_audit,
         "visible_fixture_tests": {"case_count": len(visible_results), "passed_cases": sum(1 for item in visible_results if item.get("exit_code") == 0 and not item.get("process_failed") and not item.get("timed_out"))},
-        "current_unit_tests": {"exit_code": current_tests.exit_code, "process_failed": current_tests.process_failed, "timed_out": current_tests.timed_out, "stdout": current_tests.stdout, "stderr": current_tests.stderr},
+        "current_unit_tests": {"exit_code": current_tests["exit_code"], "process_failed": current_tests["process_failed"], "timed_out": current_tests["timed_out"], "stdout": current_tests["stdout"], "stderr": current_tests["stderr"]},
         "baseline": baseline_score,
         "fixed_matrix": fixed_score,
         "breakfix": breakfix_score,
