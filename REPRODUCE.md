@@ -78,10 +78,16 @@ evaluation copy, executes the generic and BreakFix live lanes, runs the fixed
 published evidence directory. It must not be used to tune prompts or rerun
 individual cases after the holdout is opened.
 
-The preserved final run used 32 model completion calls and 128 deterministic
-fixed-matrix experiments. Its oracle-free evidence is under
+The preserved historical pre-hardening valid run used 32 model completion calls
+and 128 deterministic fixed-matrix experiments. Its oracle-free evidence is under
 `evidence/final-eval-20260829T212423Z/`; its full evaluator workspace is kept
 outside the repository under the local Temp directory named in the run log.
+
+The later hardened final-fresh evaluation was permanently failed before a
+valid gate. The latest definitive attempt preserved 32 logical requests: 16
+successful model responses and 16 HTTP 402 `Insufficient Balance`
+transport/provider failures. BreakFix and the generic comparator were
+ineligible, so its apparent BreakFix 2/8 is not a product-performance result.
 
 The live baseline is the generic comparator lane inside the same frozen runner.
 It receives the same public case context, has no hidden probes, and is scored
@@ -95,7 +101,7 @@ repository and published evidence.
 
 ## Expected runtime and cost
 
-- Offline test suite: about 10 seconds, 44 tests.
+- Offline test suite: about 65 seconds, 93 tests on the recorded host.
 - Canonical demo: under one minute.
 - Final live evaluation: about 25 minutes on the recorded host, depending on
   provider latency.

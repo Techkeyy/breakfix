@@ -43,16 +43,17 @@
 
       <section class="proof-strip page-width" aria-label="Frozen evaluation evidence">
         <div class="proof-intro">
-          <span class="eyebrow">FROZEN EVALUATION</span>
-          <p>Measured on the final BreakFix evaluation surface.</p>
+          <span class="eyebrow">PRE-HARDENING FROZEN EVALUATION</span>
+          <p>On the frozen pre-hardening holdout, the then-current BreakFix confirmed 8/8 seeded faults with 0/8 safe false confirmations, using 38 targeted experiments versus 128 fixed-matrix experiments.</p>
         </div>
         <dl class="proof-grid">
-          <div><dt>8/8</dt><dd>faults confirmed</dd></div>
+          <div><dt>8/8</dt><dd>seeded faults confirmed</dd></div>
           <div><dt>0/8</dt><dd>safe false confirmations</dd></div>
           <div><dt>38</dt><dd>targeted experiments</dd></div>
-          <div><dt>128</dt><dd>matrix runs</dd></div>
+          <div><dt>128</dt><dd>matrix experiments</dd></div>
           <div><dt>70.3%</dt><dd>fewer experiments</dd></div>
         </dl>
+        <p class="proof-note">The evidence contract was hardened after this run. Later current-engine evaluation attempts and their outcomes are preserved in the repository evidence and changelog.</p>
       </section>
 
       <section id="product" class="editorial-section page-width" aria-labelledby="product-title">
@@ -131,6 +132,7 @@
                 <button id="demo-button" class="button button-quiet" type="button">Use canonical demo</button>
               </div>
               <p class="mode-description"><strong>HOSTED</strong> Analyze compatible public Git repositories without installing BreakFix.</p>
+              <p class="compatibility-note">Hosted deterministic execution currently supports compatible Python changes using the app.run(payload) contract. Other changes can still be inspected for assumptions, but BreakFix returns UNSUPPORTED when it cannot execute a matching experiment.</p>
               <form id="job-form">
                 <div class="field-group">
                   <label for="repository-url">Repository URL</label>

@@ -42,8 +42,8 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | Solution video up to 5 minutes | Challenge page, Submission Package | Recording script and shot list are prepared; a video file is not yet recorded | docs/video-script.md; docs/video-shot-list.md | FAIL |
 | Video begins with problem and simple baseline | Challenge page, Submission Package | Recording sequence specifies the problem and generic comparator first | docs/video-script.md; docs/video-shot-list.md | FAIL |
 | Video shows realistic execution, comparison, changelog, strongest change, and removed experiment | Challenge page, Submission Package | Evidence, script, and shot list specify the required sequence; recording remains manual | docs/improvement-changelog.md; docs/video-shot-list.md | FAIL |
-| Correct, reproducible, testable, clearly explained solution | Challenge page, Overview | Standard-library runner, unit tests, independent sample, final holdout, evidence, and docs pass clean reproduction | 38-test run; clean Temp clone; final evidence | PASS |
-| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Final same-model generic baseline, fixed matrix, and BreakFix targeted lanes show 7/8, 8/8, and 8/8 fault recall respectively; BreakFix uses 38 versus 128 experiments with 0 safe false confirmations | evidence/final-eval-20260829T212423Z/final-summary.json; docs/final-evaluation-report.md | PASS |
+| Correct, reproducible, testable, clearly explained solution | Challenge page, Overview | Standard-library runner, unit tests, independent sample, historical valid holdout evidence, and docs pass clean reproduction | 93-test run; clean Temp clone; historical evidence | PASS |
+| Baseline plus advanced solution with meaningful improvement | Challenge page, Theme | Historical pre-hardening same-model generic baseline, fixed matrix, and BreakFix targeted lanes show 7/8, 8/8, and 8/8 fault recall respectively; BreakFix uses 38 versus 128 experiments with 0 safe false confirmations | evidence/final-eval-20260829T212423Z/final-summary.json; docs/final-evaluation-report.md | PASS |
 | Allowed languages include Python, TypeScript, Java, C++, Go, Rust | Challenge page, Theme and FAQ | Python 3.14 prototype | pyproject.toml; clean environment check | PASS |
 | Final problem PDF may prescribe runtime, dependency, API, and acceptance-test constraints | Challenge page, Theme | No PDF constraints could be read in this environment | blocked PDF URL; open verification queue | N/A |
 | Valid submission must be timely, complete, original, policy compliant, reproducible, and include repository/archive, tests, README, agent evidence, and video | Challenge page, FAQ | Repository, tests, README, evidence, traces, and package docs exist; archive, final form, and video remain manual | current tree; open verification queue | FAIL |
@@ -51,7 +51,7 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | Qualified human reviewer for significant effects | Challenge page, Rule Book | No consequential external action exists; the candidate-fix path has an explicit approval checkpoint | docs/canonical-demo.md; non-goals | N/A |
 | Use legal, ethical, permitted data and keep credentials outside submission | Challenge page, Rule Book | Synthetic benchmark, secret-free source, ignored .env, and external evaluator truth | .gitignore; docs/security-audit.md | PASS |
 | Every result claim connected to evidence | Challenge page, Rule Book | Final comparison metrics point to per-lane evidence and the public summary | evidence/final-eval-20260829T212423Z/final-summary.json; docs/claims.md | PASS |
-| Judges must be able to run and reproduce the main result | Challenge page, Rule Book | Fresh Git clone, fresh venv, editable install, 44 tests, canonical flow, doctor, and UI/API checks pass | REPRODUCE.md; clean Temp clone | PASS |
+| Judges must be able to run and reproduce the main result | Challenge page, Rule Book | Fresh Git clone, fresh venv, editable install, 93 tests, canonical flow, doctor, and UI/API checks pass | REPRODUCE.md; clean Temp clone | PASS |
 | micro1 may own submissions and use them for AI training and evaluation | Challenge page, Rule Book | No code action; ownership consideration is recorded before public submission | this matrix | PASS |
 | Scoring criteria and weights | Director-verified official instruction PDF | Rubric recorded below and used for prioritization | This document, director review | PASS |
 | Tie-break order: Agent Solution and Engineering, Reproducibility, Measured Improvement, End to End Quality, final evidence review | Challenge page, Evaluation Criteria | Build plan prioritizes these gates | docs/build-plan.md | PASS |
@@ -59,14 +59,15 @@ https://uc.hackerearth.com/he-public-ap-south-1/micro1%20-%20First%20Hackathon97
 | API keys or model credits supplied by organizer | Challenge page, FAQ | Final live lanes use an explicitly authorized participant-configured DeepSeek credential; no organizer credential is assumed | README; final run metadata records presence only | PASS |
 | Registration/submission intake fields, archive format, exact acceptance tests, and final PDF constraints | Official instruction PDF link | Not determinable until the PDF can be read and the final form is rechecked | blocked URL and open verification queue | N/A |
 
-## Final evaluation status
+## Historical evaluation status
 
 The final protocol is frozen in `docs/final-evaluation-protocol.md`, with the
 public holdout committed separately from the external evaluator truth. The
-final run `final-eval-20260829T212423Z` used 32 live DeepSeek calls, complete
-provider telemetry, 128 fixed executions, and 38 targeted executions. The
-primary gate passed. Phase 2B Attempt 1 remains a separate historical FAIL and
-is not overwritten by this result.
+historical pre-hardening run `final-eval-20260829T212423Z` used 32 live
+DeepSeek calls, complete provider telemetry, 128 fixed executions, and 38
+targeted executions. Its historical primary gate passed. Later hardened
+final-fresh and definitive attempts remain separate ineligible records and are
+not overwritten by this result.
 
 ## Official scoring rubric
 

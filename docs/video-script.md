@@ -73,21 +73,20 @@ fix verified.”
 
 ## 3:25 to 3:48, evaluation shot
 
-Switch to a clean, uncluttered evaluation visual titled `FINAL FROZEN HOLDOUT`.
+Switch to a clean, uncluttered evaluation visual titled `PRE-HARDENING FROZEN EVALUATION`.
 Show only:
 
 ```text
-8/8       faults confirmed
+8/8       seeded faults confirmed
 0/8       safe false confirmations
-38        BreakFix experiments
-128       fixed-matrix experiments
+38        targeted experiments
+128       matrix experiments
 70.3%     fewer experiments
-Approx. final-evaluation provider cost: $0.138
 ```
 
-Say: “On our frozen final holdout, BreakFix found all eight seeded faults with
-zero false confirmed breaks using 38 experiments versus 128 for the fixed
-matrix, 70.3% fewer.”
+Say: “On the frozen pre-hardening holdout, the then-current BreakFix confirmed
+8/8 seeded faults with 0/8 safe false confirmations, using 38 targeted
+experiments versus 128 fixed-matrix experiments.”
 
 ## 3:48 to 4:12, measured iteration
 
@@ -97,7 +96,9 @@ Say: “The strong coding agent already found the raw faults. A broad
 safety-certification framing failed. The first Phase 2B run failed because our
 2,000-token adapter truncated every advanced planner output. We preserved those
 failures. The final thesis became targeted, evidence-efficient falsification,
-and the final independent holdout passed.”
+and the historical pre-hardening independent holdout passed. The later
+hardened evaluation attempts were preserved as ineligible, including a
+definitive provider run with HTTP 402 insufficient-balance failures.”
 
 Do not open private evaluator truth, API keys, or raw credentials.
 

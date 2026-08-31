@@ -1,7 +1,15 @@
 # Claims and evidence
 
-This document separates measured claims from product scope. The final run is
-`evidence/final-eval-20260829T212423Z/`.
+This document separates measured claims from product scope. The measured
+claims below are from the historical valid pre-hardening run
+`evidence/final-eval-20260829T212423Z/`; they are not current hardened-engine
+performance metrics.
+
+The later hardened final-fresh evaluation and definitive attempt are preserved
+as ineligible runs. The definitive attempt recorded 32 logical requests, 16
+successful model responses, and 16 HTTP 402 `Insufficient Balance`
+transport/provider failures; its apparent BreakFix 2/8 is not reported as
+product performance.
 
 | Claim | Measured result | Evidence |
 | --- | --- | --- |

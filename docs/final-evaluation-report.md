@@ -1,13 +1,13 @@
-# Final independent evaluation report
+# Historical pre-hardening independent evaluation report
 
 Run: `final-eval-20260829T212423Z`  
 Protocol: `final-independent-evaluation-v1`  
 Product checkpoint: `13b8c89`  
 Public holdout checkpoint: `4939d76`
 
-## Result
+## Historical result
 
-**Primary gate: PASS**
+**Historical primary gate: PASS**
 
 | Lane | Fault recall | Safe false confirmed breaks | Experiments | Eligible |
 | --- | ---: | ---: | ---: | --- |
@@ -27,3 +27,10 @@ DeepSeek pricing metadata captured by the adapter.
 The complete oracle-free bundle is under
 `evidence/final-eval-20260829T212423Z/`. Evaluator-only expected outputs remain
 outside the repository in the Temp run workspace.
+
+This is the historical valid pre-hardening result. It is not current
+hardened-engine performance. The later hardened final-fresh evaluation was
+permanently failed before a valid gate, and the latest definitive attempt was
+ineligible: 32 logical requests produced 16 successful model responses and 16
+HTTP 402 `Insufficient Balance` transport/provider failures. BreakFix and the
+generic comparator were ineligible; only the fixed matrix was eligible.

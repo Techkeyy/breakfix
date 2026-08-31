@@ -12,9 +12,13 @@ evidence when a real break occurs.
 
 Your tests check what you expected. BreakFix tests what you forgot to expect.
 
-## The result
+## Measured evidence
 
-The final independent evaluation passed its frozen primary gate.
+### Historical valid result (pre-hardening)
+
+On the frozen pre-hardening holdout, the then-current BreakFix confirmed 8/8
+seeded faults with 0/8 safe false confirmations, using 38 targeted experiments
+versus 128 fixed-matrix experiments.
 
 | Lane | Fault recall | Safe false confirmed breaks | Experiments |
 | --- | ---: | ---: | ---: |
@@ -22,15 +26,26 @@ The final independent evaluation passed its frozen primary gate.
 | Fixed matrix | 8/8 (100%) | 0/8 | 128 |
 | BreakFix targeted | 8/8 (100%) | 0/8 | 38 |
 
-BreakFix used 70.3% fewer deterministic experiments than the fixed matrix.
-The run used 32 recorded DeepSeek V4 Pro model calls, 32 successful structured
-responses, and preserved provider telemetry. The full claim ledger is in
+This historical pre-hardening run used 32 recorded DeepSeek V4 Pro model calls,
+32 successful structured responses, and preserved provider telemetry. BreakFix
+used 70.3% fewer deterministic experiments than the fixed matrix. The full
+claim ledger is in
 [`docs/claims.md`](docs/claims.md), and the complete final report is in
 [`docs/final-evaluation-report.md`](docs/final-evaluation-report.md).
 
-> On the frozen final holdout, BreakFix found all 8 seeded faults with zero
-> false confirmed breaks while executing 38 targeted experiments instead of
-> the fixed matrix's 128, a 70.3% reduction.
+> On the frozen pre-hardening holdout, BreakFix found all 8 seeded faults with
+> zero false confirmed breaks while executing 38 targeted experiments instead
+> of the fixed matrix's 128, a 70.3% reduction.
+
+### Later current-engine evaluation attempts
+
+The later hardened final-fresh evaluation was permanently failed before a
+valid gate. The latest definitive attempt preserved 32 logical requests: 16
+successful model responses and 16 HTTP 402 `Insufficient Balance`
+transport/provider failures. BreakFix and the generic comparator were
+ineligible; only the fixed matrix was eligible. The apparent BreakFix 2/8 in
+that ineligible run is not current product performance. These outcomes remain
+preserved in the repository evidence and changelog.
 
 ## The problem
 
@@ -42,6 +57,10 @@ assumption. It cannot prove the changed code's behavior at that boundary.
 BreakFix is for a developer or coding agent who needs a fast answer to:
 
 > What assumption did this change introduce, and can I execute the failure?
+
+As coding agents get stronger, imagining possible failures stops being the
+bottleneck. The harder problem is deciding which suspicions are worth
+executing and proving which failures are real.
 
 ## Workflow
 
@@ -97,7 +116,7 @@ From the project directory:
     python -m breakfix.cli doctor
     python scripts/run_external_acceptance.py
 
-The suite currently reports 44 passing tests. The independent acceptance uses
+The suite currently reports 93 passing tests. The independent acceptance uses
 `examples/independent_sample`, not a benchmark fixture, and exercises analysis,
 replay, regression generation, and reduction.
 
@@ -136,6 +155,11 @@ paths, evaluator truth, or provider secrets; the final evaluation oracle remains
 external. The supported hosted scope is the same MVP contract described below:
 a Python project exposing `app.run(payload)` with a runnable unittest command.
 
+Hosted deterministic execution currently supports compatible Python changes
+using the `app.run(payload)` contract. Other changes can still be inspected for
+assumptions, but BreakFix returns `UNSUPPORTED` when it cannot execute a
+matching experiment.
+
 ## Scope
 
 The compatible MVP expects a Python project exposing `app.run(payload)` and a
@@ -162,7 +186,8 @@ written to `evidence/<run-id>/` locally.
 
 ## Evidence and history
 
-The final run is `evidence/final-eval-20260829T212423Z/`.
+The historical valid pre-hardening run is
+`evidence/final-eval-20260829T212423Z/`.
 
 - The final public holdout is committed under `benchmark/final_holdout/` with
   opaque case IDs.
@@ -175,12 +200,16 @@ The final run is `evidence/final-eval-20260829T212423Z/`.
   [`docs/trajectory-index.md`](docs/trajectory-index.md).
 - The historical Phase 2B Attempt 1 output remains preserved as an ineligible
   FAIL. Its provider-output failure is not replaced by the final PASS.
+- The later hardened final-fresh evaluation and definitive attempt remain
+  preserved as ineligible runs. The definitive attempt recorded 16 successful
+  responses and 16 HTTP 402 `Insufficient Balance` provider failures across 32
+  logical requests; it is not a current product-performance result.
 - Development run outputs are ignored by Git. The curated `submission/evidence/`
   bundle contains the oracle-free final trajectories, telemetry, fixed
   executions, historical Attempt 1 evidence, and final summary; evaluator-only
   records remain outside the repository.
 
-## Provider disclosure
+## Historical pre-hardening provider disclosure
 
 The final model lanes used DeepSeek V4 Pro with thinking enabled, high
 reasoning effort, JSON object mode, a 12,000-token completion budget, and at

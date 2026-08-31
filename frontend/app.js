@@ -314,7 +314,9 @@ function renderJob(job, evidence) {
   document.querySelector("#result-title").textContent = `Job ${job.job_id ? job.job_id.slice(0, 8) : ""}`;
   const pill = document.querySelector("#status-pill");
   pill.textContent = job.status || "QUEUED";
-  const pillTone = job.status === "FAILED" ? "error" : job.status === "VERIFYING" || ACTIVE_STATUSES.has(job.status) ? "active" : evidence.verification?.status === "VERIFIED" ? "verified" : evidence.fix?.status === "PROPOSED" && !evidence.fix_decision ? "waiting" : evidence.outcome === "CONFIRMED BREAK" ? "break" : evidence.outcome === "UNSUPPORTED" ? "waiting" : ["COMPLETED", "APPROVED", "REJECTED"].includes(job.status) ? "good" : "";
+  const unsupported = evidence.outcome === "UNSUPPORTED" || job.outcome === "UNSUPPORTED";
+  const terminal = !ACTIVE_STATUSES.has(job.status);
+  const pillTone = job.status === "FAILED" ? "error" : job.status === "VERIFYING" || ACTIVE_STATUSES.has(job.status) ? "active" : evidence.verification?.status === "VERIFIED" ? "verified" : evidence.fix?.status === "PROPOSED" && !evidence.fix_decision ? "waiting" : evidence.outcome === "CONFIRMED BREAK" ? "break" : unsupported ? "good" : ["COMPLETED", "APPROVED", "REJECTED"].includes(job.status) ? "good" : "";
   pill.className = `status-pill ${pillTone}`;
   renderProgress(job.status, job);
   const failed = job.status === "FAILED" || evidence.status === "FAILED" || evidence.outcome === "ERROR";
@@ -322,9 +324,9 @@ function renderJob(job, evidence) {
   const regression = evidence.regression;
   document.querySelector("#summary").innerHTML = [
     ["Outcome", outcome],
-    ["Provider", evidence.provider_status || job.provider_status || (failed ? "Error" : "Waiting")],
-    ["Experiments", failed ? "0 · not run" : evidence.experiments_run ?? job.experiments_run ?? "Waiting"],
-    ["Regression", failed ? "Not run" : regression ? (regression.valid ? "Valid" : "Failed") : "Waiting"],
+    ["Provider", evidence.provider_status || job.provider_status || (failed ? "Error" : terminal ? "Complete" : "Waiting")],
+    ["Experiments", failed || unsupported ? "0 · not run" : evidence.experiments_run ?? job.experiments_run ?? (terminal ? "0 · not run" : "Waiting")],
+    ["Regression", failed ? "Not run" : unsupported ? "Not applicable" : regression ? (regression.valid ? "Valid" : "Failed") : terminal ? "Not applicable" : "Waiting"],
   ].map(([label, value]) => `<div class="stat"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join("");
   renderRunState(job, evidence);
   renderChangeContext(evidence);
@@ -379,7 +381,7 @@ function renderExperiments(evidence) {
     const actual = item.actual_behavior || {};
     const raw = [["Command", actual.command || item.command], ["Exit code", actual.exit_code ?? item.exit_code], ["STDOUT", actual.stdout || item.stdout], ["STDERR", actual.stderr || item.stderr], ["Output", actual.output]];
     return `<article class="card experiment-card"><h4>BREAKFIX TESTED · ${esc(display(item.experiment_id, "Experiment"))}</h4><p class="experiment-action">${esc(display(item.description, "Not captured"))}</p><div class="experiment-link">ASSUMPTION ${esc(experimentAssumptionId(item))}</div><dl class="detail-grid"><div><dt>Expected behavior</dt><dd>${esc(expectedBehavior(item))}</dd></div><div><dt>Evidence state</dt><dd>${esc(display(item.evidence_state))}</dd></div><div><dt>Observed result</dt><dd>${esc(observedResult(actual))}</dd></div></dl><div class="raw-evidence"><h5>Execution evidence</h5><dl>${raw.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(formatEvidenceValue(value))}</dd></div>`).join("")}</dl></div></article>`;
-  }).join("")}</div>` : `<p class="evidence-note">Targeted experiments will appear here after the planner responds.</p>`}`;
+  }).join("")}</div>` : `<p class="evidence-note">No targeted experiment was executed because none of BreakFix's supported experiment surfaces matched this change.</p>`}`;
 }
 
 function renderFix(evidence, job) {

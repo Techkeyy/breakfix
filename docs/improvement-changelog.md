@@ -17,24 +17,26 @@ under evidence/ and are not reconstructed from memory.
 | 9 | Phase 2B provider amendment | Use the director-authorized provider without changing the frozen benchmark | Same fresh 16-case holdout | DeepSeek V4 Pro adapter, frozen thinking configuration, official peak/off-peak pricing, cache-aware telemetry, and pre-call amendment | Committed before any DeepSeek call; benchmark still awaits local credential configuration |
 | 10 | Phase 2B Attempt 1 | Fresh 16-case paired holdout | All 32 DeepSeek calls were preserved. Baseline 16/16 valid; BreakFix 16/16 provider-output errors at the 2,000-token ceiling; fixed matrix 128 executions; no BreakFix experiments | Frozen **FAIL / ineligible**. Preserve permanently; do not interpret the apparent 100% reduction as product improvement |
 | 11 | Provider-contract recovery | Two old development cases: one faulty and one safe control | Raised the bounded thinking output budget to 12,000, added JSON mode, reasoning/content separation, one deterministic structured-output recovery, explicit provider-output errors, isolated execution, telemetry, and generated regression evidence | Engineering smoke **PASS**: faulty case confirmed a break after one probe; control completed without a confirmed break |
-| 12 | Final independent evaluation | Fresh opaque 16-case holdout, 8 faulty and 8 safe | Generic comparator 7/8 fault recall; fixed matrix 8/8 at 128 executions; BreakFix 8/8 with 0 safe false confirmations at 38 targeted executions; 32 live DeepSeek calls and complete telemetry | Primary gate **PASS**; BreakFix used 70.3% fewer experiments than the fixed matrix |
+| 12 | Historical pre-hardening independent evaluation | Fresh opaque 16-case holdout, 8 faulty and 8 safe | Generic comparator 7/8 fault recall; fixed matrix 8/8 at 128 executions; BreakFix 8/8 with 0 safe false confirmations at 38 targeted executions; 32 live DeepSeek calls and complete telemetry | Historical primary gate **PASS**; BreakFix used 70.3% fewer experiments than the fixed matrix |
 | 13 | Submission hardening | Final evidence and local review surface | Removed evaluator-only files from the published trajectory copy, patched the publisher exclusion, added final-summary UI indexing, added web regression coverage, and completed security, failure, UI, and reproducibility audits | Keep the final evidence boundary and disclose the browser-renderer limitation |
 | 14 | Post-hardening artifact completion | Fresh independent holdout and external oracle were missing at the first post-hardening start | No provider calls were made; execution stopped before evaluation | Creating and sealing the required public-safe 16-case holdout and external oracle before the already-authorized run; no protocol logic changed |
 | 15 | Definitive Attempt 1 forensic classification | Fresh opaque 16-case holdout, 8 faulty and 8 safe | A. Launcher/pre-provider aborts: zero provider calls, infrastructure/setup only. B. Definitive Attempt 1: 32 logical requests, 16 successful model responses, 16 HTTP 402 transport/provider failures, two adapter retries per failure, and an ineligible gate | Preserve permanently as **FAIL / ineligible due to provider infrastructure**; do not interpret the partial BreakFix recall as product performance |
 | 16 | Production reliability hardening | Forensic replay of hosted job c0b53830 plus offline transport/state coverage | Deterministic provider 4xx errors no longer retry; physical provider attempts are recorded separately from logical calls; provider/planner errors become FAILED jobs with explicit stage states; secret-free `/readiness`; stale frontend polls cannot overwrite a newer job | Deploy and validate the production boundary before any future live product validation |
+| 17 | Final submission lock | Non-billable UI, documentation, and release checks | Terminal UNSUPPORTED jobs project as Provider Complete, Regression Not applicable, and no executed experiment; homepage labels the 8/8 result as pre-hardening; compatibility scope and later ineligible outcomes are explicit | Freeze the public submission state; do not present the historical valid result as current hardened-engine performance |
 
 ## Current conclusion
 
-The final independent evaluation supports the narrow BreakFix claim. On a
-fresh opaque 16-case holdout, BreakFix confirmed all eight seeded faults with
-zero false confirmed breaks on eight safe controls using 38 targeted
-experiments. The fixed matrix reached the same gate with 128 experiments. The
-generic comparator reached 7/8 fault recall with zero safe false confirmations.
+The historical pre-hardening independent evaluation supports the narrow
+BreakFix claim: on a fresh opaque 16-case holdout, BreakFix confirmed all eight
+seeded faults with zero false confirmed breaks on eight safe controls using 38
+targeted experiments. The fixed matrix reached the same gate with 128
+experiments, and the generic comparator reached 7/8 fault recall with zero
+safe false confirmations.
 
-The final result is a PASS for this frozen protocol, not a claim of universal
-defect-detection accuracy. The supported product remains a Python
-`app.run(payload)` prototype across four experiment surfaces. Phase 2B Attempt
-1 remains preserved as a separate ineligible provider-output FAIL, and the
-final result does not overwrite or reinterpret it. The definitive Attempt 1
-provider-account failure is likewise preserved separately from product logic
-and is not a valid performance result.
+That is a historical valid result, not a claim of current hardened-engine
+performance or universal defect-detection accuracy. The later hardened
+final-fresh evaluation and definitive attempt are preserved as ineligible. The
+definitive attempt recorded 16 successful responses and 16 HTTP 402
+`Insufficient Balance` provider failures across 32 logical requests. The
+supported product remains a Python `app.run(payload)` prototype across four
+experiment surfaces.

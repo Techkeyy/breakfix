@@ -74,6 +74,7 @@ button { cursor: pointer; }
 .proof-grid dt { color: var(--hero-blue-soft); font-size: clamp(1.5rem, 3vw, 2.15rem); font-weight: 700; letter-spacing: -.055em; line-height: 1; }
 .proof-grid div:nth-child(3) dt { color: var(--hero-red-soft); }
 .proof-grid dd { max-width: 115px; margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.proof-note { grid-column: 2; max-width: 720px; margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 
 .editorial-section, .process-section, .evaluation-section { padding: 118px 0; border-bottom: 1px solid var(--line); }
 .section-kicker { display: flex; gap: 17px; color: var(--faint); }
@@ -282,6 +283,7 @@ pre { max-width: 100%; max-height: 280px; margin: 18px 0 0; overflow: auto; bord
   .editorial-grid, .evaluation-grid, .analysis-entry { gap: 8%; }
   .proof-strip { grid-template-columns: 1fr; gap: 22px; }
   .proof-intro p { max-width: 300px; }
+  .proof-note { grid-column: 1; }
   .proof-grid { grid-template-columns: repeat(5, minmax(100px, 1fr)); }
   .proof-grid div { padding-left: 12px; }
   .proof-grid dd { font-size: 11px; }
