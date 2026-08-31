@@ -1,7 +1,9 @@
 import json
 import unittest
+from pathlib import Path
 
 from breakfix.agent_contract import validate_baseline_response, validate_breakfix_response, validate_product_planner_response
+from breakfix.product_prompts import render_product_planner_prompt
 
 
 class AgentContractTests(unittest.TestCase):
@@ -63,6 +65,7 @@ class AgentContractTests(unittest.TestCase):
                     "perturbation": {"items": []},
                     "observable": "captured target exception or structured result",
                     "failure_predicate": "the target raises when the input collection is empty",
+                    "structured_failure_predicate": None,
                     "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
                     "parameters": {},
                 },
@@ -104,6 +107,7 @@ class AgentContractTests(unittest.TestCase):
                 "perturbation": {"items": []},
                 "observable": "captured target exception or structured result",
                 "failure_predicate": "the target raises when the input collection is empty",
+                "structured_failure_predicate": None,
                 "why_this_probe_tests_this_assumption": "an empty collection directly exercises the boundary",
                 "parameters": {},
             },
@@ -137,12 +141,42 @@ class AgentContractTests(unittest.TestCase):
                     "perturbation": {"items": []},
                     "observable": "captured target exception or structured result",
                     "failure_predicate": "the target raises when the input collection is empty",
+                    "structured_failure_predicate": None,
                     "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
                     "parameters": {},
                 },
             }],
         }))
         self.assertFalse(result["valid"])
+
+    def test_product_planner_requires_structured_predicate_field(self):
+        result = validate_product_planner_response(json.dumps({
+            "change_summary": "change",
+            "assumptions": [{
+                "id": "A1",
+                "statement": "the collection is non-empty",
+                "surface": "input",
+                "risk": "high",
+                "evidence": [{"file": "app.py", "location": "run", "reason": "collection length"}],
+                "failure_if_false": "the target raises",
+                "experiment": {
+                    "type": "input_empty",
+                    "target": "app.py:run",
+                    "hypothesis": "the collection is non-empty",
+                    "perturbation": {"items": []},
+                    "observable": "captured target exception or structured result",
+                    "failure_predicate": "the target raises when the input collection is empty",
+                    "why_this_probe_tests_this_assumption": "the empty collection exercises the boundary",
+                    "parameters": {},
+                },
+            }],
+        }))
+        self.assertFalse(result["valid"])
+        self.assertIn("structured_failure_predicate", " ".join(result["validation_failures"]))
+
+    def test_product_prompt_shows_canonical_structured_path_array_example(self):
+        prompt = render_product_planner_prompt(Path.cwd(), "", "task", "tests")
+        self.assertIn('{"path":["reading"],"operator":"equals","value":1}', prompt)
 
 
 if __name__ == "__main__":

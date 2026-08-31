@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from .applicability import assess_probe_applicability
+from .evidence_contract import legacy_observation_to_predicate
 from .experiments import EXPERIMENTS
 
 
@@ -362,7 +363,7 @@ def validate_phase2b_breakfix_response(text: str) -> dict[str, Any]:
     }
 
 
-def validate_product_planner_response(text: str) -> dict[str, Any]:
+def validate_product_planner_response(text: str, *, allow_legacy_structured_predicate: bool = False) -> dict[str, Any]:
     """Validate the compact planner contract used by the shipped product.
 
     The model may suggest probes, but it never decides whether a break exists.
@@ -431,6 +432,19 @@ def validate_product_planner_response(text: str) -> dict[str, Any]:
             failures.append(f"assumption {index} experiment must contain a string type or null")
             continue
         experiment_id = experiment["type"]
+        if "structured_failure_predicate" not in experiment:
+            if not allow_legacy_structured_predicate:
+                failures.append(f"assumption {index} experiment missing structured_failure_predicate")
+                continue
+            experiment = {
+                **experiment,
+                "structured_failure_predicate": legacy_observation_to_predicate(
+                    SUPPORTED_EXPERIMENTS.get(experiment_id).output_failure_observation
+                    if SUPPORTED_EXPERIMENTS.get(experiment_id) is not None
+                    else None
+                ),
+            }
+            assumption = {**assumption, "experiment": experiment}
         applicability = assess_probe_applicability(
             assumption,
             experiment,

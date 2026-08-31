@@ -26,7 +26,11 @@ from breakfix.agent_contract import validate_product_planner_response  # noqa: E
 from breakfix.applicability import assess_probe_applicability  # noqa: E402
 from breakfix.executor import run_experiment_isolated  # noqa: E402
 from breakfix.experiments import EXPERIMENTS, experiment_by_id, payload_for  # noqa: E402
-from breakfix.product import _evaluate_product_execution  # noqa: E402
+from breakfix.product import (  # noqa: E402
+    _evaluate_product_execution,
+    _experiment_contract,
+    _run_regression_on_broken,
+)
 
 
 TABLE_FIELDS = (
@@ -292,7 +296,12 @@ def _replay_case(case_id: str, oracle_case: dict[str, Any], raw_root: Path) -> d
     if response is None:
         return {**base, "replay_status": "NO_PRESERVED_MODEL_RESPONSE", "planner_valid_after_repair": None, "selected_experiments": [], "experiments": []}
 
-    validation = validate_product_planner_response(response["response_text"])
+    # The preserved final run predates the structured predicate field. This
+    # compatibility mode adds only catalogue-declared defaults while keeping
+    # the current live planner contract strict.
+    validation = validate_product_planner_response(
+        response["response_text"], allow_legacy_structured_predicate=True
+    )
     if not validation.get("valid"):
         return {
             **base,
@@ -321,8 +330,11 @@ def _replay_case(case_id: str, oracle_case: dict[str, Any], raw_root: Path) -> d
         if not isinstance(applicability, dict):
             applicability = assess_probe_applicability(assumption, assumption.get("experiment", {}), experiment)
         execution = run_experiment_isolated(after_root, experiment_id, payload_for(experiment))
-        evaluation = _evaluate_product_execution(execution, applicability)
-        experiment_records.append({
+        contract = _experiment_contract(assumption, experiment)
+        evaluation = _evaluate_product_execution(
+            execution, applicability, experiment, contract.get("structured_failure_predicate")
+        )
+        record = {
             "experiment_id": experiment_id,
             "failure_kind": execution.failure_kind,
             "output": execution.output,
@@ -332,11 +344,27 @@ def _replay_case(case_id: str, oracle_case: dict[str, Any], raw_root: Path) -> d
             "evidence_sufficient": evaluation.get("evidence_sufficient"),
             "failure_predicate_matched": evaluation.get("failure_predicate_matched"),
             "reason": evaluation.get("reason"),
-        })
+        }
+        if evaluation.get("evidence_state") == "CONFIRMED BREAK":
+            regression = _run_regression_on_broken(after_root, payload_for(experiment), contract)
+            record["regression"] = regression
+            if not regression.get("valid"):
+                record["evidence_state"] = "REGRESSION INVALID"
+                record["evidence_sufficient"] = False
+                record["failure_predicate_matched"] = False
+                record["reason"] = "confirmed runtime observation did not produce a valid broken-project regression"
+        experiment_records.append(record)
 
     states = [record.get("evidence_state") for record in experiment_records]
-    if "CONFIRMED BREAK" in states:
+    if "CONFIRMED BREAK" in states and all(
+        record.get("evidence_state") != "CONFIRMED BREAK" or record.get("regression", {}).get("valid")
+        for record in experiment_records
+    ):
         replay_status = "CONFIRMED BREAK"
+    elif "REGRESSION INVALID" in states:
+        replay_status = "ERROR" if any(
+            record.get("regression", {}).get("harness_failed") for record in experiment_records
+        ) else "UNSUPPORTED"
     elif "HARNESS FAILURE" in states:
         replay_status = "ERROR"
     elif any(state in {"INCONCLUSIVE", "NOT EXECUTABLE"} for state in states):

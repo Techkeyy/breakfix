@@ -31,6 +31,7 @@ class FakeProvider:
                     "perturbation": {"items": []},
                     "observable": "captured target exception or structured result",
                     "failure_predicate": "the target raises when the input collection is empty",
+                    "structured_failure_predicate": None,
                     "why_this_probe_tests_this_assumption": "an empty collection directly exercises the len boundary",
                     "parameters": {},
                 },

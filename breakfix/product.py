@@ -16,7 +16,8 @@ from .executor import (
     run_command,
     run_experiment_isolated,
 )
-from .experiments import BASE_CONTEXT, EXPERIMENTS, experiment_by_id, payload_for
+from .evidence_contract import legacy_observation_to_predicate
+from .experiments import BASE_CONTEXT, EXPERIMENTS, experiment_by_id, output_failure_matches, payload_for
 from .git_project import ChangeSnapshot
 from .product_prompts import PRODUCT_PROMPT_ID, render_product_planner_prompt
 from .provider import DirectProvider, StructuredProviderResult
@@ -78,6 +79,39 @@ def _provider_telemetry(result: StructuredProviderResult) -> dict[str, Any]:
 def _regression_source(payload: dict[str, Any], contract: dict[str, Any]) -> str:
     encoded = repr(payload)
     predicate = repr(contract.get("failure_predicate", "the confirmed target failure must not recur"))
+    structured_predicate = contract.get("structured_failure_predicate")
+    if isinstance(structured_predicate, dict):
+        path = structured_predicate.get("path")
+        expected = structured_predicate.get("value")
+        if (
+            structured_predicate.get("operator") == "equals"
+            and isinstance(path, list)
+            and all(isinstance(part, str) for part in path)
+            and "value" in structured_predicate
+        ):
+            path_code = repr(path)
+            expected_code = repr(expected)
+            return f'''import unittest
+import app
+
+
+class BreakFixRegressionTests(unittest.TestCase):
+    def test_confirmed_failure_does_not_recur(self):
+        """The exact confirmed structured failure must no longer recur ({predicate})."""
+        payload = {encoded}
+        try:
+            result = app.run(payload)
+        except Exception as exc:
+            self.fail(f"confirmed target failure reproduced: {{type(exc).__name__}}: {{exc}}")
+        observed = result
+        for key in {path_code}:
+            observed = observed.get(key) if isinstance(observed, dict) else None
+        self.assertNotEqual(observed, {expected_code}, "confirmed structured failure reproduced")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
     return f'''import unittest
 import app
 
@@ -149,10 +183,21 @@ def _experiment_contract(assumption: dict[str, Any], experiment: Any) -> dict[st
         "oracle": "deterministic runtime failure predicate",
         "catalogue_target": experiment.target,
         "capability": experiment.capability,
+        "observable_schema": experiment.observable_schema,
+        "allowed_predicate_operators": experiment.allowed_predicate_operators,
+        "structured_failure_predicate": proposal.get("structured_failure_predicate"),
     }
 
 
-def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -> dict[str, Any]:
+_DEFAULT_STRUCTURED_PREDICATE = object()
+
+
+def _evaluate_product_execution(
+    execution: Any,
+    applicability: dict[str, Any],
+    experiment: Any | None = None,
+    structured_failure_predicate: Any = _DEFAULT_STRUCTURED_PREDICATE,
+) -> dict[str, Any]:
     if not applicability.get("applicable"):
         return {
             "evidence_state": applicability.get("status", "NOT EXECUTABLE"),
@@ -188,6 +233,21 @@ def _evaluate_product_execution(execution: Any, applicability: dict[str, Any]) -
             "failure_predicate_matched": False,
             "observable": None,
             "reason": "target failure had no concrete observable sufficient to distinguish or replay it",
+        }
+    if structured_failure_predicate is _DEFAULT_STRUCTURED_PREDICATE and experiment is not None:
+        structured_failure_predicate = legacy_observation_to_predicate(experiment.output_failure_observation)
+    if (
+        execution.output_captured
+        and experiment is not None
+        and output_failure_matches(experiment, execution.output, structured_failure_predicate)
+    ):
+        return {
+            "evidence_state": "CONFIRMED BREAK",
+            "failure_classification": "EXPECTED PREDICATE FAILURE",
+            "evidence_sufficient": True,
+            "failure_predicate_matched": True,
+            "observable": "structured target output matched the validated failure predicate",
+            "reason": "applicable probe returned a concrete structured output matching its deterministic typed failure predicate",
         }
     if execution.output_captured:
         return {
@@ -360,7 +420,9 @@ def analyze_change(
         execution = run_experiment_isolated(execution_root, experiment_id, payload)
         target = evidence_dir / "experiments" / experiment_id
         _write_execution(target, execution)
-        evaluation = _evaluate_product_execution(execution, applicability)
+        evaluation = _evaluate_product_execution(
+            execution, applicability, experiment, contract.get("structured_failure_predicate")
+        )
         actual_behavior = {
             "process_failed": execution.process_failed,
             "failure_kind": execution.failure_kind,

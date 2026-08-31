@@ -15,6 +15,9 @@ class Experiment:
     failure_predicate: str = ""
     capability: str = "python-runtime"
     match_terms: tuple[str, ...] = ()
+    output_failure_observation: dict[str, Any] | None = None
+    observable_schema: dict[str, Any] = field(default_factory=dict)
+    allowed_predicate_operators: tuple[str, ...] = ("equals",)
 
 
 @dataclass(frozen=True)

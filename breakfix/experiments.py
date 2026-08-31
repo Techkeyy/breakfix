@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from .evidence_contract import legacy_observation_to_predicate, structured_failure_matches
 from .models import Experiment
 
 
@@ -20,6 +21,43 @@ BASE_CONTEXT: dict[str, Any] = {
 }
 
 
+def _object_schema(properties: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    return {"type": "object", "properties": properties, "additionalProperties": False}
+
+
+INPUT_OUTPUT_SCHEMA = _object_schema({
+    "average": {"type": ["number", "null"]},
+    "count": {"type": "integer"},
+    "source": {"type": "string"},
+    "value": {"type": "number"},
+    "reading": {"type": ["number", "null"]},
+    "present": {"type": "boolean"},
+})
+RETRY_OUTPUT_SCHEMA = _object_schema({
+    "accepted": {"type": "boolean"},
+    "attempts": {"type": "integer"},
+    "replays": {"type": "integer"},
+    "status": {"type": "string"},
+})
+STATE_OUTPUT_SCHEMA = _object_schema({
+    "tax": {"type": "number"},
+    "version": {"type": "integer"},
+})
+EVENT_OUTPUT_SCHEMA = _object_schema({
+    "event_count": {"type": "integer"},
+    "sequence": {"type": "string"},
+})
+WORLD_OUTPUT_SCHEMA = _object_schema({
+    "offset_mode": {"type": "string"},
+    "zone": {"type": "string"},
+    "calendar": {"type": "string"},
+})
+CONFIG_OUTPUT_SCHEMA = _object_schema({
+    "mode": {"type": "string"},
+    "region": {"type": "string"},
+})
+
+
 EXPERIMENTS: tuple[Experiment, ...] = (
     Experiment(
         id="input_empty",
@@ -30,6 +68,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target raises when the input collection is empty",
         match_terms=("empty", "non-empty", "collection", "item", "length", "list", "array", "input"),
+        observable_schema=INPUT_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="input_boundary_zero",
@@ -40,6 +80,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target fails or returns an invalid result for a zero-valued boundary",
         match_terms=("zero", "numeric", "number", "boundary", "value", "input"),
+        observable_schema=INPUT_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="retry_duplicate",
@@ -50,6 +92,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target applies a repeated request more than once or fails on replay",
         match_terms=("retry", "replay", "duplicate", "idempot", "request", "attempt"),
+        observable_schema=RETRY_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="state_legacy",
@@ -60,6 +104,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target fails when a legacy record lacks the newly assumed field",
         match_terms=("legacy", "older", "old", "persisted", "schema", "field", "record", "state", "backward"),
+        observable_schema=STATE_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="events_reordered",
@@ -70,6 +116,9 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target produces an invalid transition or fails for a reordered event sequence",
         match_terms=("event", "order", "ordered", "sequence", "transition", "out-of-order", "reorder"),
+        output_failure_observation={"path": ["sequence"], "operator": "equals", "value": "invalid"},
+        observable_schema=EVENT_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="world_dst",
@@ -83,6 +132,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target computes a wrong or failed result across a daylight-saving boundary",
         match_terms=("timezone", "time zone", "daylight", "dst", "utc", "timestamp", "calendar", "locale"),
+        observable_schema=WORLD_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="config_missing",
@@ -93,6 +144,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target fails when optional configuration is absent",
         match_terms=("config", "configuration", "setting", "optional", "dependency", "missing"),
+        observable_schema=CONFIG_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
     Experiment(
         id="concurrent_duplicate",
@@ -103,6 +156,8 @@ EXPERIMENTS: tuple[Experiment, ...] = (
         observable="structured return or captured target exception",
         failure_predicate="the target races, duplicates a side effect, or fails under concurrent delivery",
         match_terms=("concurrent", "concurrency", "parallel", "race", "simultaneous", "effect boundary"),
+        observable_schema=RETRY_OUTPUT_SCHEMA,
+        allowed_predicate_operators=("equals",),
     ),
 )
 
@@ -118,3 +173,13 @@ def payload_for(experiment: Experiment) -> dict[str, Any]:
     payload = deepcopy(BASE_CONTEXT)
     payload.update(deepcopy(experiment.perturbation))
     return payload
+
+
+_DEFAULT_PREDICATE = object()
+
+
+def output_failure_matches(experiment: Experiment, output: Any, predicate: Any = _DEFAULT_PREDICATE) -> bool:
+    """Evaluate an exact, schema-validated structured failure predicate."""
+    if predicate is _DEFAULT_PREDICATE:
+        predicate = legacy_observation_to_predicate(experiment.output_failure_observation)
+    return structured_failure_matches(experiment, output, predicate)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .evidence_contract import validate_structured_failure_predicate
 from .models import Experiment
 
 
@@ -63,6 +64,7 @@ def assess_probe_applicability(
         "observable",
         "failure_predicate",
         "why_this_probe_tests_this_assumption",
+        "structured_failure_predicate",
     )
     if experiment is None:
         return {
@@ -90,11 +92,28 @@ def assess_probe_applicability(
             "status": "NOT EXECUTABLE",
             "reason": "proposed perturbation does not match the concrete catalogue condition",
         }
-    if proposal["failure_predicate"].strip().lower() != experiment.failure_predicate.strip().lower():
+    structured_predicate = validate_structured_failure_predicate(
+        proposal.get("structured_failure_predicate"), experiment
+    )
+    if not structured_predicate.get("valid"):
         return {
             "applicable": False,
             "status": "NOT EXECUTABLE",
-            "reason": "proposed failure predicate does not match the deterministic catalogue predicate",
+            "reason": structured_predicate.get("reason", "structured failure predicate is not executable"),
+            "structured_predicate_validation": structured_predicate,
+        }
+    # For structured output, the typed predicate is the machine-checkable
+    # contract. The catalogue prose remains explanatory context and must not
+    # reject a semantically compatible planner description. Exception-only
+    # probes retain the deterministic prose contract because there is no
+    # structured marker to evaluate.
+    if structured_predicate.get("predicate") is None and (
+        proposal["failure_predicate"].strip().lower() != experiment.failure_predicate.strip().lower()
+    ):
+        return {
+            "applicable": False,
+            "status": "NOT EXECUTABLE",
+            "reason": "exception-only failure predicate does not match the deterministic catalogue contract",
         }
     if assumption.get("surface") != experiment.surface:
         return {
@@ -131,4 +150,5 @@ def assess_probe_applicability(
         "reason": "assumption semantics, probe surface, perturbation, observable, and failure predicate align",
         "matched_terms": matches,
         "capability": experiment.capability,
+        "structured_failure_predicate": structured_predicate.get("predicate"),
     }

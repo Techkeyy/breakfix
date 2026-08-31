@@ -5,10 +5,15 @@ from pathlib import Path
 
 from breakfix.agent_contract import validate_product_planner_response, validate_fix_response
 from breakfix.applicability import assess_probe_applicability
-from breakfix.experiments import experiment_by_id
+from breakfix.evidence_contract import (
+    legacy_observation_to_predicate,
+    structured_failure_matches,
+    validate_structured_failure_predicate,
+)
+from breakfix.experiments import EXPERIMENTS, experiment_by_id
 from breakfix.fixes import verify_fix
-from breakfix.models import ExecutionResult
-from breakfix.product import _evaluate_product_execution, _run_regression_on_broken, analyze_change
+from breakfix.models import ExecutionResult, Experiment
+from breakfix.product import _evaluate_product_execution, _experiment_contract, _run_regression_on_broken, analyze_change
 from breakfix.git_project import ChangeSnapshot
 from breakfix.provider import ProviderAttempt, ProviderResponse, StructuredProviderResult
 
@@ -23,6 +28,7 @@ def _proposal(experiment_id: str, *, target: str = "app.py:run", hypothesis: str
         "observable": experiment.observable,
         "failure_predicate": experiment.failure_predicate,
         "why_this_probe_tests_this_assumption": "the exact catalogue perturbation exercises the named boundary",
+        "structured_failure_predicate": legacy_observation_to_predicate(experiment.output_failure_observation),
         "parameters": {},
     }
 
@@ -95,6 +101,192 @@ class CorrectnessHardeningTests(unittest.TestCase):
         self.assertEqual(result["evidence_state"], "CONFIRMED BREAK")
         self.assertEqual(result["failure_classification"], "EXPECTED PREDICATE FAILURE")
         self.assertTrue(result["failure_predicate_matched"])
+
+    def test_catalogue_declared_structured_failure_is_confirmed(self):
+        experiment = experiment_by_id("events_reordered")
+        execution = ExecutionResult(
+            "events_reordered", ["python", "-c", ""], 0, False, "", "",
+            output={"sequence": "invalid", "event_count": 2}, output_captured=True,
+        )
+        predicate = {"path": ["sequence"], "operator": "equals", "value": "invalid"}
+        result = _evaluate_product_execution(execution, {"applicable": True}, experiment, predicate)
+        self.assertEqual(result["evidence_state"], "CONFIRMED BREAK")
+        self.assertTrue(result["evidence_sufficient"])
+        self.assertTrue(result["failure_predicate_matched"])
+
+    def test_nonmatching_structured_failure_predicate_is_no_break(self):
+        experiment = experiment_by_id("events_reordered")
+        execution = ExecutionResult(
+            "events_reordered", ["python", "-c", ""], 0, False, "", "",
+            output={"sequence": "invalid", "event_count": 2}, output_captured=True,
+        )
+        predicate = {"path": ["sequence"], "operator": "equals", "value": "accepted"}
+        result = _evaluate_product_execution(execution, {"applicable": True}, experiment, predicate)
+        self.assertEqual(result["evidence_state"], "NO BREAK CONFIRMED")
+        self.assertFalse(result["failure_predicate_matched"])
+
+    def test_malformed_structured_predicate_is_not_executable(self):
+        proposal = _proposal("events_reordered")
+        proposal["structured_failure_predicate"] = {"path": ["sequence"], "operator": "equals"}
+        result = assess_probe_applicability(
+            _assumption("the event transition remains valid", "timing", "events_reordered"),
+            proposal,
+            experiment_by_id("events_reordered"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_missing_structured_predicate_path_is_rejected(self):
+        experiment = experiment_by_id("events_reordered")
+        result = validate_structured_failure_predicate(
+            {"path": ["missing"], "operator": "equals", "value": "invalid"}, experiment
+        )
+        self.assertFalse(result["valid"])
+
+    def test_structured_predicate_type_mismatch_is_rejected(self):
+        experiment = experiment_by_id("events_reordered")
+        result = validate_structured_failure_predicate(
+            {"path": ["sequence"], "operator": "equals", "value": 1}, experiment
+        )
+        self.assertFalse(result["valid"])
+
+    def test_unsupported_structured_predicate_operator_is_rejected(self):
+        experiment = experiment_by_id("events_reordered")
+        result = validate_structured_failure_predicate(
+            {"path": ["sequence"], "operator": "not_equals", "value": "accepted"}, experiment
+        )
+        self.assertFalse(result["valid"])
+
+    def test_structured_predicate_cannot_inspect_undeclared_output_field(self):
+        experiment = experiment_by_id("events_reordered")
+        result = validate_structured_failure_predicate(
+            {"path": ["private_internal_state"], "operator": "equals", "value": "bad"}, experiment
+        )
+        self.assertFalse(result["valid"])
+
+    def test_structured_probe_accepts_semantically_compatible_human_failure_prose(self):
+        assumption = _assumption("zero numeric boundary values are preserved", "input", "input_boundary_zero")
+        proposal = assumption["experiment"]
+        proposal["failure_predicate"] = "observing reading 1 means zero preservation is broken"
+        proposal["structured_failure_predicate"] = {"path": ["reading"], "operator": "equals", "value": 1}
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_boundary_zero"),
+        )
+        self.assertTrue(result["applicable"])
+        self.assertEqual(result["status"], "CANDIDATE")
+
+    def test_correct_prose_with_invalid_structured_path_is_not_executable(self):
+        assumption = _assumption("zero numeric boundary values are preserved", "input", "input_boundary_zero")
+        proposal = assumption["experiment"]
+        proposal["structured_failure_predicate"] = {"path": ["missing"], "operator": "equals", "value": 1}
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_boundary_zero"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_correct_probe_with_unsupported_structured_operator_is_not_executable(self):
+        assumption = _assumption("zero numeric boundary values are preserved", "input", "input_boundary_zero")
+        proposal = assumption["experiment"]
+        proposal["structured_failure_predicate"] = {"path": ["reading"], "operator": "not_equals", "value": 1}
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_boundary_zero"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_correct_probe_with_wrong_perturbation_is_not_executable(self):
+        assumption = _assumption("zero numeric boundary values are preserved", "input", "input_boundary_zero")
+        proposal = assumption["experiment"]
+        proposal["perturbation"] = {"items": [1]}
+        proposal["structured_failure_predicate"] = {"path": ["reading"], "operator": "equals", "value": 1}
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_boundary_zero"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_structured_predicate_wrong_declared_value_type_is_not_executable(self):
+        assumption = _assumption("zero numeric boundary values are preserved", "input", "input_boundary_zero")
+        proposal = assumption["experiment"]
+        proposal["structured_failure_predicate"] = {"path": ["reading"], "operator": "equals", "value": "1"}
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_boundary_zero"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_nested_canonical_path_arrays_validate_and_match_deterministically(self):
+        experiment = Experiment(
+            id="nested_test",
+            surface="input",
+            description="nested structured output test",
+            perturbation={"items": [0]},
+            observable_schema={
+                "type": "object",
+                "properties": {
+                    "meta": {
+                        "type": "object",
+                        "properties": {"status": {"type": "string"}},
+                    }
+                },
+            },
+            allowed_predicate_operators=("equals",),
+        )
+        predicate = {"path": ["meta", "status"], "operator": "equals", "value": "broken"}
+        result = validate_structured_failure_predicate(predicate, experiment)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["predicate"], predicate)
+        self.assertTrue(structured_failure_matches(experiment, {"meta": {"status": "broken"}}, predicate))
+        self.assertFalse(structured_failure_matches(experiment, {"meta": {"status": "ok"}}, predicate))
+
+    def test_string_structured_predicate_path_is_rejected_by_canonical_contract(self):
+        experiment = experiment_by_id("input_boundary_zero")
+        result = validate_structured_failure_predicate(
+            {"path": "reading", "operator": "equals", "value": 1}, experiment
+        )
+        self.assertFalse(result["valid"])
+        self.assertIn("non-empty list", result["reason"])
+
+    def test_exception_only_probe_retains_deterministic_prose_contract(self):
+        assumption = _assumption("the collection is non-empty", "input", "input_empty")
+        proposal = assumption["experiment"]
+        proposal["failure_predicate"] = "the changed path returns a value"
+        result = assess_probe_applicability(
+            assumption,
+            proposal,
+            experiment_by_id("input_empty"),
+        )
+        self.assertFalse(result["applicable"])
+        self.assertEqual(result["status"], "NOT EXECUTABLE")
+
+    def test_every_probe_family_declares_structured_evidence_capability(self):
+        for experiment in EXPERIMENTS:
+            self.assertEqual(experiment.observable_schema.get("type"), "object")
+            self.assertTrue(experiment.observable_schema.get("properties"))
+            self.assertEqual(experiment.allowed_predicate_operators, ("equals",))
+
+    def test_catalogue_structured_failure_generates_replayable_regression(self):
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp)
+            (project / "app.py").write_text(
+                "def run(payload): return {'sequence': 'invalid'}\n", encoding="utf-8"
+            )
+            experiment = experiment_by_id("events_reordered")
+            contract = _experiment_contract(_assumption("event order is valid", "timing", "events_reordered"), experiment)
+            result = _run_regression_on_broken(project, {"events": ["confirm", "reserve"]}, contract)
+            self.assertTrue(result["valid"])
+            self.assertEqual(result["result_against_broken"], "FAIL")
 
     def test_budget_selection_marks_only_selected_and_executed_assumptions(self):
         with tempfile.TemporaryDirectory() as temp:
