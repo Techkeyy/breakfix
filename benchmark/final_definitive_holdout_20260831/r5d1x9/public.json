@@ -1,0 +1,6 @@
+{
+  "id": "r5d1x9",
+  "task": "Review the change to a Python reading helper and describe its behavior at the smallest numeric boundary.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Boundary reading"
+}

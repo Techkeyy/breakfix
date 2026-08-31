@@ -1,0 +1,6 @@
+{
+  "id": "o8k5q2",
+  "task": "Review the change to a timestamp helper and describe its behavior for a named timezone and calendar.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Calendar conversion"
+}

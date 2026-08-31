@@ -1,0 +1,6 @@
+{
+  "id": "c2r8p6",
+  "task": "Review the change to a timestamp helper and describe its behavior across a daylight-saving timezone boundary.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Timezone boundary"
+}

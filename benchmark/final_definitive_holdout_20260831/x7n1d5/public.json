@@ -1,0 +1,6 @@
+{
+  "id": "x7n1d5",
+  "task": "Review the change to an event transition helper and describe its behavior when two valid events arrive in a different order.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Reordered events"
+}

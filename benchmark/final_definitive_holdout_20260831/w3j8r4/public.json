@@ -1,0 +1,6 @@
+{
+  "id": "w3j8r4",
+  "task": "Review the change to a Python configuration reader and describe its behavior when settings are omitted.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Default configuration"
+}

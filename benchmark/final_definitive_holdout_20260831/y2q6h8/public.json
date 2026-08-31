@@ -1,0 +1,6 @@
+{
+  "id": "y2q6h8",
+  "task": "Review the change to an event transition helper and describe its behavior when event order changes.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Flexible event order"
+}

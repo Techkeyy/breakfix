@@ -1,0 +1,6 @@
+{
+  "id": "s8h3k6",
+  "task": "Review the change to a Python summary helper and describe its behavior for an empty collection.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Empty input handling"
+}

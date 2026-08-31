@@ -1,0 +1,6 @@
+{
+  "id": "v9p5c3",
+  "task": "Review the change to a Python configuration reader and describe its behavior when optional settings are absent.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Optional configuration"
+}

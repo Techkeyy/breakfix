@@ -1,0 +1,6 @@
+{
+  "id": "u6g2m7",
+  "task": "Review the change to a Python state reader and describe its behavior for a record from an earlier schema.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Older record compatibility"
+}

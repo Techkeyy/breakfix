@@ -1,0 +1,6 @@
+{
+  "id": "e6t1w9",
+  "task": "Review the change to a timestamp helper and describe its behavior for a daylight-saving timezone conversion.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Named timezone conversion"
+}

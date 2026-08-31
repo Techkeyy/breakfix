@@ -1,0 +1,6 @@
+{
+  "id": "a7v3k5",
+  "task": "Review the change to a request handler and describe its behavior when a delivery is repeated.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Repeated request handling"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "p2m8v5",
+  "task": "Review the change to a Python reading helper and describe the result for a collection containing zero.",
+  "test_command": "python -m unittest discover -s tests -v",
+  "title": "Zero reading"
+}

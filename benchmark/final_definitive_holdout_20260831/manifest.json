@@ -1,0 +1,28 @@
+{
+  "case_count": 16,
+  "case_ids": [
+    "a7v3k5",
+    "c2r8p6",
+    "e6t1w9",
+    "i3b7n4",
+    "n7c4q2",
+    "o8k5q2",
+    "p2m8v5",
+    "r5d1x9",
+    "s8h3k6",
+    "t4w9b1",
+    "u6g2m7",
+    "v9p5c3",
+    "w3j8r4",
+    "x7n1d5",
+    "y2q6h8",
+    "z4m9s1"
+  ],
+  "protocol_id": "breakfix-post-hardening-evaluation-v1",
+  "required_case_files": [
+    "public.json",
+    "before/app.py",
+    "after/app.py",
+    "after/tests/test_app.py"
+  ]
+}
