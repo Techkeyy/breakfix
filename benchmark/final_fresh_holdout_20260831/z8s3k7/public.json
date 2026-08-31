@@ -1,0 +1,6 @@
+{
+  "id": "z8s3k7",
+  "title": "Calendar context",
+  "task": "Preserve regional calendar context for named timezone metadata.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

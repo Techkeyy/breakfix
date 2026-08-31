@@ -1,0 +1,6 @@
+{
+  "id": "t9b3q6",
+  "title": "Event transition",
+  "task": "Accept a valid two-event transition summary in either delivery order.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

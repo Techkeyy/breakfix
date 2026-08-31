@@ -1,0 +1,6 @@
+{
+  "id": "m9c4y6",
+  "title": "Regional settings",
+  "task": "Return a regional readiness response with a safe default setting.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

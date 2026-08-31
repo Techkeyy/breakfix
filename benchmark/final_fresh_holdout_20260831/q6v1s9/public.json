@@ -1,0 +1,6 @@
+{
+  "id": "q6v1s9",
+  "title": "Account compatibility",
+  "task": "Keep account summaries readable across current and older record shapes.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

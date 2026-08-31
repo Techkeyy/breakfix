@@ -1,0 +1,6 @@
+{
+  "id": "f7m2q8",
+  "title": "Collection summary",
+  "task": "Return a stable summary for empty collections.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "h6r3v7",
+  "title": "First reading",
+  "task": "Keep a zero reading stable in the first-sample summary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

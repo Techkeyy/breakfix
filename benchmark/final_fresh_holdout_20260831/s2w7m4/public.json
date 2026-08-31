@@ -1,0 +1,6 @@
+{
+  "id": "s2w7m4",
+  "title": "Replay handling",
+  "task": "Preserve acceptance metadata when a request is replayed.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

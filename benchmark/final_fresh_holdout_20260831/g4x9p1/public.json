@@ -1,0 +1,6 @@
+{
+  "id": "g4x9p1",
+  "title": "Reading digest",
+  "task": "Keep the reading digest correct for populated and empty samples.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

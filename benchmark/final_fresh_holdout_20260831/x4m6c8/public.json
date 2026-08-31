@@ -1,0 +1,6 @@
+{
+  "id": "x4m6c8",
+  "title": "Zone metadata",
+  "task": "Return the named timezone metadata for ordinary and boundary timestamps.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

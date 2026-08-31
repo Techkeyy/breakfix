@@ -1,0 +1,6 @@
+{
+  "id": "v5d8x1",
+  "title": "Event ordering",
+  "task": "Keep transition summaries valid when equivalent events arrive in either order.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

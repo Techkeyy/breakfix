@@ -1,0 +1,6 @@
+{
+  "id": "y1q9r5",
+  "title": "Calendar marker",
+  "task": "Keep the regional calendar marker stable across timezone boundaries.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

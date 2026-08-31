@@ -409,8 +409,26 @@ def validate_product_planner_response(text: str) -> dict[str, Any]:
         if not isinstance(evidence, list) or not all(isinstance(item, dict) for item in evidence):
             failures.append(f"assumption {index} evidence must be a list of objects")
         experiment = assumption["experiment"]
+        if experiment is None:
+            # The planner is allowed to identify an assumption that the
+            # deterministic catalogue cannot test. Preserve that assumption
+            # as a valid, non-executable record so the product can report
+            # UNSUPPORTED instead of misclassifying it as provider output
+            # corruption. This is the representation promised by the
+            # planner prompt's "do not force a probe" instruction.
+            applicability = assess_probe_applicability(assumption, {}, None)
+            record = {
+                **assumption,
+                "supported_experiment": False,
+                "execution_status": applicability.get("status", "UNSUPPORTED"),
+                "applicability": applicability,
+                "unsupported_reason": applicability.get("reason", "probe is not executable"),
+            }
+            unsupported.append(record)
+            valid_assumptions.append(record)
+            continue
         if not isinstance(experiment, dict) or not isinstance(experiment.get("type"), str):
-            failures.append(f"assumption {index} experiment must contain a string type")
+            failures.append(f"assumption {index} experiment must contain a string type or null")
             continue
         experiment_id = experiment["type"]
         applicability = assess_probe_applicability(

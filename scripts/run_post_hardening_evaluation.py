@@ -109,8 +109,11 @@ def _holdout_manifest_hash(public_root: Path) -> str:
     return digest.hexdigest()
 
 
-def _copy_history_free_workspace(target: Path) -> Path:
+def _copy_history_free_workspace(target: Path, holdout_root: Path) -> Path:
     target.mkdir(parents=True, exist_ok=False)
+    if not holdout_root.is_dir():
+        raise RuntimeError(f"holdout root not found: {holdout_root}")
+
     def ignore_history(_directory: str, names: list[str]) -> set[str]:
         return {
             name
@@ -120,7 +123,7 @@ def _copy_history_free_workspace(target: Path) -> Path:
 
     shutil.copytree(PROJECT_ROOT / "breakfix", target / "breakfix", ignore=ignore_history)
     shutil.copytree(
-        PROJECT_ROOT / "benchmark" / "post_hardening_holdout",
+        holdout_root,
         target / "benchmark" / "post_hardening_holdout",
     )
     for name in ("pyproject.toml", ".env.example"):
@@ -136,7 +139,12 @@ def _public_case_files(case_root: Path) -> list[Path]:
     return sorted(path for path in case_root.rglob("*") if path.is_file())
 
 
-def _leakage_audit(public_root: Path, oracle: dict[str, Any]) -> dict[str, Any]:
+def _leakage_audit(
+    public_root: Path,
+    oracle: dict[str, Any],
+    *,
+    source_holdout_root: Path | None = None,
+) -> dict[str, Any]:
     cases = oracle.get("cases") if isinstance(oracle, dict) else None
     if not isinstance(cases, dict):
         return {"passed": False, "reason": "oracle cases object missing"}
@@ -156,26 +164,30 @@ def _leakage_audit(public_root: Path, oracle: dict[str, Any]) -> dict[str, Any]:
     answer_bearing_paths: list[str] = []
     overlap_hits: list[str] = []
     old_hashes: dict[str, str] = {}
+    source_holdout_root = source_holdout_root.resolve() if source_holdout_root else None
     for path in PROJECT_ROOT.glob("benchmark/**"):
         if not path.is_file() or "post_hardening_holdout" in path.parts:
             continue
+        if source_holdout_root and (path.resolve() == source_holdout_root or source_holdout_root in path.resolve().parents):
+            continue
         old_hashes.setdefault(_sha256(path), str(path.relative_to(PROJECT_ROOT)))
-    allowed_names = {"public.json", "app.py", "test_app.py"}
-    for case_root in case_dirs:
-        for path in _public_case_files(case_root):
-            relative = path.relative_to(public_root).as_posix()
-            if path.name not in allowed_names:
-                answer_bearing_paths.append(relative)
-            text = path.read_text(encoding="utf-8", errors="replace")
-            lower = text.lower()
-            for term in forbidden_terms:
-                if term in lower:
-                    term_hits.append(f"{relative}:{term}")
-            if re.search(r"\b(?:truth|fault|verdict)\b", lower):
-                truth_term_hits.append(relative)
-            file_hash = _sha256(path)
-            if file_hash in old_hashes:
-                overlap_hits.append(f"{relative}={old_hashes[file_hash]}")
+    allowed_names = {"manifest.json", "public.json", "app.py", "test_app.py"}
+    public_files = [public_root / "manifest.json"] if (public_root / "manifest.json").is_file() else []
+    public_files.extend(path for case_root in case_dirs for path in _public_case_files(case_root))
+    for path in public_files:
+        relative = path.relative_to(public_root).as_posix()
+        if path.name not in allowed_names:
+            answer_bearing_paths.append(relative)
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lower = text.lower()
+        for term in forbidden_terms:
+            if term in lower:
+                term_hits.append(f"{relative}:{term}")
+        if re.search(r"\b(?:truth|fault|verdict)\b", lower):
+            truth_term_hits.append(relative)
+        file_hash = _sha256(path)
+        if file_hash in old_hashes:
+            overlap_hits.append(f"{relative}={old_hashes[file_hash]}")
     public_ids = {path.name for path in case_dirs}
     oracle_ids = set(cases)
     required_files_ok = all(
@@ -369,6 +381,12 @@ class BudgetedProvider:
         self.inner = inner
         self.maximum = maximum
         self.calls = 0
+        self.successful_responses = 0
+        self.transport_failures = 0
+        self.schema_failures = 0
+        self.budget_blocked_calls = 0
+        self.structured_recovery_retries = 0
+        self.adapter_retries = 0
         self.context_lane = "unknown"
         self.context_case = "unknown"
         self.call_log: list[dict[str, Any]] = []
@@ -384,6 +402,7 @@ class BudgetedProvider:
 
         def complete(request_prompt: str) -> Any:
             if self.calls >= self.maximum:
+                self.budget_blocked_calls += 1
                 raise ProviderError("frozen live completion budget exhausted before another provider call")
             self.calls += 1
             entry: dict[str, Any] = {
@@ -396,9 +415,13 @@ class BudgetedProvider:
             try:
                 response = self.inner.complete(request_prompt, response_format={"type": "json_object"})
             except ProviderError as exc:
-                entry.update({"status": "PROVIDER_ERROR", "error": str(exc), "completed_at_utc": _utc_now()})
+                self.transport_failures += 1
+                self.adapter_retries += exc.retries
+                entry.update({"status": "PROVIDER_ERROR", "error": str(exc), "retries": exc.retries, "completed_at_utc": _utc_now()})
                 self.call_log.append(entry)
                 raise
+            self.successful_responses += 1
+            self.adapter_retries += response.retries
             entry.update(
                 {
                     "status": "RESPONSE",
@@ -415,12 +438,15 @@ class BudgetedProvider:
             self.call_log.append(entry)
             return response
 
-        return bounded_structured_recovery(
+        result = bounded_structured_recovery(
             complete,
             prompt,
             validator=validator,
             max_recovery_attempts=max_recovery_attempts,
         )
+        self.schema_failures += sum(1 for attempt in result.attempts if attempt.output_failure)
+        self.structured_recovery_retries += max(0, len(result.attempts) - 1)
+        return result
 
 
 def _validate_oracle_shape(oracle: dict[str, Any]) -> None:
@@ -439,12 +465,14 @@ def _validate_oracle_shape(oracle: dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the frozen post-hardening independent evaluation.")
+    parser.add_argument("--holdout-root", type=Path, default=PROJECT_ROOT / "benchmark" / "post_hardening_holdout")
     parser.add_argument("--oracle-path", type=Path, required=True)
     parser.add_argument("--raw-root", type=Path, default=None)
     parser.add_argument("--public-evidence-root", type=Path, default=PROJECT_ROOT / "evidence")
     args = parser.parse_args()
 
     oracle_path = args.oracle_path.resolve()
+    holdout_root = args.holdout_root.resolve()
     if not oracle_path.is_file():
         raise SystemExit(f"oracle file not found: {oracle_path}")
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
@@ -458,14 +486,14 @@ def main() -> None:
     if raw_root.exists():
         raise SystemExit(f"refusing to overwrite raw root: {raw_root}")
     raw_root.mkdir(parents=True)
-    workspace = _copy_history_free_workspace(raw_root / "workspace")
+    workspace = _copy_history_free_workspace(raw_root / "workspace", holdout_root)
     public_root = workspace / "benchmark" / "post_hardening_holdout"
     public_evidence = args.public_evidence_root.resolve() / run_id
     public_evidence.mkdir(parents=True, exist_ok=False)
     if str(oracle_path).startswith(str(workspace)) or str(oracle_path).startswith(str(public_evidence)):
         raise SystemExit("oracle must remain outside evaluation and published evidence roots")
 
-    leakage = _leakage_audit(public_root, oracle)
+    leakage = _leakage_audit(public_root, oracle, source_holdout_root=holdout_root)
     workspace_audit = _workspace_audit(workspace, oracle_path)
     _write_json(raw_root / "leakage-audit.json", {"public_holdout": leakage, "history_free_workspace": workspace_audit})
     if not leakage["passed"] or not workspace_audit["passed"]:
@@ -558,7 +586,8 @@ def main() -> None:
     breakfix_regressions_valid = 0
     started_all = time.perf_counter()
 
-    for case_root in case_dirs:
+    for index, case_root in enumerate(case_dirs, start=1):
+        print(f"[{index:02d}/{len(case_dirs):02d}] generic baseline: {case_root.name}", flush=True)
         case_id = case_root.name
         public = json.loads((case_root / "public.json").read_text(encoding="utf-8"))
         expected_outputs = oracle_cases[case_id]["expected_outputs"]
@@ -575,6 +604,7 @@ def main() -> None:
         started = time.perf_counter()
         baseline = budgeted.complete_structured(prompt, validator=validate_phase2b_baseline_response, max_recovery_attempts=1)
         baseline_duration_ms = round((time.perf_counter() - started) * 1000)
+        print(f"[{index:02d}/{len(case_dirs):02d}] provider response received: generic baseline", flush=True)
         baseline_data = baseline.as_dict()
         parsed = baseline.parsed or {}
         recommendation = parsed.get("recommendation") if baseline.success else None
@@ -607,6 +637,7 @@ def main() -> None:
             },
         )
 
+        print(f"[{index:02d}/{len(case_dirs):02d}] BreakFix planner: {case_id}", flush=True)
         snapshot = ChangeSnapshot(
             project_root=(case_root / "after").resolve(),
             change_kind="post-hardening-holdout",
@@ -622,6 +653,7 @@ def main() -> None:
         started = time.perf_counter()
         product_analysis = analyze_change(snapshot, breakfix_evidence, provider=budgeted, max_experiments=PRODUCT_MAX_EXPERIMENTS, max_recovery_attempts=1)
         breakfix_duration_ms = round((time.perf_counter() - started) * 1000)
+        print(f"[{index:02d}/{len(case_dirs):02d}] provider response received: BreakFix planner", flush=True)
         breakfix_experiment_total += product_analysis.experiments_run
         if product_analysis.regression_valid:
             breakfix_regressions_valid += 1
@@ -677,9 +709,11 @@ def main() -> None:
         _write_json(raw_breakfix_root / case_id / "evaluation.json", {**breakfix_result, "oracle": oracle_cases[case_id]})
         _copy_public_product_evidence(breakfix_evidence, public_breakfix_root / case_id)
         _write_json(public_breakfix_root / case_id / "evaluation-summary.json", breakfix_result)
+        print(f"[{index:02d}/{len(case_dirs):02d}] live case complete: {case_id}", flush=True)
 
-    fixed_started = time.perf_counter()
-    for case_root in case_dirs:
+        fixed_started = time.perf_counter()
+    for index, case_root in enumerate(case_dirs, start=1):
+        print(f"[{index:02d}/{len(case_dirs):02d}] fixed matrix: {case_root.name}", flush=True)
         case_id = case_root.name
         expected_outputs = oracle_cases[case_id]["expected_outputs"]
         case_result: dict[str, Any] = {"case_id": case_id, "experiments": [], "confirmed_break": False, "errors": 0, "unsupported": 0}
@@ -756,7 +790,23 @@ def main() -> None:
         "experiment_reduction_percentage": reduction,
         "experiments_per_confirmed_defect": per_defect,
         "primary_gate": gate,
-        "live_provider_completion_calls": budgeted.calls,
+        "provider_accounting": {
+            "attempted_provider_calls": budgeted.calls,
+            "successful_responses": budgeted.successful_responses,
+            "transport_failures": budgeted.transport_failures,
+            "schema_failures": budgeted.schema_failures,
+            "budget_blocked_calls": budgeted.budget_blocked_calls,
+            "structured_recovery_retries": budgeted.structured_recovery_retries,
+            "adapter_retries": budgeted.adapter_retries,
+            "telemetry_retries": total_telemetry["retries"],
+            "live_provider_call_log_entries": len(budgeted.call_log),
+            "input_tokens": total_telemetry["input_tokens"],
+            "output_tokens": total_telemetry["output_tokens"],
+            "total_tokens": total_telemetry["total_tokens"],
+            "monetary_cost_usd": total_telemetry["monetary_cost_usd"],
+            "telemetry_latency_ms": total_telemetry["latency_ms"],
+            "wall_duration_ms": round((time.perf_counter() - started_all) * 1000),
+        },
         "live_provider_call_log": budgeted.call_log,
         "telemetry": {"baseline": _aggregate_telemetry(baseline_telemetry), "breakfix": _aggregate_telemetry(breakfix_telemetry), "all_live_provider_calls": total_telemetry},
         "live_case_results": {"baseline": baseline_results, "breakfix": breakfix_results},
@@ -785,9 +835,9 @@ def main() -> None:
         "truth_path_published": False,
         "git_head_at_start": freeze["git_head_at_freeze"],
         "deepseek_credential_present": credential_present,
-        "live_provider_completion_calls": budgeted.calls,
+        "attempted_provider_calls": budgeted.calls,
     })
-    print(json.dumps({"run_id": run_id, "primary_gate": gate, "live_provider_completion_calls": budgeted.calls, "baseline": baseline_score, "fixed_matrix": fixed_score, "breakfix": breakfix_score, "experiment_reduction_percentage": reduction, "public_evidence": str(public_evidence), "raw_evidence": str(raw_root)}, indent=2))
+    print(json.dumps({"run_id": run_id, "primary_gate": gate, "provider_accounting": summary["provider_accounting"], "baseline": baseline_score, "fixed_matrix": fixed_score, "breakfix": breakfix_score, "experiment_reduction_percentage": reduction, "public_evidence": str(public_evidence), "raw_evidence": str(raw_root)}, indent=2))
 
 
 if __name__ == "__main__":

@@ -71,6 +71,55 @@ class AgentContractTests(unittest.TestCase):
         self.assertTrue(result["valid"])
         self.assertEqual(result["selected_experiment_ids"], ["input_empty"])
 
+    def test_product_planner_accepts_null_experiment_as_unsupported(self):
+        result = validate_product_planner_response(json.dumps({
+            "change_summary": "the change may rely on an unavailable capability",
+            "assumptions": [{
+                "id": "A1",
+                "statement": "the application depends on a capability outside the executor catalogue",
+                "surface": "world",
+                "risk": "medium",
+                "evidence": [{"file": "app.py", "location": "run", "reason": "changed boundary"}],
+                "failure_if_false": "the unavailable capability is not observed",
+                "experiment": None,
+            }],
+        }))
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["selected_experiment_ids"], [])
+        self.assertEqual(result["assumptions"][0]["execution_status"], "UNSUPPORTED")
+        self.assertEqual(result["unsupported_assumptions"][0]["unsupported_reason"], "experiment is outside the supported execution catalogue")
+
+    def test_product_planner_keeps_supported_probe_when_other_assumption_is_null(self):
+        supported = {
+            "id": "A1",
+            "statement": "the collection is non-empty",
+            "surface": "input",
+            "risk": "high",
+            "evidence": [{"file": "app.py", "location": "run", "reason": "collection length is used"}],
+            "failure_if_false": "the target raises when the input collection is empty",
+            "experiment": {
+                "type": "input_empty",
+                "target": "app.py:run",
+                "hypothesis": "the collection is non-empty",
+                "perturbation": {"items": []},
+                "observable": "captured target exception or structured result",
+                "failure_predicate": "the target raises when the input collection is empty",
+                "why_this_probe_tests_this_assumption": "an empty collection directly exercises the boundary",
+                "parameters": {},
+            },
+        }
+        unsupported = {
+            **supported,
+            "id": "A2",
+            "statement": "the change depends on a capability outside the executor catalogue",
+            "surface": "world",
+            "experiment": None,
+        }
+        result = validate_product_planner_response(json.dumps({"change_summary": "change", "assumptions": [supported, unsupported]}))
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["selected_experiment_ids"], ["input_empty"])
+        self.assertEqual(len(result["unsupported_assumptions"]), 1)
+
     def test_product_planner_rejects_missing_evidence_object_shape(self):
         result = validate_product_planner_response(json.dumps({
             "change_summary": "change",

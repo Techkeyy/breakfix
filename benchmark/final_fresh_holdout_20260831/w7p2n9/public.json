@@ -1,0 +1,6 @@
+{
+  "id": "w7p2n9",
+  "title": "Zone description",
+  "task": "Keep named-zone metadata stable at a daylight-saving boundary.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

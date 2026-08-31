@@ -1,0 +1,6 @@
+{
+  "id": "j8n5w2",
+  "title": "Sensor reading",
+  "task": "Preserve zero-valued sensor readings in the compact response.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

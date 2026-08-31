@@ -1,0 +1,6 @@
+{
+  "id": "r8k5h3",
+  "title": "Repeat delivery",
+  "task": "Keep repeated deliveries accepted with stable request metadata.",
+  "test_command": "python -m unittest discover -s tests -v"
+}

@@ -115,6 +115,29 @@ class CorrectnessHardeningTests(unittest.TestCase):
             self.assertEqual(statuses["A1"], ("SELECTED", "EXECUTED"))
             self.assertEqual([item["execution_status"] for item in planner["assumptions"]].count("EXECUTED"), 1)
 
+    def test_null_experiment_reaches_unsupported_product_outcome(self):
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp)
+            (project / "app.py").write_text("def run(payload): return {'ok': True}\n", encoding="utf-8")
+            assumption = {
+                "id": "A1",
+                "statement": "the change depends on a capability outside the executor catalogue",
+                "surface": "world",
+                "risk": "medium",
+                "evidence": [{"file": "app.py", "location": "run", "reason": "changed boundary"}],
+                "failure_if_false": "the unavailable capability is not observed",
+                "experiment": None,
+            }
+            provider = _PlannerProvider([assumption])
+            snapshot = ChangeSnapshot(project, "test", None, "diff", ("app.py",), "test", "python -m unittest discover -s tests -v")
+            evidence = project / "evidence"
+            result = analyze_change(snapshot, evidence, provider=provider, max_experiments=3)
+            self.assertEqual(result.outcome, "UNSUPPORTED")
+            analysis = json.loads((evidence / "analysis.json").read_text(encoding="utf-8"))
+            self.assertEqual(analysis["error_code"], "NO_SUPPORTED_ASSUMPTION")
+            self.assertEqual(analysis["assumptions"][0]["execution_status"], "UNSUPPORTED")
+            self.assertEqual(analysis["experiments_run"], 0)
+
     def test_generated_regression_is_the_artifact_not_a_generic_project_test_command(self):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp)

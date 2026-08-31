@@ -66,6 +66,9 @@ behavior. Do not map browser-specific hypotheses to generic probes.
 
 Return exactly one compact JSON object, with no markdown and no prose outside
 the object. Do not include chain-of-thought or duplicated source excerpts.
+Set experiment to null when no supported catalogue probe can genuinely test
+the assumption; do not invent or force a probe. Otherwise, use the complete
+experiment object shown below and copy the catalogue perturbation exactly.
 Use this schema:
 {{
   "change_summary": "short summary",
@@ -77,18 +80,21 @@ Use this schema:
       "risk": "low|medium|high",
       "evidence": [{{"file": "path", "location": "line or symbol", "reason": "short reason"}}],
       "failure_if_false": "observable failure",
-      "experiment": {{
-        "type": "supported experiment type",
-        "target": "relevant file, symbol, or runtime boundary",
-        "hypothesis": "the assumption being falsified",
-        "perturbation": {{}},
-        "observable": "what the executor will inspect",
-        "failure_predicate": "the exact observation that counts as the predicted failure",
-        "why_this_probe_tests_this_assumption": "causal explanation",
-        "parameters": {{}}
-      }}
+      "experiment": null
     }}
   ]
+}}
+
+When experiment is not null, it must be an object with these exact fields:
+{{
+  "type": "supported experiment type",
+  "target": "relevant file, symbol, or runtime boundary",
+  "hypothesis": "the assumption being falsified",
+  "perturbation": {{}},
+  "observable": "what the executor will inspect",
+  "failure_predicate": "the exact observation that counts as the predicted failure",
+  "why_this_probe_tests_this_assumption": "causal explanation",
+  "parameters": {{}}
 }}
 
 {_source_context(project_dir, diff, task, visible_tests)}

@@ -1,0 +1,6 @@
+{
+  "id": "k2t7b4",
+  "title": "Regional readiness",
+  "task": "Keep the regional readiness response stable when optional settings are absent.",
+  "test_command": "python -m unittest discover -s tests -v"
+}
