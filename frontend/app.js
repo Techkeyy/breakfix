@@ -24,10 +24,15 @@ const formatEvidenceValue = (value) => {
 };
 
 let scrollRevealCleanup = () => {};
+const STATIC_STORY_REVEAL_SELECTOR = [
+  "#product [data-scroll-reveal]",
+  "#how-it-works [data-scroll-reveal]",
+  "#evaluation [data-scroll-reveal]",
+].join(", ");
 
 function initScrollReveal() {
   scrollRevealCleanup();
-  const targets = [...document.querySelectorAll("[data-scroll-reveal]")];
+  const targets = [...document.querySelectorAll(STATIC_STORY_REVEAL_SELECTOR)];
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (!targets.length || motionQuery.matches || !window.gsap || !window.ScrollTrigger) return;
 
